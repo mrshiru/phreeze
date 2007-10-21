@@ -1,0 +1,243 @@
+/* 
+dark   #317082 
+medium #8fb5b6 
+light  #c9e5e6 
+*/
+
+/* ############ LAYOUT ######### */
+body
+{
+	background-image: url(../images/bg_diagonal.gif);
+	padding: 15px;
+	margin: 0px;
+}
+
+*
+{
+	font-family: verdana,arial,helvetica;
+	font-size: 8pt;
+}
+
+img
+{
+	border: none;
+}
+
+form
+{
+	margin: 5px 0px 0px 0px;
+}
+
+#shell
+{
+	text-align: center;
+}
+
+#main
+{
+	text-align: left;
+	background-color: #ffffff;
+	color: #000000;
+	padding: 10px 0px 20px 0px;
+	margin: auto;
+	border: solid 1px #c9e5e6 ;
+}
+
+
+#header
+{
+	height: 45px;
+	background-image: url(../images/header.jpg);
+	background-repeat: no-repeat;
+	text-align: right;
+	padding-right: 15px;
+}
+
+#headernav
+{
+	padding-top: 25px;
+}
+
+#banner
+{
+	margin-left: 15px;
+	background-color: #317082;
+	height: 120px;
+	background-image: url(../images/banner.jpg);
+	background-repeat: no-repeat;
+	background-position: right;
+}
+
+#content
+{
+	padding: 15px 13px 0px 13px;
+}
+
+#footer
+{
+	padding: 15px;
+	text-align: center;
+}
+
+/* ############ TEXT STYLES ######### */
+
+a
+{
+	text-decoration: none;
+	color: #317082;
+}
+
+a:hover
+{
+	text-decoration: underline;
+}
+
+.warning
+{
+	text-align: left;
+	padding: 10px 10px 10px 26px;
+	color: red;
+	font-weight: bold;
+	border: solid 1px #CC9999;
+	background-color: #FFCCCC;
+	margin-bottom: 12px;
+}
+
+.stacktrace
+{
+	font-family: Courier New, Courier;
+	font-size: 9pt;
+	text-align: left;
+	padding: 10px 10px 10px 26px;
+	color: #555555;
+	border: solid 1px #555555;
+	background-color: #dddddd;
+	margin-bottom: 12px;
+}
+
+.feedback
+{
+	text-align: left;
+	padding: 10px 10px 10px 26px;
+	color: blue;
+	font-weight: bold;
+	border: solid 1px #6699CC;
+	background-color: #99CCFF;
+	margin-bottom: 12px;
+}
+
+.instruction
+{
+	border: solid 1px #eeee33;
+	background-color: #ffffcc;
+	padding: 5px 10px 5px 10px;
+	margin-top: 5px;
+	margin-bottom: 12px;
+}
+
+.excel
+{
+	background-image: url(../images/ico_excel.gif);
+	background-repeat: no-repeat;
+	background-position: 0px 1px;
+	padding: 2px 0px 2px 20px;
+}
+
+.print
+{
+	background-image: url(../images/ico_print.gif);
+	font-weight: bold;
+	background-repeat: no-repeat;
+	background-position: 0px 1px;
+	padding: 2px 0px 2px 20px;
+}
+
+.back
+{
+	background-image: url(../images/ico_back.gif);
+	background-repeat: no-repeat;
+	background-position: 0px 1px;
+	padding: 2px 0px 2px 20px;
+}
+
+.genericlink
+{
+	background-image: url(../images/ico_link.gif);
+	background-repeat: no-repeat;
+	background-position: 0px 1px;
+	padding: 2px 0px 2px 20px;
+}
+
+.debug, .query, .info
+{
+	font-family: Courier New;
+	font-size: 9pt;
+}
+.debug {color: Blue;}
+.query {color: Green;}
+
+
+/* ############ MISC ######### */
+
+.center
+{
+	text-align: center;
+}
+
+.pad
+{
+	padding-bottom: 10px;
+}
+
+#loginform
+{
+	width: 275px;
+	margin: auto;
+	text-align: left;
+}
+
+.filter
+{
+	border: solid 1px #cccccc;
+	background-color: #eeeeee;
+	padding: 5px;
+	margin-bottom: 10px;
+}
+
+/* ############ PRINTING DEFINITIONS ######### */
+
+@media screen 
+{
+	.onlyprint {display: none;}
+}
+
+@media print 
+{
+   .noprint {display: none;}
+   
+   body
+	{
+		padding: 0px;
+		margin: 0px;
+	}
+
+
+	#shell
+	{
+		text-align: left;
+	}
+	
+	#main
+	{
+		text-align: left;
+		width: 675px;
+		border: none;
+		padding: 0px;
+	}
+	
+	.instruction
+	{
+		display: none;
+	}
+
+}

@@ -1,0 +1,1 @@
+<input type="text" id="{ldelim}$fieldname{rdelim}" name="{ldelim}$fieldname{rdelim}" value="{ldelim}$fieldvalue|date_format:"%m/%d/%Y"{rdelim}" class="x-form-text x-form-field date-picker" />
