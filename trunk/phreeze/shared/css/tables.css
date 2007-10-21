@@ -1,0 +1,151 @@
+/* ###################################################################### */
+table.basic
+{
+    border-collapse: collapse;
+    border: none;
+}
+
+table.basic tr
+{
+    vertical-align: top;
+    border: none;
+}
+
+table.basic th, table.basic td
+{
+    margin: 0px;
+    padding: 3px 5px 3px 5px;
+    border: none;
+}
+
+table.basic td
+{
+    background-color: #ffffff;
+    color: inherit;
+    border-bottom: dotted 1px #bbbbbb;
+}
+
+table.basic td.odd
+{
+    background-color: #fafafa;
+}
+
+table.basic th
+{
+    text-align: left;
+    font-weight: bold;
+    background-color: #dddddd;
+    color: inherit;
+    border-bottom: solid 1px #bbbbbb;
+}
+
+table.basic td.footer
+{
+    font-weight: bold;
+}
+
+table.basic .numeric
+{
+	text-align: right;
+	white-space: nowrap;
+}
+
+/* ###################################################################### */
+table.oldschool
+{
+    border-collapse: collapse;
+    border: none;
+}
+
+table.oldschool tr
+{
+    vertical-align: top;
+    border: none;
+}
+
+table.oldschool th, table.oldschool td
+{
+    margin: 3px;
+    padding: 3px 5px 3px 5px;
+}
+
+table.oldschool td
+{
+    border: solid 1px #000000;
+}
+
+table.oldschool th
+{
+    text-align: left;
+    font-weight: bold;
+    border: solid 1px #000000;
+}
+
+/* ###################################################################### */
+table.bluecube
+{
+    border-collapse: separate;
+    border: none;
+}
+
+table.bluecube tr
+{
+    vertical-align: top;
+    border: none;
+}
+
+table.bluecube th, table.bluecube td
+{
+    margin: 0px;
+    padding: 3px 5px 3px 5px;
+    border: none;
+}
+
+table.bluecube td
+{
+    background-color: #99CCFF;
+    color: inherit;
+}
+
+table.bluecube th
+{
+    text-align: left;
+    font-weight: bold;
+    background-color: #336699;
+    color: #ffffff;
+}
+
+/* ###################################################################### */
+table.corporate
+{
+    border-collapse: collapse;
+    border: none;
+}
+
+table.corporate tr
+{
+    vertical-align: top;
+    border: none;
+}
+
+table.corporate th, table.corporate td
+{
+    margin: 0px;
+    padding: 3px 5px 3px 5px;
+    border: solid 1px #336699;
+}
+
+table.corporate td
+{
+
+}
+
+table.corporate th
+{
+    text-align: left;
+    font-weight: bold;
+    background-image: url(images/gradient_1.gif);
+    background-repeat: repeat-x;
+    color: #000000;
+    background-color: inherit;
+}
