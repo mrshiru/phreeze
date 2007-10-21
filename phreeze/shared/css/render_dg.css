@@ -1,0 +1,14 @@
+/* style tweaks for datagrid */
+
+ygrid-mso
+{
+	border: 1px solid #c3daf9; 
+	overflow: hidden;
+}
+
+.ytoolbar .new-button
+{
+	padding:1px;
+	width:auto;
+	display:block;
+}
