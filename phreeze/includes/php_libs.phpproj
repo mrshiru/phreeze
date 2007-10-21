@@ -1,0 +1,372 @@
+"General"
+{
+"ProjectIdGuid" = "{573967F2-91CA-47A3-B938-8A92E50CFFD3}"
+"ProjectVersion" = "2.3.6.4068"
+}
+"Configurations"
+{
+    "Local|PHP 4"
+    {
+    "IncludeDirs" = ""
+    }
+    "Local|PHP 5"
+    {
+    "IncludeDirs" = "C:\\php5\\includes\\;c:\\php5\\pear;"
+    }
+    "Remote|PHP 4"
+    {
+    "IncludeDirs" = ""
+    }
+    "Remote|PHP 5"
+    {
+    "IncludeDirs" = ""
+    }
+}
+"Files"
+{
+    "services\\json.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.curl.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.datagrid.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.html_dynamic_options.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.html_yesno.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.pear_calendar.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.rss.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.sr_property.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.ternary.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.weather.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.camelcase.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.money_format.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.safe_array.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.sr_get_children.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.sr_get_page.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.sr_get_property.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.studlycaps.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\authentication\\authenticationexception.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\authentication\\authenticator.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\authentication\\iauthenticatable.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\authentication\\passphrase.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\db\\reflection\\dbcolumn.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\db\\reflection\\dbconnection.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\db\\reflection\\dbconnectionstring.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\db\\reflection\\dbconstraint.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\db\\reflection\\dbeventhandler.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\db\\reflection\\dbkey.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\db\\reflection\\dbschema.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\db\\reflection\\dbserver.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\db\\reflection\\dbset.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\db\\reflection\\dbtable.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\email\\mailer.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\email\\message.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\email\\pop3client.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\email\\recipient.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\email\\class.phpmailer.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\email\\class.smtp.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\encryption\\gpg\\aes.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\encryption\\gpg\\cipher.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\encryption\\gpg\\expanded_key.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\encryption\\gpg\\public_key.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\encryption\\gpg\\utility.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\encryption\\gpg.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\encryption\\arbitrary.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\http\\context.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\http\\fileupload.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\http\\httprequest.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\http\\request.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\http\\urlwriter.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\io\\filehelper.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\io\\folderhelper.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\payment\\authorizenet.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\payment\\paymentprocessor.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\payment\\paymentrequest.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\payment\\paymentresponse.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\payment\\skipjack.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\authaccount.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\connectionsetting.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\controller.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\criteria.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\dataadapter.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\datapage.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\dataset.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\dispatcher.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\fieldmap.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\idaomap.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\iobservable.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\iobserver.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\keymap.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\notfoundexception.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\observable.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\observetobrowser.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\observetosmarty.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\phreezable.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\phreezer.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\querybuilder.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\reporter.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\validationresponse.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\search\\google.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\search\\searchengine.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\search\\searchrank.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\xml\\xmlutil.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\form.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\generate_docs.bat"
+    {
+    "ProjRelPath" = "T"
+    }
+}
+"ProjStartupServices"
+{
+}
+"Globals"
+{
+}
+"References"
+{
+}
