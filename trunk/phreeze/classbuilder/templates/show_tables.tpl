@@ -1,20 +1,10 @@
-{include file="_header.tpl" header_title="Generate Templates"}
+{include file="_header.tpl" header_title="Generate Application"}
 
-<h1><a href="index.php">Home</a>  <span class="iconlink">Generate Templates</span></h1>
+<h1><span class="iconlink">Generate Application</span></h1>
 
 <form action="generate_class.php" method="post">
 
-<p>Select Templates to Generate:
-(<input type="checkbox" name="table_toggle" value="0" onclick="checkAll(this.form, 'template_name[]',this.checked)" checked="checked"/> All)
-</p>
-<div style="height: 100px; width: 500px; overflow: auto; border: solid 1px #666666; background-color: #dddddd;"> 
-
-	{foreach from=$files item=file}
-		<div><input type="checkbox" name="template_name[]" value="{$file->Name}" checked="checked"/>{$file->Prefix}</div>
-	{/foreach}
-</div>
-
-<p>Select Tables:</p> 
+<h2>1. Select Tables:</h2> 
 
 <table class="basic"> 
 <tr> 
@@ -37,9 +27,32 @@
 
 </table>
 
-<p><input type="checkbox" name="debug" value="1" /> Debug Mode</p>
+<h2>2. Select Templates to Generate:</h2>
 
-<p><input type="submit" value="Export Templates" /></p>
+<div style="height: 150px; overflow: auto; border: solid 1px #666666; background-color: #E1E1E1;"> 
+
+	<div><input type="checkbox" name="table_toggle" value="0" onclick="checkAll(this.form, 'template_name[]',this.checked)" checked="checked"/> <em>SELECT ALL</em></div>
+	{foreach from=$files item=file}
+		<div><input type="checkbox" name="template_name[]" value="{$file->Name}" checked="checked"/>{$file->Prefix}</div>
+	{/foreach}
+</div>
+
+<h2>3. (Optional) Additional Parameters (one per line):</h2> 
+
+<p>
+<textarea name="parameters" style="width: 400px; height: 75px;">PathToVerySimpleScripts=/scripts/verysimple/
+PathToExtScripts=/scripts/ext/
+</textarea>
+</p>
+
+<h2>4. Send Output To:</h2>
+
+<p>
+<input type="radio" name="debug" value="" checked="checked" /> Zip Archive 
+<input type="radio" name="debug" value="1" /> Browser
+</p>
+
+<p><input type="submit" value="Generate Application" /></p>
 
 </form>
 

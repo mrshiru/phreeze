@@ -24,7 +24,8 @@ catch (exception $ex)
 	exit();
 }
 
-$debug = isset($_REQUEST["debug"]);
+$debug = isset($_REQUEST["debug"]) && $_REQUEST["debug"] == "1";
+$parameters = explode("\n", trim(str_replace("\r","", $_REQUEST["parameters"])));
 $tableNames = $_REQUEST["table_name"];
 $templateNames = $_REQUEST["template_name"];
 $debug_output = "";
@@ -49,7 +50,14 @@ foreach ($templateNames as $templateName)
 		$templateFilename = str_replace(array("~","DBNAME"),array("/",$G_CONNECTION->DBName), $templateFile->MiddleBit);
 
 		$G_SMARTY->clear_all_assign();
-		$G_SMARTY->assign("$tableNames",$tableNames);
+		
+		foreach ($parameters as $param)
+		{
+			list($key,$val) = explode("=",$param,2);
+			$G_SMARTY->assign($key,$val);
+		}
+		
+		$G_SMARTY->assign("tableNames",$tableNames);
 		$G_SMARTY->assign("templateFilename",$templateFilename);
 		$G_SMARTY->assign("schema",$schema);
 		$G_SMARTY->assign("tables",$schema->Tables);
