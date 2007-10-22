@@ -1,4 +1,5 @@
 <?php
+/** @package    verysimple::Encryption */
 
 require_once("GPG/Expanded_Key.php");
 require_once("GPG/Public_Key.php");
