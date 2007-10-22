@@ -1,4 +1,5 @@
 <?php
+/** @package    verysimple::Encryption::GPG */
 
 // seed rand
 list($gpg_usec, $gpg_sec) = explode(' ', microtime());
