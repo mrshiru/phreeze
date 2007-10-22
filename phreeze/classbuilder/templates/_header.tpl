@@ -5,8 +5,8 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 	<title>Class Builder: {$header_title}</title>
 	<link rel="stylesheet" type="text/css" href="styles/classbuilder.css" />
-	<link rel="stylesheet" type="text/css" href="/shared/css/tables.css" />
-	<script type="text/javascript" src="/shared/js/verysimple/form.js"></script>
+	<link rel="stylesheet" type="text/css" href="../scripts/verysimple/resources/css/tables.css" />
+	<script type="text/javascript" src="../scripts/verysimple/form.js"></script>
 </head>
 	
 	<body>

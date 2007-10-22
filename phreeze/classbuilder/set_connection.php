@@ -17,7 +17,7 @@ $_SESSION["connstr"] = $connstr;
 $NO_SESSION_START = 1;
 require_once("_global.php");
 
-$G_SMARTY->assign("redirect","index.php");
+$G_SMARTY->assign("redirect","show_tables.php");
 $G_SMARTY->display("redirect.tpl")
 
 ?>

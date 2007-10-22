@@ -1,6 +1,6 @@
-{include file="_header.tpl" header_title="New Connection"}
+{include file="_header.tpl" header_title="Configure DB Connection"}
 
-<h1><a href="index.php">Home</a> <span class="iconlink">New Connection</span></h1>
+<h1><span class="iconlink">Configure DB Connection</span></h1>
 
 <form action="set_connection.php" method="post">
 
