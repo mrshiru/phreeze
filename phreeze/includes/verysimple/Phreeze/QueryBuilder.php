@@ -8,7 +8,7 @@
  * @author     VerySimple Inc.
  * @copyright  1997-2007 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    2.0
+ * @version    2.01
  */
  class QueryBuilder
 {
@@ -133,10 +133,11 @@
 		// start building the sql statement
 		$sql = "select " . $this->GetColumnNames() . "";
 
-		if (count($this->Tables) > 1)
+		$tablenames = array_keys($this->Tables);
+
+		if (count($tablenames) > 1)
 		{
 			// we're selecting from multiple tables so we have to do an outer join
-			$tablenames = array_keys($this->Tables);
 			$sql .= " from `" . $tablenames[0] . "`";
 			
 			// TODO: if a table is being added in the wrong sequence, check that the field maps
@@ -144,14 +145,16 @@
 			//for ($i = count($tablenames) -1; $i > 0 ; $i--) // this iterates backwards
 			for ($i = 1; $i < count($tablenames); $i++)      // this iterates forwards
 			{
-				$sql .= " left join " . $tablenames[$i] 
-				. " " . $this->Joins[$tablenames[$i]];
+				// (LL) added backticks here
+				$sql .= " left join `" . $tablenames[$i] 
+				. "` " . $this->Joins[$tablenames[$i]];
 			}
 		}
 		else
 		{
 			// we are only selecting from one table
-			$sql .= " from " . implode(", ",array_keys($this->Tables)) . " ";
+			// (LL) added backticks here
+			$sql .= " from `" . $tablenames[0] . "` ";
 		}
 
 		$sql .= $criteria->GetJoin();
