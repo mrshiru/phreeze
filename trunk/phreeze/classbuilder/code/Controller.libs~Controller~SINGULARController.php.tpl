@@ -159,10 +159,10 @@ class {$singular}Controller extends Controller
 
 {/foreach}
 {foreach from=$table->Sets item=set}
-		// get {$set->Name|studlycaps|replace:$singular:''} child records and assign as DataPage for grid display
+		// get {$set->GetterName|studlycaps} child records and assign as DataPage for grid display
 		// if this code throws an error, check that your foreign key name is not the same as the table name
-		${$set->Name|studlycaps|replace:$singular:''} = ${$singular|lower}->Get{$set->Name|studlycaps|replace:$singular:''}()->GetDataPage(1,9999); // TODO: update if pagination is necessary
-		$this->Assign("{$set->Name|studlycaps|replace:$singular:''}DataPage",${$set->Name|studlycaps|replace:$singular:''});
+		${$set->GetterName|studlycaps} = ${$singular|lower}->Get{$set->GetterName|studlycaps}()->GetDataPage(1,9999); // TODO: update if pagination is necessary
+		$this->Assign("{$set->GetterName|studlycaps}DataPage",${$set->GetterName|studlycaps});
 
 {/foreach}
 	{rdelim}

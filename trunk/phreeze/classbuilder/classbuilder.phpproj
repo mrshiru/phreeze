@@ -1,7 +1,7 @@
 "General"
 {
 "ProjectIdGuid" = "{CB36EE14-8FA4-4B11-95E8-06A3D17B3673}"
-"ProjectVersion" = "2.1.3.3161"
+"ProjectVersion" = "2.3.6.4068"
 }
 "Configurations"
 {
@@ -148,10 +148,6 @@
     {
     "ProjRelPath" = "T"
     }
-    "scripts\\index.html"
-    {
-    "ProjRelPath" = "T"
-    }
     "styles\\classbuilder.css"
     {
     "ProjRelPath" = "T"
@@ -193,6 +189,10 @@
     "ProjRelPath" = "T"
     }
     "generate_class.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "generate_sql.php"
     {
     "ProjRelPath" = "T"
     }
