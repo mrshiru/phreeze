@@ -1,10 +1,5 @@
 #summary Phreeze User Documentation and Tutorials
 
-= Introduction =
-
-Phreeze User Documentation and Tutorials
-
-
 = Details =
 
 Documentation is under construction...
