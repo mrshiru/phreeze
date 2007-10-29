@@ -20,13 +20,13 @@ class {$singular}DAO extends Phreezable
 {foreach from=$table->Columns item=column}	public ${$column->NameWithoutPrefix|studlycaps};
 {/foreach}
 
-{foreach from=$table->Sets item=set}	public function Get{$set->Name|studlycaps|replace:$singular:''}($criteria = null)
+{foreach from=$table->Sets item=set}	public function Get{$set->GetterName|studlycaps}($criteria = null)
 	{ldelim}
 		return $this->_phreezer->GetOneToMany($this, "{$set->Name}", $criteria);
 	{rdelim}
 
 {/foreach}
-{foreach from=$table->Constraints item=constraint}	public function Get{$constraint->Name|studlycaps|replace:$plural:''}($criteria = null)
+{foreach from=$table->Constraints item=constraint}	public function Get{$constraint->GetterName|studlycaps}()
 	{ldelim}
 		return $this->_phreezer->GetManyToOne($this, "{$constraint->Name}");
 	{rdelim}

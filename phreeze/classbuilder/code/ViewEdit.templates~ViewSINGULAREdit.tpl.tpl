@@ -49,10 +49,10 @@
 
 {foreach from=$table->Sets item=set}
 	<fieldset>
-		<legend>{$set->Name|studlycaps|replace:$singular:''}</legend>
+		<legend>{$set->GetterName|studlycaps}</legend>
 		
 		{ldelim}datagrid 
-			page=${$set->Name|studlycaps|replace:$singular:''}DataPage
+			page=${$set->GetterName|studlycaps}DataPage
 			edit_url="index.php?action={$set->SetTableName|studlycaps}.Edit" 
 			delete_url="index.php?action={$set->SetTableName|studlycaps}.Delete"
 			primary_key="{$set->SetPrimaryKeyNoPrefix|studlycaps}"
