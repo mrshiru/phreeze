@@ -1,5 +1,0 @@
-#summary Phreeze User Documentation and Tutorials
-
-= Details =
-
-Documentation is under construction...
