@@ -4,8 +4,8 @@
 
 Phreeze provides a built-in mechanism for authentication that you can use in your application.  This gives you the ability to require users to login, and restrict the actions that these users can perform.  You have two options for using this feature:
 
-a) Implement your own IAuthenticatible class
-b) Adhere to a compatible schema in your database
+ # Implement your own IAuthenticatible class
+ # Adhere to a compatible schema in your database
 
 = Implement your own IAuthenticatible class =
 
