@@ -1,3 +1,81 @@
-#summary How to use Phreeze's built-in authentication
+#summary How to use Phreeze's Built-In Authentication
 
-= How to use Phreeze's built-in authentication =
+= How to use Phreeze's Built-In Authentication =
+
+Phreeze provides a built-in mechanism for authentication that you can use in your application.  This gives you the ability to require users to login, and restrict the actions that these users can perform.  You have two options for using this feature:
+
+a) Implement your own IAuthenticatible class
+b) Adhere to a compatible schema in your database
+
+= Implement your own IAuthenticatible class =
+
+The base Controller class provides three methods that are used for authentication.  They are:
+
+{{{
+protected function SetCurrentUser(IAuthenticatable $user)
+protected function GetCurrentUser()
+protected function RequirePermission($permission, $on_fail_action = "")
+}}}
+
+If you create a class that implments the interface verysimple:Authentication:IAuthenticatable, you can pass it as an argument in any controller using SetCurrentUser().  This will store this user object in the session.
+
+Once the current user is stored in the session, you simply can call RequirePermission() in any Controller.  The controller will make a call to $user->IsAuthorized($permission) to see if the current user has the permission specified.  If not, an error is displayed.
+
+= Authentication Using a Phreeze-Compatible Schema =
+
+The easiest way to implement authentication is by simply designing your database in a way that is compatible with Phreeze.  If you already have an existing schema that you can't change, it's still possible, but you may have to write a little bit of code.
+
+This is the absolute minimum that your account/role tables must have.  You can have more columns than included here, but you have to have username, password and role_id:
+
+{{{
+CREATE TABLE  `role` (
+  `r_id` tinyint(3) unsigned NOT NULL default '0',
+  `r_name` varchar(25) NOT NULL,
+  `r_permission` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`r_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE  `account` (
+  `a_id` int(10) unsigned NOT NULL auto_increment,
+  `a_role_id` tinyint(3) unsigned NOT NULL,
+  `a_username` varchar(50) NOT NULL,
+  `a_password` varchar(250) NOT NULL,
+  PRIMARY KEY  (`a_id`),
+  KEY `a_role` (`a_role_id`),
+  CONSTRAINT `a_role` FOREIGN KEY (`a_role_id`) REFERENCES `role` (`r_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+}}}
+
+If you create your authentication tables in such a way, you should wind up with two Model classes "Account" and "Role" and the Account class will have a method GetRole().
+
+You need to make one change to the Account class.  Simply change the line:
+
+class Account extends AccountDAO
+to
+class Account extends AuthAccount
+
+Your Account will work almost exactly the same as before, however it has a couple of cool additions.  The first thing you will notice is that when you create or update an account, the password is now one-way crypted for security purposes.  You'll also get a new method Login which allows you to authenticate a user based on their username/password.  Here is an example of a method that would process a login request:
+
+{{{
+public function Authenticate()
+{
+  // create a new "AuthAccount"
+  $account = new Account($this->Phreezer);
+
+  if ( $account->Login(Request::Get("Username"),Request::Get("Password")))
+  {
+    // login success - save the user to the session context
+    $this->SetCurrentUser($account);
+
+    // TODO: send the user somewhere
+    $this->Redirect("Default.ListAll");
+  }
+  else
+  {
+    // login fail - show the login form again w/ feedback
+    $this->Redirect("Login.Form","The username/password combination was not found");
+  }
+
+}
+}}}
