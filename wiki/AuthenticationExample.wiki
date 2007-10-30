@@ -7,7 +7,7 @@ Phreeze provides a built-in mechanism for authentication that you can use in you
  # Implement your own IAuthenticatible class
  # Adhere to a compatible schema in your database
 
-= Implement your own IAuthenticatible class =
+== Implement your own IAuthenticatible class ==
 
 The base Controller class provides three methods that are used for authentication.  They are:
 
@@ -32,7 +32,7 @@ protected function Init()
 
 This code would assume that you had defined a global variable P_READWRITE which then was recognized by IAuthenticatable->IsAuthorized().  You can use integers or strings to represent permissions if you prefer, as long as IsAuthorized recognizes what it means.
 
-= Authentication Using a Phreeze-Compatible Schema =
+== Authentication Using a Phreeze-Compatible Schema ==
 
 The easiest way to implement authentication is by simply designing your database in a way that is compatible with Phreeze.  If you already have an existing schema that you can't change, it's still possible, but you may have to write a little bit of code.
 
@@ -130,4 +130,4 @@ $this->RequirePermission(P_WRITE | P_SUPERUSER);
 $this->RequirePermission(P_WRITE & P_DELETE); 
 }}}
 
-The AuthAccount recognizes bitwise operations so you don't have to worry about any of the math.  You just need to make sure your permission id numbers use bitwise integers 1,2,4,8,16, etc.
+The AuthAccount class recognizes bitwise operations so you don't have to worry about any of the math.  You just need to make sure your permission id numbers use bitwise integers 1,2,4,8,16, etc.
