@@ -2,4 +2,4 @@
 
 = Details =
 
-This area will one day contain user-contributed tutorials for the phreeze framework
+[AuthenticationExample How to use Phreeze's Built-In Authentication]
