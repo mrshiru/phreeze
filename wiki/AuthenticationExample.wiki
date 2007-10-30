@@ -111,9 +111,9 @@ If you are familiar with bitwise operations, the numbers will look very familiar
 
 The Role class, you will notice has a Permission field which is an integer.  If you use bitwise integers as in the code above then here are some example values for Role->Permission:
 
-a role "admin" permission could be *31*  (16 + 8 + 4 + 2 + 1)
-a role "visitor" permission could be *1*
-a role "client" permission might be *7* (4 + 2 + 1)
+ * role "admin" permission could be *31*  (16 + 8 + 4 + 2 + 1)
+ * role "visitor" permission could be *1*
+ * role "client" permission might be *7* (4 + 2 + 1)
 
 If you are familiar with unix file permissions, this works on the same principle.   Basically you just take the value for each permission and add them all up.  That will give you a final number that goes in the Permission column for each role.  In the example above, the visitor only has one permission "1" which is "read" permission.  The client has 1,2,3 which is read,write,update permission.  The admin has all of the permission available.
 
