@@ -115,7 +115,7 @@ The Role class, you will notice has a Permission field which is an integer.  If 
  * role "visitor" permission could be *1*
  * role "client" permission might be *7* (4 + 2 + 1)
 
-If you are familiar with unix file permissions, this works on the same principle.   Basically you just take the value for each permission and add them all up.  That will give you a final number that goes in the Permission column for each role.  In the example above, the visitor only has one permission "1" which is "read" permission.  The client has 1,2,3 which is read,write,update permission.  The admin has all of the permission available.
+If you are familiar with unix file permissions, this works on the same principle.   Basically you just take the value for each permission and add them all up.  That will give you a final number that goes in the Permission column for each role.  In the example above, the visitor only has one permission "1" which is "read" permission.  The client has 4,2,1 which is read,write,update permission.  The admin has all of the permission available.
 
 Using the examples above, you can now check for permissions in your controller using bitwise operations like so:
 
