@@ -10,7 +10,7 @@
  * @author     VerySimple Inc. <noreply@verysimple.com>
  * @copyright  1997-2007 VerySimple Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    1.0
+ * @version    1.1
  */
 class DataPage implements Iterator
 {
@@ -61,6 +61,16 @@ class DataPage implements Iterator
 		return $this->current() !== false;
 	}
     
+	/**
+	* Returns the entire page as an array of objects.
+	*
+	* @access     public
+	* @return     array
+	    */
+	function ToObjectArray()
+	{
+		return $this->Rows;
+	}
 }
 
 ?>

@@ -18,7 +18,7 @@ require_once("NotFoundException.php");
  * @author     VerySimple Inc.
  * @copyright  1997-2007 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    2.7
+ * @version    2.71
  */
 class Phreezer extends Observable
 {
@@ -63,7 +63,27 @@ class Phreezer extends Observable
 		$this->DataAdapter->AttachObserver($observer);
 	}
 
-
+	/**
+	* Phreezer::Compare is used internally by Phreezer::Sort
+	*/
+	static function Compare($a, $b)
+	{
+		return strcmp($a->ToString(), $b->ToString());
+	}
+	
+	
+	/**
+	* Sort an array of Phreezable objects.  ToString() is used as the sort 
+	* key.  You must implmement ToString on your sortable objects in order
+	* for Phreezer::Sort to be effective
+	*
+	* @param array $objects array of objects
+	*/
+	static function Sort(&$objects)
+	{
+		usort($objects,array("Phreezer","Compare"));
+	}
+	
 	/**
 	* Get one instance of an object based on criteria.  If multiple records
 	* are found, only the first is returned.  If no matches are found,

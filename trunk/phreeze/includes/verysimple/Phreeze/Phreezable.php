@@ -10,7 +10,7 @@
  * @author     VerySimple Inc. <noreply@verysimple.com>
  * @copyright  1997-2005 VerySimple Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    1.2
+ * @version    1.3
  */
 abstract class Phreezable
 {
@@ -185,6 +185,15 @@ abstract class Phreezable
         {
             $this->Load($row);
         }
+	}
+    
+    /**
+     * Serialized string representation of this object.  For sorting
+     * purposes it is recommended to override this method
+     */
+    function ToString()
+    {
+		return serialize($this);
 	}
     
     /**
