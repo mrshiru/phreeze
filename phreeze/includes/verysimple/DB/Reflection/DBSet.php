@@ -17,12 +17,16 @@ class DBSet
 	public $KeyColumn;
 	public $SetTableName;
 	public $SetKeyColumn;
+
+	public $NameNoPrefix;
 	
 	public $KeyColumnNoPrefix;
 	public $SetKeyColumnNoPrefix;
 	public $SetPrimaryKey;
 	public $SetPrimaryKeyNoPrefix;
-
+	
+	public $GetterName;
+	
 	/**
 	 * Instantiate new DBSet
 	 *
@@ -38,15 +42,21 @@ class DBSet
 		$this->KeyColumn = $row[3];
 		$this->SetTableName = $table->Name;
 		$this->SetKeyColumn = $row[1];
-
+		
 		$reftable = $this->Table->Schema->Tables[$this->SetTableName];
 		// print "<p><b>" . $this->Table->Name . " set references " . $reftable->Name . "</b></p>";
-
+		
 		$this->SetPrimaryKey = $reftable->GetPrimaryKeyName(false);
-
+		
+		$this->NameNoPrefix = $this->Table->RemovePrefix($this->Name);
 		$this->KeyColumnNoPrefix = $this->Table->RemovePrefix($this->KeyColumn);
 		$this->SetKeyColumnNoPrefix = $reftable->RemovePrefix($this->SetKeyColumn);
 		$this->SetPrimaryKeyNoPrefix = $reftable->RemovePrefix($this->SetPrimaryKey);
+		
+		// intelligently decide what a good name for this set would be
+		$tmp1 = str_replace("__","_",str_replace($this->Table->Name,"", str_replace("_id","", $this->SetKeyColumnNoPrefix)) . "_");
+		$tmp2 = $this->SetTableName . "s";
+		$this->GetterName = ($tmp1 == "_") ? $tmp2 : ($tmp1 . $tmp2);
 	}
 }
 

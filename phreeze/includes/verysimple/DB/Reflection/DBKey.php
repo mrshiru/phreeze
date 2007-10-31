@@ -14,6 +14,8 @@ class DBKey
 {
 	public $Table;
 	public $Name;
+	public $NameNoPrefix;
+	public $GetterName;
 	public $KeyColumn;
 
 	/**
@@ -29,6 +31,9 @@ class DBKey
 		$this->Table =& $table;
 		$this->Name = $keyname;
 		$this->KeyColumn = str_replace("`","", $columnname);
+
+		$this->NameNoPrefix = $this->Table->RemovePrefix($this->Name);
+		$this->GetterName = $this->NameNoPrefix;
 	}
 }
 
