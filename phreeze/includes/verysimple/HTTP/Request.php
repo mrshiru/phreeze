@@ -86,7 +86,7 @@ class Request
 	* @param    bool $b64encode true to base64encode file data (default false)
 	* @param    bool $ignore_empty true to not throw exception if form fields doesn't contain a file (default false)
 	* @param    int $max_kb maximum size allowed for upload (default unlimited)
-	* @param    array $ok_types if array is provided, only files with those extentions will be allowed (default all)
+	* @param    array $ok_types if array is provided, only files with those Extensions will be allowed (default all)
 	* @return   FileUpload object
 	*/
 	public static function GetFileUpload($fieldname, $ignore_empty = false, $max_kb = 0, $ok_types = null)
@@ -130,7 +130,7 @@ class Request
 		}
 		
 		
-		// get the filename and extention
+		// get the filename and Extension
 		$tmp_path = $upload['tmp_name'];
 		$info = pathinfo($upload['name']);
 		
@@ -138,10 +138,10 @@ class Request
 		$fupload->Name = $info['basename'];
 		$fupload->Size = $upload['size'];
 		$fupload->Type = $upload['type'];
-		$fupload->Extention = strtolower($info['extension']);
+		$fupload->Extension = strtolower($info['extension']);
 		
 		
-		if ($ok_types && !in_array($fupload->Extention, $ok_types) )
+		if ($ok_types && !in_array($fupload->Extension, $ok_types) )
 		{
 			throw new Exception("The file '".htmlentities($fupload->Name)."' is not a type that is allowed.  Allowed file types are: " . (implode(", ",$ok_types)) . ".");
 		}
@@ -167,7 +167,7 @@ class Request
 	* @param    bool $b64encode true to base64encode file data (default true)
 	* @param    bool $ignore_empty true to not throw exception if form fields doesn't contain a file (default false)
 	* @param    int $max_kb maximum size allowed for upload (default unlimited)
-	* @param    array $ok_types if array is provided, only files with those extentions will be allowed (default all)
+	* @param    array $ok_types if array is provided, only files with those Extensions will be allowed (default all)
 	* @return   string or null
 	 */
 	public static function GetFile($fieldname, $b64encode = true, $ignore_empty = false, $max_kb = 0, $ok_types = null)

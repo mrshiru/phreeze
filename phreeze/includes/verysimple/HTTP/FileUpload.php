@@ -18,7 +18,7 @@ class FileUpload
 	public $Name;
 	public $Size;
 	public $Type;
-	public $Extention;
+	public $Extension;
 	public $Data;
 	
 	/**
@@ -34,7 +34,7 @@ class FileUpload
 			. "<name>".$this->Name."</name>\r\n"
 			. "<size>".$this->Size."</size>\r\n"
 			. "<type>".$this->Type."</type>\r\n"
-			. "<extention>".$this->Extention."</extention>\r\n"
+			. "<Extension>".$this->Extension."</Extension>\r\n"
 			. "<encoding>" . ($base64 ? "base64" : "none") . "</encoding>\r\n"
 			. "<data>" . ($base64 ? base64_encode($this->Data) : $this->Data) . "</data>\r\n"
 			. "</file>";
@@ -62,6 +62,24 @@ class FileUpload
 		$this->Type = $attachment->type;
 		$this->Size = $attachment->size;
 		$this->Extension = $attachment->extension;
+	}
+	
+	/**
+	 * Saves the file upload to the given path
+	 * @param string $path full path to save directory (trailing slash required)
+	 * @param string $alternate_name (optional) if not provided, $this->Name is used
+	 * @param bool $chmod (default=true) set file permission to 666
+	 */
+	public function SaveTo($path, $alternate_name="", $chmod=true)
+	{
+		$name = $alternate_name ? $alternate_name : $this->Name;
+		
+		$fullpath = $path . $name;
+		$handle = fopen($fullpath, "w");
+		fwrite($handle, $this->Data);
+		fclose($handle);
+		
+		if ($chmod) @chmod($fullpath, 0666);
 	}
 }
 ?>
