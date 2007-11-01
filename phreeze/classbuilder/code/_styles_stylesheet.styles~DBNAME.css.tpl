@@ -6,7 +6,8 @@
 
 img {ldelim}border: none;{rdelim}
 
-p,h1,h2,h3 {ldelim}margin: 4px 0px 8px 0px;{rdelim}
+p {ldelim}margin: 1em 0;{rdelim}
+h1,h2,h3 {ldelim}margin: .75em 0;{rdelim}
 
 h1 {ldelim}font-size: 14pt;{rdelim}
 
@@ -28,7 +29,7 @@ body
 	width: 880px; 
 	overflow: hidden;
 	background-color: #ffffff;
-	padding: 15px;
+	padding: 0px 15px 15px 15px
 	margin: auto;
 	text-align: left;
 	border-left: solid 3px #444444;

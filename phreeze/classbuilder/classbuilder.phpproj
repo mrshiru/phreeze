@@ -48,10 +48,6 @@
     {
     "ProjRelPath" = "T"
     }
-    "code\\viewdisplay.templates~viewsingulardisplay.tpl.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
     "code\\viewedit.templates~viewsingularedit.tpl.tpl"
     {
     "ProjRelPath" = "T"

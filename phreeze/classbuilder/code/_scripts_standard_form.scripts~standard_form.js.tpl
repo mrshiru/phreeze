@@ -6,10 +6,14 @@ function standardForm(formId)
 	
 	var fields = frm.getValues()
 	
-	for (key in fields)
+	for (var key in fields)
 	{ldelim}
 		var elem = Ext.get(key);
-		if (elem.hasClass('combo-box'))
+		if (elem == null)
+		{ldelim}
+			// this is probably a checkbox
+		{rdelim}
+		else if (elem.hasClass('combo-box'))
 		{ldelim}
 			var cb = new Ext.form.ComboBox({ldelim}
 				transform:elem.dom.name,
