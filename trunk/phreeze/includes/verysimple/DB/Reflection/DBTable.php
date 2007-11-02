@@ -28,6 +28,7 @@ class DBTable
 	public $ForeignKeys;
 	public $Constraints;
 	public $Sets;
+	public $IsView = false;
 
 	/**
 	 * Instantiate new DBTable
@@ -186,7 +187,19 @@ class DBTable
 		
 		if ($row = $this->Schema->Server->Connection->Next($rs))
 		{
-			$create_table = $row["Create Table"];
+			if (isset($row["Create Table"]))
+			{
+				$create_table = $row["Create Table"];
+			}
+			else if (isset($row["Create View"]))
+			{
+				$this->IsView = true;
+				$create_table = $row["Create View"];
+			}
+			else
+			{
+				throw new Exception("Unknown Table Type");
+			}
 		}
 		
 		$this->Schema->Server->Connection->Release($rs);
