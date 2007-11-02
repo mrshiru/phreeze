@@ -17,8 +17,8 @@
 
 {foreach from=$schema->Tables item=table}
 	<tr>
-		<td><input type="checkbox" name="table_name[]" value="{$table->Name}" checked="checked" /></td> 
-		<td>{$table->Name}</td> 
+		<td><input type="checkbox" name="table_name[]" value="{$table->Name}" {if !$table->IsView}checked="checked"{/if} /></td> 
+		<td>{if $table->IsView}VIEW: {/if}{$table->Name}</td> 
 		<td><input type="text" name="{$table->Name}_singular" value="{$table->Name|studlycaps}" /></td> 
 		<td><input type="text" name="{$table->Name}_plural" value="{$table->Name|studlycaps}s" /></td> 
 		<td><input type="text" name="{$table->Name}_prefix" value="{$table->ColumnPrefix}" size="15" /></td> 
