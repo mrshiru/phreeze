@@ -29,7 +29,7 @@ body
 	width: 880px; 
 	overflow: hidden;
 	background-color: #ffffff;
-	padding: 0px 15px 15px 15px
+	padding: 0px 15px 15px 15px;
 	margin: auto;
 	text-align: left;
 	border-left: solid 3px #444444;
