@@ -8,7 +8,7 @@ define("FM_TYPE_INT",2);
 define("FM_TYPE_SMALLINT",3);
 define("FM_TYPE_TINYINT",4);
 define("FM_TYPE_MEDIUMINT",15);
-define("FM_TYPE_BIGINT",15);
+define("FM_TYPE_BIGINT",16);
 define("FM_TYPE_VARCHAR",5);
 define("FM_TYPE_BLOB",6);
 define("FM_TYPE_DATE",7);
@@ -19,6 +19,10 @@ define("FM_TYPE_MEDIUMTEXT",11);
 define("FM_TYPE_CHAR",12);
 define("FM_TYPE_LONGBLOB",13);
 define("FM_TYPE_LONGTEXT",14);
+
+define("FM_TYPE_TIMESTAMP",17);
+define("FM_TYPE_ENUM",18);
+
 define("FM_CALCULATION",99); // not to be used during save
 
 /**
