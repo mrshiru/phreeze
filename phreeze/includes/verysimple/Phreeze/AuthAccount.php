@@ -160,7 +160,8 @@ class AuthAccount extends AccountDAO implements IAuthenticatable
 	 */
 	function UpdatePassword($new_pass)
 	{
-		$this->Password = base64_encode(crypt($this->Password,$this->Username));
+		$this->_original_password = ""; // force Save to crypt the password
+		$this->Password = $new_pass; //base64_encode(crypt($this->Password,$this->Username));
 		$this->Save();
 	}
 	
