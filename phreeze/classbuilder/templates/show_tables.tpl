@@ -40,8 +40,14 @@
 <h2>3. (Optional) Additional Parameters (one per line):</h2> 
 
 <p>
+<!-- laplix 2007-11-02. using the $param var instead of harcoding the parameters
 <textarea name="parameters" style="width: 400px; height: 75px;">PathToVerySimpleScripts=/scripts/verysimple/
 PathToExtScripts=/scripts/ext/
+</textarea>
+-->
+<textarea name="parameters" style="width: 400px; height: 75px;">{foreach from=$params item=param}
+{$param->name}={$param->value}
+{/foreach}
 </textarea>
 </p>
 

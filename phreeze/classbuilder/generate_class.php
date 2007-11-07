@@ -119,7 +119,12 @@ else
 {
 	// now output the zip as binary data to the browser
 	header("Content-type: application/force-download");
-	header("Content-disposition: attachment; filename=".str_replace(" ","_",$G_CONNSTR->DBName).".zip");
+
+   // laplix 2007-11-02.
+   // Use the application name provided by the user in show_tables.
+	//header("Content-disposition: attachment; filename=".str_replace(" ","_",$G_CONNSTR->DBName).".zip");
+	header("Content-disposition: attachment; filename=".str_replace(" ","_",$G_SMARTY->get_template_vars('AppName')).".zip");
+
 	header("Content-Transfer-Encoding: Binary");
 	header('Content-Type: application/zip');
 	print $zipFile->file();
