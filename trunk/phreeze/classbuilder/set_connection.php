@@ -1,4 +1,14 @@
 <?php
+
+// laplix 2007-11-02
+// Phreeze SVN now has these 3 directories: classbuilder, includes and scripts.
+// For dev purposes, it's easier to keep te includes dir under WEB_ROOT/phreeze
+// with classbuilder and scripts. So we include the path here.
+// FOR PRODUCTION, YOU SHOULD PUT THE includes DIRECTORY **OUTSIDE** YOU WEB ROOT
+// AND SETUP THIS LINE TO POINT TO YOUR PRODUCTION includes DIR 
+// You can also use your php.ini or .htaccess file to do that
+set_include_path(dirname(__FILE__) . '/../includes' . PATH_SEPARATOR . get_include_path());
+
 require_once("verysimple/DB/Reflection/DBConnectionString.php");
 
 session_start();

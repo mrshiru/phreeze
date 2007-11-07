@@ -12,6 +12,15 @@ define("CODE_PATH", APP_ROOT . "/code/");
 // add local libs to include path (optionally use .htaccess or php.ini)
 set_include_path(APP_ROOT . "/libs/" . PATH_SEPARATOR . get_include_path());
 
+// laplix 2007-11-02s
+// Phreeze SVN now has these 3 directories: classbuilder, includes and scripts.
+// For dev purposes, it's easier to keep te includes dir under WEB_ROOT/phreeze
+// with classbuilder and scripts. So we include the path here.
+// FOR PRODUCTION, YOU SHOULD PUT THE includes DIRECTORY **OUTSIDE** YOU WEB ROOT
+// AND SETUP THIS LINE TO POINT TO YOUR PRODUCTION includes DIR 
+// You can also use your php.ini or .htaccess file to do that
+set_include_path(APP_ROOT . "../includes/" . PATH_SEPARATOR . get_include_path());
+
 error_reporting(E_ALL); // E_ALL | E_ERROR | E_WARNING | E_NOTICE
 
 //#
