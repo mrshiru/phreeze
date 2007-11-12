@@ -181,12 +181,14 @@ class Request
 	* Returns a form parameter as a string, handles null values
 	*
 	* @param    string $fieldname
-	* @param    string $default
+	* @param    string $default value returned if $_REQUEST[$fieldname] is blank or null (default = empty string)
+	* @param    bool $escape if true htmlspecialchars($val) is returned (default = false)
 	* @return   string
 	*/
-	public static function Get($fieldname,$default = "")
+	public static function Get($fieldname,$default = "",$escape = false)
 	{
-		return (isset($_REQUEST[$fieldname]) && $_REQUEST[$fieldname] != "") ? $_REQUEST[$fieldname] : $default;
+		$val = (isset($_REQUEST[$fieldname]) && $_REQUEST[$fieldname] != "") ? $_REQUEST[$fieldname] : $default;
+		return $escape ? htmlspecialchars($val) : $val;
 	}
 	
 	/**
@@ -198,7 +200,7 @@ class Request
 	* @param    string $default
 	* @return   string
 	*/
-	public static function GetPersisted($fieldname, $default = "")
+	public static function GetPersisted($fieldname, $default = "",$escape = false)
 	{
 		if ( isset($_REQUEST[$fieldname]) )
 		{
@@ -207,7 +209,7 @@ class Request
 		
 		if ( isset($_SESSION["_PERSISTED_".$fieldname]) )
 		{
-			return $_SESSION["_PERSISTED_".$fieldname];
+			return $escape ? htmlspecialchars($_SESSION["_PERSISTED_".$fieldname]) : $_SESSION["_PERSISTED_".$fieldname];
 		}
 		
 		return $default;
