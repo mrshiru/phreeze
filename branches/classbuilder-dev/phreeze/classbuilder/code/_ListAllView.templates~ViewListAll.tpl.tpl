@@ -1,4 +1,4 @@
-{ldelim}include file="_header.tpl" title="{$connection->DBName|studlycaps} Home"{rdelim}
+{ldelim}include file="_header.tpl" title="{$AppName|studlycaps} Home"{rdelim}
 
 <div><img src="http://www.phreeze.com/images/phreeze_banner.jpg" alt="Phreeze Framework" /></div>
 

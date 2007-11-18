@@ -1,7 +1,7 @@
 {ldelim}include file="_header.tpl" title="Edit {$singular|studlycaps}"{rdelim}
 
 <!-- form validation scripts -->
-<script type="text/javascript" src="/shared/js/verysimple/validate.js"></script>
+<script type="text/javascript" src="{$PathToVerySimpleScripts}validate.js"></script>
 <script type="text/javascript" src="scripts/validate_model.js"></script>
 <script type="text/javascript" src="scripts/standard_form.js"></script>
 

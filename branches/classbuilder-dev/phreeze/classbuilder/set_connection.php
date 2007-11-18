@@ -10,6 +10,7 @@
 set_include_path(dirname(__FILE__) . '/../includes' . PATH_SEPARATOR . get_include_path());
 
 require_once("verysimple/DB/Reflection/DBConnectionString.php");
+require_once('CBProperties.php');
 
 session_start();
 
@@ -23,6 +24,11 @@ $connstr->DBName = $_REQUEST["dbname"];
 
 // persist to the session
 $_SESSION["connstr"] = $connstr;
+
+// save $connstr for later sessions
+$cbp = new CBProperties;
+$cbp->putSection('Connection', get_object_vars($connstr));
+$cbp->iniWrite();
 
 $NO_SESSION_START = 1;
 require_once("_global.php");

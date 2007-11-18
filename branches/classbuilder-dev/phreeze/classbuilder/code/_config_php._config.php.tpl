@@ -11,6 +11,9 @@ define("TEMP_PATH", APP_ROOT . "/temp/");
 // add local libs to include path (optionally use .htaccess or php.ini)
 set_include_path(APP_ROOT . "/libs/" . PATH_SEPARATOR . get_include_path());
 
+// add includes dir to include path (optionally use .htaccess or php.ini)
+set_include_path('{$include_path}'.PATH_SEPARATOR.get_include_path());
+
 // require framework libs
 require_once("verysimple/HTTP/UrlWriter.php");
 require_once("verysimple/HTTP/Request.php");

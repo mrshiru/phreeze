@@ -3,6 +3,8 @@
 require_once("_global.php");
 require_once("verysimple/IO/FileHelper.php");
 include_once("zip.lib.php");
+require_once('CBProperties.php');
+require_once('CBParameter.php');
 
 // check for all required fields
 if ( empty($_REQUEST["table_name"]) || empty($_REQUEST["template_name"]) )
@@ -32,6 +34,17 @@ $debug_output = "";
 
 $zipFile = new zipfile();
 
+// write down the parameters so we can use them in our next session.
+$cbp = new CBProperties;
+$verysimple = array();
+foreach ($parameters as $parameter)
+{
+   list($key, $value) = explode('=', $parameter);
+   $verysimple[$key] = $value;
+}
+$cbp->putSection('VerySimple', $verysimple);
+$cbp->iniWrite();
+
 // need to change the smarty template directory
 $G_SMARTY->template_dir = CODE_PATH;
 
@@ -46,8 +59,6 @@ foreach ($templateNames as $templateName)
 	{
 		// templates that begin with an underscore are a single template where one is generated
 		// for the entire project instead of one for each selected table
-		
-		$templateFilename = str_replace(array("~","DBNAME"),array("/",$G_CONNECTION->DBName), $templateFile->MiddleBit);
 
 		$G_SMARTY->clear_all_assign();
 		
@@ -56,12 +67,53 @@ foreach ($templateNames as $templateName)
 			list($key,$val) = explode("=",$param,2);
 			$G_SMARTY->assign($key,$val);
 		}
+
+      // moved here so we have access to the parameters and can process
+      // the AppName var. Mostly so our CSS file has the app name instead
+      // of the database name. 
+      if (strpos($templateFile->MiddleBit, 'APPNAME'))
+      {
+         $templateFilename = str_replace(array("~","APPNAME"),
+                                         array("/",$G_SMARTY->get_template_vars('AppName')),
+                                         $templateFile->MiddleBit);
+      }
+      else
+      {
+         $templateFilename = str_replace(array("~","DBNAME"),array("/",$G_CONNECTION->DBName), $templateFile->MiddleBit);
+      }
 		
 		$G_SMARTY->assign("tableNames",$tableNames);
 		$G_SMARTY->assign("templateFilename",$templateFilename);
 		$G_SMARTY->assign("schema",$schema);
 		$G_SMARTY->assign("tables",$schema->Tables);
 		$G_SMARTY->assign("connection",$G_CONNECTION);
+		$G_SMARTY->assign("include_path",INCLUDE_PATH);
+
+      // take care of Ext adapters
+      $adapters = array();
+      switch ($verysimple['ExtAdapter'])
+      {
+         case 'ext':
+            $adapters[] = 'ext/ext-base.js';
+            break;
+         case 'jquery':
+            $adapters[] = 'jquery/jquery.js';
+            $adapters[] = 'jquery/jquery-plugins.js';
+            $adapters[] = 'jquery/ext-jquery-adapter.js';
+            break;
+         case 'prototype':
+            $adapters[] = 'prototype/prototype.js';
+            $adapters[] = 'prototype/scriptaculous.js?load=effects';
+            $adapters[] = 'prototype/ext-prototype-adapter.js';
+            break;
+         case 'yui':
+         default:
+            $adapters[] = 'yui/yui-utilities.js';
+            $adapters[] = 'yui/ext-yui-adapter.js';
+            break;
+      }
+      $G_SMARTY->assign('ExtAdapter', $verysimple['ExtAdapter']);
+      $G_SMARTY->assign('ExtAdapterFiles', $adapters);
 		
 		if ($debug)
 		{
@@ -79,6 +131,7 @@ foreach ($templateNames as $templateName)
 	}
 	else
 	{
+
 		// enumerate all selected tables and merge them with the selected template
 		// append each to the zip file for output
 		foreach ($tableNames as $tableName)
@@ -94,6 +147,14 @@ foreach ($templateNames as $templateName)
 			$G_SMARTY->assign("prefix",$prefix);
 			$G_SMARTY->assign("templateFilename",$templateFilename);
 			$G_SMARTY->assign("table",$schema->Tables[$tableName]);
+         $G_SMARTY->assign("include_path",INCLUDE_PATH);
+
+         foreach ($parameters as $param)
+         {
+            list($key,$val) = explode("=",$param,2);
+            $G_SMARTY->assign($key,$val);
+         }
+
 			//print "<pre>"; print_r($schema->Tables[$tableName]->PrimaryKeyIsAutoIncrement()); die();
 			if ($debug)
 			{
@@ -119,12 +180,7 @@ else
 {
 	// now output the zip as binary data to the browser
 	header("Content-type: application/force-download");
-
-   // laplix 2007-11-02.
-   // Use the application name provided by the user in show_tables.
-	//header("Content-disposition: attachment; filename=".str_replace(" ","_",$G_CONNSTR->DBName).".zip");
 	header("Content-disposition: attachment; filename=".str_replace(" ","_",$G_SMARTY->get_template_vars('AppName')).".zip");
-
 	header("Content-Transfer-Encoding: Binary");
 	header('Content-Type: application/zip');
 	print $zipFile->file();

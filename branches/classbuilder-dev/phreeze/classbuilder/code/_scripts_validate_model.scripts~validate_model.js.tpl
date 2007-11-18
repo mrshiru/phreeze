@@ -25,7 +25,8 @@ function validateModel(frm, model)
     {rdelim}
     
 	// TODO: replace this with Ext DomQuery.
-	var validators = getElementsByClass('validator');
+	//var validators = getElementsByClass('validator');
+   var validators = Ext.query('.validator');
 	for (i=0;i<validators.length;i++)
 	{ldelim}
 		validators[i].style.display='none';
@@ -56,6 +57,7 @@ function validateModel(frm, model)
         {rdelim}
     {rdelim}
 
+{if $ExtAdapter == 'yui'}
     var validate_callback = 
     {ldelim} 
 	    success: processServerResponse, 
@@ -64,6 +66,9 @@ function validateModel(frm, model)
     {rdelim} 
 
     YAHOO.util.Connect.asyncRequest('POST', url, validate_callback, pars);
+{elseif $ExtAdapter == 'ext'}
+    Ext.Ajax.request({ldelim}method:'POST', url:url, params:pars, callback:processServerResponse{rdelim});
+{/if}
 
 	return false;
 {rdelim}
@@ -71,7 +76,11 @@ function validateModel(frm, model)
 /**
  * Processes the validation response from the server, which should be JSON code
  */
+{if $ExtAdapter == 'yui'}
 function processServerResponse(response)
+{elseif $ExtAdapter == 'ext'}
+function processServerResponse(options, success, response)
+{/if}
 {ldelim}
 
 	var result = Ext.util.JSON.decode(response.responseText);

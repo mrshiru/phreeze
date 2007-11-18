@@ -7,8 +7,9 @@
 
 	<!-- ext libs -->
 	<link rel="stylesheet" href="{$PathToExtScripts}resources/css/ext-all.css"/>
-	<script type="text/javascript" src="{$PathToExtScripts}adapter/yui/yui-utilities.js"></script>
-	<script type="text/javascript" src="{$PathToExtScripts}adapter/yui/ext-yui-adapter.js"></script>
+   {foreach from=$ExtAdapterFiles item=adapter}
+     <script type="text/javascript" src="{$PathToExtScripts}adapter/{$adapter}"></script>
+   {/foreach}
 	<script type="text/javascript" src="{$PathToExtScripts}ext-all.js"></script>
 	
 	<!-- verysimple libs -->
@@ -40,7 +41,7 @@
 <div id="main">
 	<div id="stage">
 
-	<h1>{$connection->DBName|studlycaps} Application</h1>
+	<h1>{$AppName|studlycaps} Application</h1>
 
 	
 	<div id="nav">
