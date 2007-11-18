@@ -29,29 +29,63 @@ class FolderHelper
 	}
 	
 	/**
-	 * Returns an array of FileHelper objects
-	 *
+    * Returns an array of FileHelper objects.
+    *
+    * GetFiles can take either a regex pattern (default) or a glob
+    * pattern. 
+    *
 	 * @access public
-	 * @param string $pattern (not yet implemented)
+    * @param string $pattern  Pattern to search for. Defaults to
+    *                         regex: .*
+    *                         glob : *
+    * @param string $type     type of pattern. can be regex or glob.
 	 * @return array
 	 */	
-	public function GetFiles($pattern = "")
+	public function GetFiles($pattern = ".*", $type='regex')
 	{
 		$files = Array();
-		$dh = opendir($this->Path);
 
-		while ($fname = readdir($dh)) 
-		{
-			if (is_file($this->Path.$fname))
-			{
-				// TODO: implement patter search as regex
-				$files[] = new FileHelper($this->Path.$fname);
-			}
-		}
-		
-		closedir($dh);
-	    
+      switch ($type)
+      {
+         case 'glob':
+            foreach(glob($this->Path.$pattern) as $fname)
+            {
+               if (is_file($fname))
+               {
+                  $files[] = new FileHelper($fname);
+               }
+            }
+            break;
+
+         case 'regex':
+         default:
+            $dh = opendir($this->Path);
+            $fnames = array();
+            while ($fname = readdir($dh)) 
+            {
+               if (is_file($this->Path.$fname) && preg_match("/{$pattern}/i", $fname))
+               {
+                  $files[] = new FileHelper($this->Path.$fname);
+               }
+            }
+            closedir($dh);
+            break;
+      }
 		return $files;
+	}
+
+	/**
+	 * Returns an array of FileHelper objects
+    *
+    * ls() uses the glob pattern to find its files.
+    * 
+	 * @access public
+	 * @param string $pattern A glob type pattern
+	 * @return array
+	 */	
+	public function ls($pattern = '*')
+	{
+		return $this->GetFiles($pattern, 'glob');
 	}
 
 }

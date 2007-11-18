@@ -53,5 +53,5 @@ Ext.onReady(
 
 </script>
 {ldelim}/literal{rdelim}
-																																																																																																																																																											
+
 {ldelim}include file="_footer.tpl"{rdelim}
