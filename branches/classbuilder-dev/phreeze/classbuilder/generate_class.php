@@ -2,7 +2,7 @@
 
 require_once("_global.php");
 require_once("verysimple/IO/FileHelper.php");
-include_once("zip.lib.php");
+include_once("Services/ziplib/zip.lib.php");
 require_once('CBProperties.php');
 require_once('CBParameter.php');
 
