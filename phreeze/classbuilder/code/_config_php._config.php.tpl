@@ -19,7 +19,7 @@ require_once("verysimple/HTTP/UrlWriter.php");
 require_once("verysimple/HTTP/Request.php");
 require_once("verysimple/Phreeze/Phreezer.php");
 require_once("verysimple/Phreeze/Dispatcher.php");
-require_once("Smarty.class.php");
+require_once("Smarty/libs/Smarty.class.php");
 
 // it may be necessary to require your user account model files prior to session start
 // require_once("Model/Account.php");

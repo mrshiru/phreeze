@@ -2,7 +2,7 @@
 /** @package    verysimple::Email */
 
 /** import supporting libraries */
-require_once("class.phpmailer.php");
+require_once("Services/phpmailer/class.phpmailer.php");
 require_once("Message.php");
 
 define("MAILER_RESULT_FAIL",0);
@@ -40,6 +40,10 @@ class Mailer
     function Send($message)
     {
         $mailer = new PHPMailer();
+        
+        // TODO remove the phpmailer files from the Email directory if
+        // everything works.
+        $mailer->PluginDir = 'Services/phpmailer/';
         
         $mailer->From = $message->From->Email;
         $mailer->FromName = $message->From->RealName;

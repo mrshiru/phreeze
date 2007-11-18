@@ -333,7 +333,7 @@ abstract class Controller
 	 */
 	protected function RenderJSON($var)
 	{
-		require_once("JSON.php");
+		require_once("Services/json/JSON.php");
 		$json = new Services_JSON();
 		print $json->encode($var);
 	}

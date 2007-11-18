@@ -26,7 +26,7 @@ error_reporting(E_ALL); // E_ALL | E_ERROR | E_WARNING | E_NOTICE
 //#
 ///####################################################################################################
 
-require_once("Smarty.class.php");
+require_once("Smarty/libs/Smarty.class.php");
 require_once("verysimple/DB/Reflection/DBServer.php");
 require_once('CBParameter.php');
 require_once('CBProperties.php');
