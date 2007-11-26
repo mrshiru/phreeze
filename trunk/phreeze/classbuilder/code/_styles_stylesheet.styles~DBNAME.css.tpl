@@ -98,6 +98,23 @@ body
 	font-weight: bold;
 {rdelim}
 
+.info
+{ldelim}
+	background-color: #ffffff;
+	color: #0000ff;
+	padding: 3px;
+	font-weight: bold;
+	margin-bottom: 3px;
+{rdelim}
+
+.warning
+{ldelim}
+	background-color: #ff0000;
+	color: #222222;
+	padding: 3px;
+	font-weight: bold;
+	margin-bottom: 3px;
+{rdelim}
 
 /* ext form fields */
 /*  
@@ -108,4 +125,3 @@ body
 .x-form-trigger
 .x-form-arrow-trigger 
 */
-
