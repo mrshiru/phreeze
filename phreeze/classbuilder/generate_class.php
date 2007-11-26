@@ -94,6 +94,13 @@ foreach ($templateNames as $templateName)
 			$G_SMARTY->assign("prefix",$prefix);
 			$G_SMARTY->assign("templateFilename",$templateFilename);
 			$G_SMARTY->assign("table",$schema->Tables[$tableName]);
+
+			foreach ($parameters as $param)
+			{
+				list($key,$val) = explode("=",$param,2);
+				$G_SMARTY->assign($key,$val);
+			}
+
 			//print "<pre>"; print_r($schema->Tables[$tableName]->PrimaryKeyIsAutoIncrement()); die();
 			if ($debug)
 			{

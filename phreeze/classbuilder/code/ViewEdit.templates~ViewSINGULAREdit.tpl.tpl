@@ -1,9 +1,14 @@
 {ldelim}include file="_header.tpl" title="Edit {$singular|studlycaps}"{rdelim}
 
-<!-- form validation scripts -->
-<script type="text/javascript" src="/shared/js/verysimple/validate.js"></script>
-<script type="text/javascript" src="scripts/validate_model.js"></script>
+<!-- verysimple form libs -->
+<script type="text/javascript" src="{$PathToVerySimpleScripts}validate.js"></script>
+<link rel="stylesheet" rev="stylesheet" href="{$PathToVerySimpleScripts}resources/css/tables.css" />
+<link rel="stylesheet" rev="stylesheet" href="{$PathToVerySimpleScripts}resources/css/forms.css" />
+
+<!-- local form libs -->
 <script type="text/javascript" src="scripts/standard_form.js"></script>
+<script type="text/javascript" src="scripts/validate_model.js"></script>
+
 
 <form id="{$singular|studlycaps}Form" action="{ldelim}$URL->Get('{$singular}','Save'){rdelim}" onsubmit="return validateModel(this,'{$singular|studlycaps}');" method="post">
 

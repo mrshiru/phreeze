@@ -1,6 +1,6 @@
 {ldelim}include file="_header.tpl" title="Error Occured"{rdelim}
 
-<div class="warning">{ldelim}$message{rdelim}</div>
+<div class="warning">{ldelim}$message|escape{rdelim}</div>
 
 {ldelim}if stacktrace{rdelim}
 <div class="stacktrace"><b>Stack Trace:</b><br />{ldelim}$stacktrace{rdelim}</div>

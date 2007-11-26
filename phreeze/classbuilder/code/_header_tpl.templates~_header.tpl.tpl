@@ -11,13 +11,7 @@
 	<script type="text/javascript" src="{$PathToExtScripts}adapter/yui/ext-yui-adapter.js"></script>
 	<script type="text/javascript" src="{$PathToExtScripts}ext-all.js"></script>
 	
-	<!-- verysimple libs -->
-	<script type="text/javascript" src="{$PathToVerySimpleScripts}validate.js"></script>
-	<link rel="stylesheet" rev="stylesheet" href="{$PathToVerySimpleScripts}resources/css/tables.css" />
-	<link rel="stylesheet" rev="stylesheet" href="{$PathToVerySimpleScripts}resources/css/forms.css" />
-	
 	<!-- local libs -->
-	<script type="text/javascript" src="scripts/validate_model.js"></script>
 	<link rel="stylesheet" rev="stylesheet" href="styles/{$connection->DBName}.css" />
 
 	{ldelim}* show feedback or warning if necessary using animated ext dialog *{rdelim}
