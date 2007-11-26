@@ -125,6 +125,9 @@ abstract class Phreezable
 						case FM_TYPE_INT:
 						case FM_TYPE_SMALLINT:
 						case FM_TYPE_TINYINT:
+						case FM_TYPE_MEDIUMINT:
+						case FM_TYPE_BIGINT:
+						case FM_TYPE_DECIMAL:
 							if (!is_numeric($this->$prop))
 							{
 								$this->_val_errors[$prop] = "$prop is not a valid number";
