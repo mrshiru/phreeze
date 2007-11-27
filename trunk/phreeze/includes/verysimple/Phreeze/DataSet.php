@@ -86,7 +86,7 @@ class DataSet implements Iterator
         
         if ($row = $this->_phreezer->DataAdapter->Fetch($this->_rs))
         {
-            $this->_current =& $this->_getObject($row);
+            $this->_current = $this->_getObject($row);
 			$this->_last = $this->_current;
 		}
         else
@@ -108,7 +108,7 @@ class DataSet implements Iterator
 			$this->_phreezer->IncludeModel($this->_objectclass);
             //$this->_phreezer->Observe("Importing object definition " . $this->_objectclass . ".php", OBSERVE_DEBUG);
             //require_once($this->_objectclass . ".php");
-            $this->_rs =& $this->_phreezer->DataAdapter->Select($this->_sql);
+            $this->_rs = $this->_phreezer->DataAdapter->Select($this->_sql);
         }
     }
     
@@ -149,7 +149,7 @@ class DataSet implements Iterator
     {
         if ($this->_totalcount == -1)
         {
-            $rs =& $this->_phreezer->DataAdapter->Select("select count(1) as counter from (" . $this->_sql . ") tmptable");
+            $rs = $this->_phreezer->DataAdapter->Select("select count(1) as counter from (" . $this->_sql . ") tmptable");
             $row = $this->_phreezer->DataAdapter->Fetch($rs);
             $this->_phreezer->DataAdapter->Release($rs);
             $this->_totalcount = $row["counter"];
@@ -260,7 +260,7 @@ class DataSet implements Iterator
         // limit query.
         // $sql = "select * from (" . $this->_sql . ") page limit $start,$pagesize";
         $sql = $this->_sql . ($pagesize == 0 ? "" : " limit $start,$pagesize");
-        $this->_rs =& $this->_phreezer->DataAdapter->Select($sql);
+        $this->_rs = $this->_phreezer->DataAdapter->Select($sql);
         
         
 		// transfer all of the results into the page object
