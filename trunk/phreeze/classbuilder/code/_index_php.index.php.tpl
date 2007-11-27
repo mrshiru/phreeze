@@ -10,7 +10,7 @@ try
 catch (exception $ex)
 {ldelim}
 	$G_SMARTY->assign("message",$ex->getMessage());
-	$G_SMARTY->assign("stacktrace",FormatTrace($ex->getTrace(),"\n<br /># ",true));
+	$G_SMARTY->assign("stacktrace","# " . FormatTrace($ex->getTrace(),"\n<br /># ",true));
 	$G_SMARTY->assign("code",$ex->getCode());
 	$G_SMARTY->display("_error.tpl");
 {rdelim}
