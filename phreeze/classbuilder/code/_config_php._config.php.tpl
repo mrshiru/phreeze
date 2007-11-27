@@ -25,6 +25,9 @@ session_start();
 ///####################################################################################################
 //# CONFIGURATION SETTINGS
 
+// server timezone - see http://us2.php.net/manual/en/timezones.php
+date_default_timezone_set("America/Chicago");
+
 // database connection settings
 $csetting = new ConnectionSetting();
 $csetting->ConnectionString = "{$connection->Host}:{$connection->Port}";
@@ -44,9 +47,11 @@ $G_URLWRITER = new UrlWriter("index.php?action=%s.%s&%s");
 // debugging info
 $debug_mode = false;
 
+// convert fatal PHP runtime errors to catchable exceptions
+set_error_handler(array("Dispatcher", "HandleException"),error_reporting());
+
 //#
 ///####################################################################################################
-
 
 // instantiate the smarty template engine
 $G_SMARTY = new Smarty();
@@ -90,7 +95,7 @@ function FormatTrace($tb, $join = " :: ", $show_lines = false)
 {ldelim}
 	$stack = "";
 	$delim = "";
-	for ($x = count($tb)-1; $x > 0; $x--)
+	for ($x = 0; $x < count($tb); $x++)
 	{ldelim}
 		$stack .= $delim . (isset($tb[$x]['class']) ? ($tb[$x]['class'] . "-&gt;") : "") . $tb[$x]['function'];
 		$show_lines && isset($tb[$x]['file']) && $stack .= " (" . basename($tb[$x]['file']) . " Line " . (isset($tb[$x]['line']) ? $tb[$x]['line'] : "??") . ")";

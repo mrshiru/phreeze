@@ -33,11 +33,11 @@
 		<input type="text" id="{$column->NameWithoutPrefix|studlycaps}" name="{$column->NameWithoutPrefix|studlycaps}" value="{ldelim}${$singular|lower}->{$column->NameWithoutPrefix|studlycaps}|escape{rdelim}" class="x-form-text x-form-field{if $column->Size > 100} long{elseif $column->Size > 50} medium{elseif $column->Size > 10} small{elseif $column->Size > 0} tiny{else} medium{/if}" {if $column->Size}maxlength="{$column->Size}"{/if} />
 {/if}
 		</div>
-		<div id="{$column->NameWithoutPrefix|studlycaps}_Error" class="field_validator"></div>
+		<div id="{$column->NameWithoutPrefix|studlycaps}_Error" class="validator field_validator"></div>
 	</div>
 
 {/foreach}
-	<div id="Validator_Error" class="form_validator"></div>
+	<div id="Validator_Error" class="validator form_validator"></div>
 
 	<p>
 {if !$table->PrimaryKeyIsAutoIncrement()}
