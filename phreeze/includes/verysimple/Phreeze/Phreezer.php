@@ -18,7 +18,7 @@ require_once("NotFoundException.php");
  * @author     VerySimple Inc.
  * @copyright  1997-2007 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    2.71
+ * @version    2.72
  */
 class Phreezer extends Observable
 {
@@ -596,9 +596,7 @@ class Phreezer extends Observable
 	}
 
 	/**
-	 * Handler that can be used for PHP exceptions.  add the following
-	 * line if you want exceptions thrown in place of php exceptions:
-	 * set_error_handler(array("Dispatcher", "HandleException"));
+	 * Handler for catching IncludeModel file-not-found errors
 	 */
 	public static function ModelException($code, $string, $file, $line, $context)
 	{
