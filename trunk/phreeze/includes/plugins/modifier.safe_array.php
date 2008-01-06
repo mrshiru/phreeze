@@ -20,9 +20,9 @@
  * @return string
  @example {$myarray|safe_array:key:property:errormessage}
  */
-function smarty_modifier_safe_array($prefix, $myarray, $key, $property = "", $errormsg = "")
+function smarty_modifier_safe_array($prefix, $myarray, $key, $property = "", $errormsg = "-NULL-")
 {
-    $returnval = ($errormsg != "") ? $errormsg : ("ERROR: ARRAY KEY '" . $key . "' IS UNDEFINED");
+    $returnval = ($errormsg != "-NULL-") ? $errormsg : ("ERROR: ARRAY KEY '" . $key . "' IS UNDEFINED");
     
     //print "<pre>key is $key</pre>";
     //print_r($myarray);
