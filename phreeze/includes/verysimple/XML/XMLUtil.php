@@ -1,19 +1,93 @@
 <?php
 /** @package    verysimple::XML */
 
+require_once("ParseException.php");
+
 /**
  * XMLUtil provides a collection of static methods that are useful when
- * dealine with XML
+ * dealing with XML
  *
  * @package    verysimple::XML
  * @author     VerySimple Inc.
  * @copyright  1997-2007 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    2.0
+ * @version    3.1
  */
 class XMLUtil
 {
-
+	static $reserved = Array("\"","'","&","<",">");
+	static $replacements = Array("&quot;","&apos;","&amp;","&lt;","&gt;");
+	
+	/**
+	 * Parses the given XML using SimpleXMLElement, however traps PHP errors and
+	 * warnings and converts them to an Exception that you can catch.  Surround
+	 * this statement with try/catch and you can handle parsing exceptions instead
+	 * of allowing PHP to terminate or write errors to the browser
+	 *
+	 * @param $xml string
+	 */
+	static function SafeParse($xml)
+	{
+		// re-route error handling temporarily so we can convert PHP errors to an exception
+		set_error_handler(array("XMLUtil", "HandleParseException"),E_ALL);
+		
+		$element = new SimpleXMLElement($xml);
+		
+		// reset error handling back to whatever it was
+		restore_error_handler();
+		
+		return $element;
+	}
+	
+	/**
+	* Escapes special characters that will corrupt XML
+	* @param String to be escaped
+	*/
+	static function Escape($str)
+	{
+		return str_replace(XmlUtil::$reserved,XmlUtil::$replacements,$str);
+	}
+	
+	/**
+	 * UnEscapes special characters from XML that were Escaped
+	 * @param String to be unescaped
+	 */
+	static function UnEscape($str)
+	{
+		return str_replace(XmlUtil::$replacements,XmlUtil::$reserved,$str);
+	}
+	
+	/**
+	* Recurses an associative array and returns an XML string
+	* @param $arr Array to recurse
+	*/
+	static function ArrayToXML($arr)
+	{
+		$xml = "";
+		foreach (array_keys($arr) as $key)
+		{
+			if (is_array($arr[$key]))
+			{
+				$xml .= "<".$key.">";
+				$xml .= XmlUtil::ArrayToXML($arr[$key]);
+				$xml .= "</".$key.">\n";
+			}
+			elseif (is_object($arr[$key]))
+			{
+				$props = get_object_vars($arr[$key]);
+				$xml .= "<".$key.">";
+				$xml .= XmlUtil::ArrayToXML( $props );
+				$xml .= "</".$key.">\n";
+			}
+			else
+			{
+				$xml .= "<".$key.">" . XmlUtil::Escape($arr[$key]) . "</".$key.">\n";
+			}
+		}
+		
+		return $xml;
+	}
+	
 	/**
 	 * For a node that is known to have inner text and no other child nodes, 
 	 * this returns the inner text and advances the reader curser to the next
@@ -82,6 +156,15 @@ class XMLUtil
 		
 		return $obj;
 	}
+	
+	/**
+	* Handler for catching ParseException errors
+	*/
+	public static function HandleParseException($code, $string, $file, $line, $context)
+	{
+		throw new ParseException($string,$code);
+	}
+	
 }
 
 ?>
