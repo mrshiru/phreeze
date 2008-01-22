@@ -348,6 +348,10 @@
     {
     "ProjRelPath" = "T"
     }
+    "verysimple\\xml\\parseexception.php"
+    {
+    "ProjRelPath" = "T"
+    }
     "verysimple\\xml\\xmlutil.php"
     {
     "ProjRelPath" = "T"
