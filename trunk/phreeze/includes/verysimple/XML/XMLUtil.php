@@ -15,8 +15,11 @@ require_once("ParseException.php");
  */
 class XMLUtil
 {
-	static $reserved = Array("\"","'","&","<",">");
-	static $replacements = Array("&quot;","&apos;","&amp;","&lt;","&gt;");
+	// replacement variable for inner text and for attribute values
+	static $reservedAttrib = Array("\"","'","&","<",">");
+	static $replacementsAttrib = Array("&quot;","&apos;","&amp;","&lt;","&gt;");
+	static $reservedText = Array("&","<",">");
+	static $replacementsText = Array("&amp;","&lt;","&gt;");
 	
 	/**
 	 * Parses the given XML using SimpleXMLElement, however traps PHP errors and
@@ -42,10 +45,18 @@ class XMLUtil
 	/**
 	* Escapes special characters that will corrupt XML
 	* @param String to be escaped
+	* @param bool (default false) true if you are escaping an attribute (ie <field attribute="" />)
 	*/
-	static function Escape($str)
+	static function Escape($str, $escapeQuotes = false)
 	{
-		return str_replace(XmlUtil::$reserved,XmlUtil::$replacements,$str);
+		if ($escapeQuotes)
+		{
+			return str_replace(XmlUtil::$reservedAttrib,XmlUtil::$replacementsAttrib,$str);
+		}
+		else
+		{
+			return str_replace(XmlUtil::$reservedText,XmlUtil::$replacementsText,$str);
+		}
 	}
 	
 	/**
@@ -58,33 +69,46 @@ class XMLUtil
 	}
 	
 	/**
-	* Recurses an associative array and returns an XML string
-	* @param $arr Array to recurse
+	* Recurses value and serializes it as an XML string
+	* @param $var object, array or value to convert
+	* @param $key name of the root node (optional)
 	*/
-	static function ArrayToXML($arr)
+	static function ToXML($var, $key="")
 	{
 		$xml = "";
-		foreach (array_keys($arr) as $key)
-		{
-			if (is_array($arr[$key]))
-			{
-				$xml .= "<".$key.">";
-				$xml .= XmlUtil::ArrayToXML($arr[$key]);
-				$xml .= "</".$key.">\n";
-			}
-			elseif (is_object($arr[$key]))
-			{
-				$props = get_object_vars($arr[$key]);
-				$xml .= "<".$key.">";
-				$xml .= XmlUtil::ArrayToXML( $props );
-				$xml .= "</".$key.">\n";
-			}
-			else
-			{
-				$xml .= "<".$key.">" . XmlUtil::Escape($arr[$key]) . "</".$key.">\n";
-			}
-		}
 		
+		if (is_object($var))
+		{
+			// object have properties that we recurse
+			$name = strlen($key) > 0 && is_numeric($key) == false ? $key : get_class($var);
+			$xml .= "<".$name.">\n";
+			
+			$props = get_object_vars($var);
+			foreach (array_keys($props) as $key)
+			{
+				$xml .= XmlUtil::ToXML( $props[$key], $key );
+			}
+			
+			$xml .= "</".$name.">\n";
+		}
+		elseif (is_array($var))
+		{
+			$name = strlen($key) > 0 ? (is_numeric($key) ? "Array_".$key : $key) : "Array";
+			$xml .= "<".$name.">\n";
+			
+			foreach (array_keys($var) as $key)
+			{
+				$xml .= XmlUtil::ToXML( $var[$key], $key );
+			}
+			
+			$xml .= "</".$name.">\n";
+		}
+		else
+		{
+			$name = strlen($key) > 0 ? (is_numeric($key) ? "Value_".$key : $key) : "Value";
+			$xml .= "<".$name.">" . XmlUtil::Escape($var) . "</".$name.">\n";
+		}
+
 		return $xml;
 	}
 	
