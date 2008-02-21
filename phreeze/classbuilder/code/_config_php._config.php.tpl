@@ -8,6 +8,12 @@ define("TEMPLATE_PATH", APP_ROOT . "/templates/");
 define("COMPILE_PATH", APP_ROOT . "/templates_c/");
 define("TEMP_PATH", APP_ROOT . "/temp/");
 
+// make sure template folder is writable
+if (!@fopen(TEMPLATE_PATH . "permission.test","w"))
+{ldelim}
+	die("<span style='color: red;'>ERROR: " . TEMPLATE_PATH . " must be writable</span>");
+{rdelim}
+
 // add local libs to include path (optionally use .htaccess or php.ini)
 set_include_path(APP_ROOT . "/libs/" . PATH_SEPARATOR . get_include_path());
 

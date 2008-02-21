@@ -27,13 +27,14 @@ var StandardGrid = {ldelim}
 			),
 			
 			remoteSort: true
-		{rdelim}); // datastore
+		{rdelim});
+		
         ds.load();
 
 		// event handlers
 		function rowDblClick(grid,rowIndex,e)
 		{ldelim}
-			var pk = grid.getDataSource().getAt(rowIndex).id;
+			var pk = grid.getStore().getAt(rowIndex).id;
 			self.location=urlFormat.replace(/\%s/, "Edit") + '&'+pkName+'='+pk;
 		{rdelim}
 
@@ -42,40 +43,37 @@ var StandardGrid = {ldelim}
 			self.location=urlFormat.replace(/\%s/, "Edit");
 		{rdelim}
 
-		// the DefaultColumnModel expects this blob to define columns. It can be extended to provide
-        // custom or reusable ColumnModels
+		// convert the config array into a columnmodel
         var colModel = new Ext.grid.ColumnModel(columnDef);
 
-        // create the Grid
-        var grid = new Ext.grid.Grid(''+objectName+'Grid', {ldelim}
-            ds: ds,
-            cm: colModel
-        {rdelim});
-
-        var layout = Ext.BorderLayout.create({ldelim}
-            center: {ldelim}
-                margins:{ldelim}left:3,top:3,right:3,bottom:3{rdelim},
-                panels: [new Ext.GridPanel(grid)]
-            {rdelim}
-        {rdelim}, ''+objectName+'GridPanel');
-
-		grid.addListener('rowdblclick',rowDblClick);
-
-        grid.render();
-
-		var gridFoot = grid.getView().getFooterPanel(true);
-
-		var pageBar = new Ext.PagingToolbar(gridFoot, ds, {ldelim}
+		var pageBar = new Ext.PagingToolbar({ldelim}
+			store: ds,
 			pageSize: pageSize,
 			displayInfo: true,
 			displayMsg: 'Displaying records {ldelim}0{rdelim} - {ldelim}1{rdelim} of {ldelim}2{rdelim}',
 			emptyMsg: "No records to display"
 		{rdelim});
 		
+		// create the Grid
+        var grid = new Ext.grid.GridPanel({ldelim}
+            store: ds,
+            cm: colModel,
+            bbar: pageBar,
+            frame: true
+            {rdelim});
+
+		// listener must be added before rendering
+		grid.addListener('rowdblclick',rowDblClick);
+
+		// render the grid into the panel div
+        grid.applyToMarkup(objectName+'GridPanel');
+
+		// buttons must be added after rendering
 		pageBar.addButton(new Ext.Toolbar.Button({ldelim}
 		    text:'New Record...',
 		    handler: newRecordClick
 		{rdelim}));
+
 		
         // grid.getSelectionModel().selectFirstRow();
     {rdelim}
