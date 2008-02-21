@@ -55,7 +55,7 @@ class Parameter
 // laplix 2007-11-02. Setup the parameters.
 $params = array();
 $params[] = new Parameter('PathToVerySimpleScripts', '/scripts/verysimple/');
-$params[] = new Parameter('PathToExtScripts', '/scripts/ext/');
+$params[] = new Parameter('PathToExtScripts', '/scripts/ext-2/');
 
 // Laplix 2007-11-02.
 // AppName will enable the user to provide a name for his application.
