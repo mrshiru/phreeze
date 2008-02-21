@@ -7,7 +7,7 @@ Double click on a row to edit an existing {$singular}.
 Use the "New Record" button to add a new {$singular}.</p>
 
 <!-- placeholder for the grid -->
-<div id="{$singular}GridPanel" style="width:780px; height:300px;">
+<div id="{$singular}GridPanel" style="width:100%; height:300px;">
 	<div id="{$singular}Grid" class="ygrid-mso"></div>
 </div>
 

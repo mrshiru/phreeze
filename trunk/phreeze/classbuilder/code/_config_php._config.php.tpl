@@ -9,7 +9,7 @@ define("COMPILE_PATH", APP_ROOT . "/templates_c/");
 define("TEMP_PATH", APP_ROOT . "/temp/");
 
 // make sure template folder is writable
-if (!@fopen(TEMPLATE_PATH . "permission.test","w"))
+if (!@fopen(COMPILE_PATH . "permission.test","w"))
 {ldelim}
 	die("<span style='color: red;'>ERROR: " . TEMPLATE_PATH . " must be writable</span>");
 {rdelim}
