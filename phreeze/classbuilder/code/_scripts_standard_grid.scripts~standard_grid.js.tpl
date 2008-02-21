@@ -29,7 +29,7 @@ var StandardGrid = {ldelim}
 			remoteSort: true
 		{rdelim});
 		
-        ds.load();
+        ds.load({ldelim}params:{ldelim}start:0,limit:pageSize{rdelim}{rdelim});
 
 		// event handlers
 		function rowDblClick(grid,rowIndex,e)

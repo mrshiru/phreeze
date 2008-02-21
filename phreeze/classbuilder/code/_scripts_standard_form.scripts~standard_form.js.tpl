@@ -25,7 +25,7 @@ function standardForm(formId)
 		else if (elem.hasClass('date-picker'))
 		{ldelim}
 			var df = new Ext.form.DateField({ldelim}format:'m/d/Y'{rdelim});
-			df.applyTo(elem.dom.name);
+			df.applyToMarkup(elem.dom.name);
 		{rdelim}
 	{rdelim}
 {rdelim}

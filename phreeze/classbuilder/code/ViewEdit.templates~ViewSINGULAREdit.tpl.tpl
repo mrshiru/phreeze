@@ -52,6 +52,9 @@
 {ldelim}* hide the child objects for new records *{rdelim}
 {ldelim}if (${$singular|lower}->{$table->GetPrimaryKeyName()|studlycaps}){rdelim}
 
+{ldelim}assign var=params value='{$table->GetPrimaryKeyName()|studlycaps}='|cat:${$singular|lower}->{$table->GetPrimaryKeyName()|studlycaps}{rdelim}
+	<p><input type="button" class="button" value="Delete" onclick="if (confirm('Delete this record?')) {ldelim}ldelim{rdelim}self.location='{ldelim}$URL->Get('{$singular}','Delete',$params){rdelim}';{ldelim}rdelim{rdelim} else {ldelim}ldelim{rdelim}return false;{ldelim}rdelim{rdelim}" /></p>
+
 {foreach from=$table->Sets item=set}
 	<fieldset>
 		<legend>{$set->GetterName|studlycaps}</legend>
