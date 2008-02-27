@@ -25,9 +25,14 @@ table.basic td
     border-bottom: dotted 1px #bbbbbb;
 }
 
-table.basic td.odd
+table.basic td.odd, table.basic tr.alt td
 {
     background-color: #fafafa;
+}
+
+table.basic tr.hover td
+{
+    background-color: #ddddff;
 }
 
 table.basic th
