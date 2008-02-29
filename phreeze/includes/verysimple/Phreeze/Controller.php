@@ -318,11 +318,18 @@ abstract class Controller
 	/**
 	 * Renders the specified view
 	 *
-	 * @param string $view
-	 * @param string $format
+	 * @param string $view (optional) if not provided, the view is automatically bound using the class and method name
+	 * @param string $format (optional) default = "View"
 	 */
-	protected function Render($view,$format="View")
+	protected function Render($view="",$format="View")
 	{
+		if ($view == "")
+		{
+			// automatic binding
+			$backtrace = debug_backtrace();
+			$view = str_replace("Controller","", $backtrace[1]['class']) . $backtrace[1]['function'];
+		}
+		
 		$this->Smarty->display("View".$view.".tpl");
 	}
 	
