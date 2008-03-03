@@ -84,7 +84,9 @@ fieldset textarea
 	display: none;
 }
 
-.long {width: 500px;}
-.medium {width: 250px;}
-.small {width: 125px;}
-.tiny {width: 60px;}
+.xlong  {width: 500px;}
+.long   {width: 350px;}
+.medium {width: 200px;}
+.small  {width: 100px;}
+.tiny   {width: 50px;}
+.xtiny   {width: 25px;}

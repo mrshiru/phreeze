@@ -32,8 +32,9 @@ table.basic td.odd, table.basic tr.alt td
 
 table.basic tr.hover td
 {
-    background-color: #ddddff;
+    background-color: #D2D4D5;
 }
+
 
 table.basic th
 {
