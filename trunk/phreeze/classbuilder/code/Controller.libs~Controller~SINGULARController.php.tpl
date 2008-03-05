@@ -134,7 +134,7 @@ class {$singular}Controller extends Controller
 {if $column->NameWithoutPrefix|studlycaps == "Created" or $column->NameWithoutPrefix|studlycaps == "CreatedDate" or $column->NameWithoutPrefix|studlycaps == "CreateDate"}
 		${$singular|lower}->{$column->NameWithoutPrefix|studlycaps} = (${$singular|lower}->{$column->NameWithoutPrefix|studlycaps}) ? ${$singular|lower}->{$column->NameWithoutPrefix|studlycaps} : Request::GetAsDateTime("");
 {else}
-		${$singular|lower}->{$column->NameWithoutPrefix|studlycaps} = Request::GetAsDateTime("");
+		${$singular|lower}->{$column->NameWithoutPrefix|studlycaps} = Request::GetAsDateTime("{$column->NameWithoutPrefix|studlycaps}");
 {/if}
 {else}
 		${$singular|lower}->{$column->NameWithoutPrefix|studlycaps} = Request::Get("{$column->NameWithoutPrefix|studlycaps}");
