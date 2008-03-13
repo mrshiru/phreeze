@@ -45,6 +45,7 @@ class Authenticator
 	public static function ClearAuthentication($guid = "CURRENT_USER")
 	{
 		unset($_SESSION[$guid]);
+		session_destroy();
 	}
 
 }

@@ -1,32 +1,31 @@
 <?php
-/*
- * Smarty plugin "Thumb"
- * Purpose: creates cached thumbnails
- * Home: http://www.cerdmann.com/thumb/
- * Copyright (C) 2005 Christoph Erdmann
+/**
+ * Smarty plugin "Thumb" creates cached thumbnails
  * 
- * This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
+ * @copyright (C) 2005 Christoph Erdmann http://www.cerdmann.com/thumb/
  * 
+ * @license This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
  * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
- * 
  * You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA 
- * -------------------------------------------------------------
- * Author:   Christoph Erdmann (CE)
- * Internet: http://www.cerdmann.com
- *
- * Author: Benjamin Fleckenstein (BF)
- * Internet: http://www.benjaminfleckenstein.de
- *
- * Author: Marcus Gueldenmeister (MG)
- * Internet: http://www.gueldenmeister.de/marcus/
- *
- * Author: Andreas Bösch (AB)
- *
- * Author: Jason HInkle (JH)
- * Internet: http://www.verysimple.com/
-
- * Changelog:
- * 2007-01-07 Better error reporting when file doesn't exist and/or is blank (JH)
+ * 
+ * @author Christoph Erdmann (CE) http://www.cerdmann.com
+ * @author Benjamin Fleckenstein (BF) http://www.benjaminfleckenstein.de
+ * @author Marcus Gueldenmeister (MG) http://www.gueldenmeister.de/marcus/
+ * @author Andreas Bösch (AB)
+ * @author Jason Hinkle (JH) http://www.verysimple.com/
+ * 
+ * @param hint true/false to show magnifying glass overlay
+ * @param link true/false to link to original image
+ * @param extrapolate true/false to enlarge image if necessary
+ * @param cache file path to writable directory for cache files
+ * @param dev set to true to overlay the rendering time on the image
+ * 
+ * @version:
+ * 2008-03-13 set default param values to avoid various warnings in strict mode
+              error handling when cache is not writable
+              changed empty to !isset to make params work properly
+              if cache path is a full uri, strip it out in the generated html code (JH)
+ * 2007-01-07 Friendly output when file doesn't exist and/or is blank (JH)
  * 2005-10-31 Fixed some small bugs (CE)
  * 2005-10-09 Rewrote crop-function (CE)
  * 2005-10-08 Decreased processing time by prescaling linear and cleaned code (CE)
@@ -44,10 +43,37 @@
  * 2004-12-02 Intergrated UnsharpMask (CE)
  * -------------------------------------------------------------
  */
- 
-function smarty_function_thumb($params, &$smarty)
+ function smarty_function_thumb($params, &$smarty)
 	{
 
+	// prevents warning in strict mode (JH)
+	if (!isset($params['width'])) $params['width'] = null;
+	if (!isset($params['height'])) $params['height'] = null;
+	if (!isset($params['longside'])) $params['longside'] = null;
+	if (!isset($params['shortside'])) $params['shortside'] = null;
+	if (!isset($params['html'])) $params['html'] = null;
+	if (!isset($params['sharpen'])) $params['sharpen'] = null;
+	if (!isset($params['hint'])) $params['hint'] = null;
+	if (!isset($params['addgreytohint'])) $params['addgreytohint'] = null;
+	
+	if (!isset($params['link'])) $params['link'] = true;
+	if (!isset($params['window'])) $params['window'] = true;
+	if (!isset($params['hint'])) $params['hint'] = true;
+	if (!isset($params['extrapolate'])) $params['extrapolate'] = true;
+	if (!isset($params['dev'])) $params['dev'] = false;
+	if (!isset($params['crop'])) $params['crop'] = true;
+	if (!isset($params['width']) && !isset($params['height']) 
+			&& !isset($params['longside']) && !isset($params['shortside'])) $params['width'] = 100;
+
+	// have a look at the params for debugging purposes
+	// return "<pre>" . print_r($params,1) . "</pre>";
+	
+	// defining these prevents warnings
+	$_SRC = array();
+	$_DST = array();
+	$_DST['offset_w'] = 0;
+	$_DST['offset_h'] = 0;
+	
 	// Start time measurement
 	if ($params['dev'])
 		{
@@ -151,15 +177,6 @@ function smarty_function_thumb($params, &$smarty)
 	if (!file_exists($params['file'])) { 
 		return "<div class='warning'>thumb: file '".$params['file']."' could not be found</div>";	
 	}
-
-	if (empty($params['link'])) $params['link'] = true;
-	if (empty($params['window'])) $params['window'] = true;
-	if (empty($params['hint'])) $params['hint'] = true;
-	if (empty($params['extrapolate'])) $params['extrapolate'] = true;
-	if (empty($params['dev'])) $params['crop'] = false;
-	if (empty($params['crop'])) $params['crop'] = true;
-	if (empty($params['width']) AND empty($params['height']) 
-		AND empty($params['longside']) AND empty($params['shortside'])) $params['width'] = 100;
 	
 	### Info über Source (SRC) holen
 	$temp = getimagesize($params['file']);
@@ -232,7 +249,7 @@ function smarty_function_thumb($params, &$smarty)
 		}
 
 	// Wenn das Ursprungsbild kleiner als das Ziel-Bild ist, soll nicht hochskaliert werden und die neu berechneten Werte werden wieder überschrieben
-	if ($params['extrapolate'] == 'false' && $_DST['height'] > $_SRC['height'] && $_DST['width'] > $_SRC['width'])
+	if ( $params['extrapolate'] != true && $params['extrapolate'] != "true"  && $_DST['height'] > $_SRC['height'] && $_DST['width'] > $_SRC['width'])
 		{
 		$_DST['width'] = $_SRC['width'];
 		$_DST['height'] = $_SRC['height'];
@@ -245,16 +262,20 @@ function smarty_function_thumb($params, &$smarty)
 	$_DST['string']		= 'width="'.$_DST['width'].'" height="'.$_DST['height'].'"';
 
 
+	// strip out any path stuff in case the cache path is a full URI (JH)
+	$file_url = str_replace( realpath(".") . "/","",$_DST['file']);
+
 	### Rückgabe-Strings erstellen
-	if (empty($params['html'])) $_RETURN['img'] = '<img src="'.$_DST['file'].'" '.$params['html'].' '.$_DST['string'].' alt="" title="" />';
-	else $_RETURN['img'] = '<img src="'.$_DST['file'].'" '.$params['html'].' '.$_DST['string'].' />';
+
+	if (empty($params['html'])) $_RETURN['img'] = '<img src="'.$file_url.'" '.$params['html'].' '.$_DST['string'].' alt="" title="" />';
+	else $_RETURN['img'] = '<img src="'.$file_url.'" '.$params['html'].' '.$_DST['string'].' />';
 
 	if ($params['link'] == "true")
 		{
-		if (empty($params['linkurl'])) $params['linkurl'] = $_SRC['file'];
+		if (empty($params['linkurl'])) $params['linkurl'] = $file_url;
 		
-		if ($params['window'] == "true") $returner = '<a href="'.$params['linkurl'].'" target="_blank">'.$_RETURN['img'].'</a>';
-		else $returner = '<a href="'.$params['linkurl'].'">'.$_RETURN['img'].'</a>';
+		if ($params['window'] == "true") $returner = '<a href="'.$file_url.'" target="_blank">'.$_RETURN['img'].'</a>';
+		else $returner = '<a href="'.$file_url.'">'.$_RETURN['img'].'</a>';
 		}
 	else
 		{
@@ -329,6 +350,11 @@ function smarty_function_thumb($params, &$smarty)
 		// Schrift mit Zeitangabe
 		imagestring($_DST['image'], 1, 5, 2, 'processing time: '.$time.'s', $black);
 		}
+	
+	if (!is_writeable($_CONFIG['cache']))
+	{
+		return "<div class='warning'>thumb: unable to write cache to '".$_DST['file']."'  Provide a cache parameter to use an alternate location.</div>";	
+	}
 	
 	// Thumbnail abspeichern
 	if ($_DST['type'] == 1)

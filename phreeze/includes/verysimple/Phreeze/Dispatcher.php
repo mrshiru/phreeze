@@ -73,8 +73,16 @@ class Dispatcher
 			throw new Exception("'".$controller_class.".".$method_param."' is not a valid action");
 		}
 		
+		// convert any php errors into an exception
+		set_error_handler(array("Dispatcher", "HandleException"),E_ALL );
+		//set_exception_handler(array("Dispatcher", "HandleException"));
+		
 		// file, class and method all are ok, go ahead and call it
 		call_user_func(array(&$controller, $method_param));
+		
+		// reset error handling back to whatever it was
+		//restore_exception_handler();
+		restore_error_handler();
 		
 		return true;
 	}

@@ -21,8 +21,9 @@ class Context
 	/**
 	 * Returns a persisted object or value
 	 *
-	 * @access public
-	 * @return object || null
+	 * @param var
+	 * @param default value (default = null)
+	 * @return value of var (or default)
 	 */
 	public function Get($var,$default = null)
 	{
@@ -33,6 +34,8 @@ class Context
 	 * Persists an object or value
 	 *
 	 * @access public
+	 * @param var
+	 * @param value
 	 * @return object || null
 	 */
 	public function Set($var,$val)
