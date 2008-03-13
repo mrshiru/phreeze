@@ -179,6 +179,27 @@ abstract class Controller
 	}
 	
 	/**
+	 * Sets a value in the current context
+	 * @param var
+	 * @param value
+	 */
+	protected function Set($var,$val)
+	{
+		return $this->Context->Set($var,$val);
+	}
+	
+	/**
+	 * Gets a value from the current context
+	 * @param var
+	 * @param default value (default = null)
+	 * @return value of var (or default)
+	 */
+	protected function Get($var,$default=null)
+	{
+		return $this->Context->Get($var,$default);
+	}
+	
+	/**
 	 * This method calls LoadFromForm to retrieve a model object populated with user
 	 * input.  The input is validated and a ValidationResponse is rendered in JSON format
 	 */

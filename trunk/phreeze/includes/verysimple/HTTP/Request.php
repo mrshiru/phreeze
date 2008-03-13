@@ -87,7 +87,7 @@ class Request
 	* @param    bool $ignore_empty true to not throw exception if form fields doesn't contain a file (default false)
 	* @param    int $max_kb maximum size allowed for upload (default unlimited)
 	* @param    array $ok_types if array is provided, only files with those Extensions will be allowed (default all)
-	* @return   FileUpload object
+	* @return   FileUpload object (or null if $ignore_empty = true and there is no file data)
 	*/
 	public static function GetFileUpload($fieldname, $ignore_empty = false, $max_kb = 0, $ok_types = null)
 	{
@@ -98,7 +98,7 @@ class Request
 			// however if ignore is specified, then return empty string
 			if ($ignore_empty)
 			{
-				return "";
+				return null;
 			}
 			throw new Exception("\$_FILES['".$fieldname."'] is empty.  Did you forget to add enctype='multipart/form-data' to your form code?");
 		}
