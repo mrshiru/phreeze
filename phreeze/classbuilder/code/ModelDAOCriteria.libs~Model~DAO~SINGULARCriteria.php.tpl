@@ -22,6 +22,7 @@ class {$singular}Criteria extends Criteria
 	 * If you wish to add any criteria parameters beyond these, you must override OnPrepare
 	 */
 {foreach from=$table->Columns item=column}	public ${$column->NameWithoutPrefix|studlycaps}_Equals;
+	public ${$column->NameWithoutPrefix|studlycaps}_NotEquals;
 	public ${$column->NameWithoutPrefix|studlycaps}_IsLike;
 	public ${$column->NameWithoutPrefix|studlycaps}_BeginsWith;
 	public ${$column->NameWithoutPrefix|studlycaps}_EndWith;
