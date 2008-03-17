@@ -71,6 +71,38 @@ abstract class Phreezable
 			$this->$prop = $fm->DefaultValue;
 		}
 	}
+
+	/**
+	* LoadFromObject allows this class to be populated from another class, so long as
+	* the properties are compatible.  This is useful when using reporters so that you
+	* can easily convert them to phreezable objects.  Be sure to check that IsLoaded
+	* is true before attempting to save this object.
+	*
+	* @access     public
+	* @param $src the object to populate from, which must contain compatible properties
+	*/
+	public function LoadFromObject($src)
+	{
+		$this->IsLoaded = true;
+		$src_cls = get_class($src);
+
+		foreach (get_object_vars($this) as $key => $val)
+		{
+			if ($key != "IsLoaded" && $key != "IsPartiallyLoaded" && substr($key,0,1) != "_")
+			{
+				if (property_exists($src_cls ,$key))
+				{
+					$this->$key = $src->$key;
+					$this->IsPartiallyLoaded = true;
+				}
+				else
+				{
+					$this->IsLoaded = false;
+				}
+			}
+		}
+		
+	}
 	
     /**
     * Validate returns true if the properties all contain valid values.  If not,
