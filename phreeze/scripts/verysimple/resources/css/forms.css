@@ -40,6 +40,13 @@ fieldset label
 	padding: 2px 4px 2px 0px;
 }
 
+/* prevent labels from floating inside the x-form-element */
+.x-form-element label
+{
+	display: inline;
+	float: none;
+}
+
 .readonly
 {
 	border: solid 1px #dddddd;
