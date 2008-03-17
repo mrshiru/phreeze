@@ -264,7 +264,7 @@
 
 	// strip out any path stuff in case the cache path is a full URI (JH)
 	$file_url = str_replace( realpath(".") ,".",$_DST['file']);
-	$file_url = str_replace("\\","/", $file_url);
+	$file_url = str_replace(array("\\","//"),array("/","/"), $file_url);
 	
 	### Rückgabe-Strings erstellen
 
