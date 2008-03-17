@@ -1,7 +1,7 @@
 "General"
 {
 "ProjectIdGuid" = "{573967F2-91CA-47A3-B938-8A92E50CFFD3}"
-"ProjectVersion" = "2.3.6.4068"
+"ProjectVersion" = "2.4.3.4467"
 }
 "Configurations"
 {
@@ -36,6 +36,10 @@
     {
     "ProjRelPath" = "T"
     }
+    "plugins\\function.html_checkbox_options.php"
+    {
+    "ProjRelPath" = "T"
+    }
     "plugins\\function.html_dynamic_options.php"
     {
     "ProjRelPath" = "T"
@@ -57,6 +61,10 @@
     "ProjRelPath" = "T"
     }
     "plugins\\function.ternary.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.thumb.php"
     {
     "ProjRelPath" = "T"
     }
@@ -345,6 +353,10 @@
     "ProjRelPath" = "T"
     }
     "verysimple\\search\\searchrank.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\string\\namevalue.php"
     {
     "ProjRelPath" = "T"
     }
