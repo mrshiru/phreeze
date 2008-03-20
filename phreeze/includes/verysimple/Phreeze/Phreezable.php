@@ -20,6 +20,7 @@ abstract class Phreezable
 
     public $IsLoaded;
 	public $IsPartiallyLoaded;
+	public $NoCache = false;
 	
     /**
     * constructor
@@ -396,6 +397,7 @@ abstract class Phreezable
 	* Returns a value from the local cache
 	*
 	* @access     public
+	* @deprecated this is handled internally by Phreezer now
 	* @param      string $key
 	* @return     object
 	*/
@@ -408,6 +410,7 @@ abstract class Phreezable
 	* Sets a value from in local cache
 	*
 	* @access     public
+	* @deprecated this is handled internally by Phreezer now
 	* @param      string $key
 	* @param      object $obj
 	*/
@@ -420,6 +423,7 @@ abstract class Phreezable
 	* Clears all values in the local cache
 	*
 	* @access     public
+	* @deprecated this is handled internally by Phreezer now
 	*/
 	public function ClearCache()
     {

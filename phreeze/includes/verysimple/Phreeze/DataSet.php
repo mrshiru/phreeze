@@ -112,7 +112,6 @@ class DataSet implements Iterator
         }
     }
     
-	
 	public function rewind() {
 		$this->_rs = null;
 		$this->_counter = 0;
@@ -149,10 +148,25 @@ class DataSet implements Iterator
     {
         if ($this->_totalcount == -1)
         {
-            $rs = $this->_phreezer->DataAdapter->Select("select count(1) as counter from (" . $this->_sql . ") tmptable");
-            $row = $this->_phreezer->DataAdapter->Fetch($rs);
-            $this->_phreezer->DataAdapter->Release($rs);
-            $this->_totalcount = $row["counter"];
+			$sql = "select count(1) as counter from (" . $this->_sql . ") tmptable";
+			
+			// try to get this from the cache first
+			$this->_totalcount = $this->_phreezer->GetValueCache($sql);
+			
+			if (!empty($this->_totalcount))
+			{
+				$this->_phreezer->Observe("DataSet.Count Found Total '".$this->_totalcount."' in ValueCache",OBSERVE_DEBUG);
+			}
+			else
+			{
+				// no cache, get the count
+				$rs = $this->_phreezer->DataAdapter->Select($sql);
+				$row = $this->_phreezer->DataAdapter->Fetch($rs);
+				$this->_phreezer->DataAdapter->Release($rs);
+				$this->_totalcount = $row["counter"];
+
+				$this->_phreezer->SetValueCache($sql,$this->_totalcount);
+			}
         }
 
 		return $this->_totalcount;
@@ -203,7 +217,12 @@ class DataSet implements Iterator
         return $arr;
     }
 
-    function Clear()
+	/**
+	* Release the resources held by this DataSet
+	*
+	* @access     public
+	*/
+	function Clear()
     {
          $this->_phreezer->DataAdapter->Release($this->_rs);
     }

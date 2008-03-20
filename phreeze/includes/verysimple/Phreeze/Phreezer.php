@@ -30,8 +30,10 @@ class Phreezer extends Observable
 	 * Render engine can hold any arbitrary object used to render views
 	 */
 	public $RenderEngine;
-	
 	public $Version = 3.0;
+	public $ValueCacheTimeout = 5;
+	
+	private $_mapCache;
 	private $_level1Cache;
 	private $_level2Cache;
 	
@@ -46,6 +48,7 @@ class Phreezer extends Observable
     */
     public function Phreezer($csetting, $observer = null)
 	{
+		$this->_mapCache = new CacheRam();
 		$this->_level1Cache = new CacheRam();
 		$this->_level2Cache = new CacheNoCache();
 		
@@ -60,7 +63,7 @@ class Phreezer extends Observable
 	* Sets a cache provider for the level 1 cache
 	* @param ICache $cache
 	*/
-	public function SetLevel1Cache(ICache $cache)
+	public function SetLevel1CacheProvider(ICache $cache)
 	{
 		$this->_level1Cache = $cache;
 	}
@@ -69,9 +72,79 @@ class Phreezer extends Observable
 	* Sets a cache provider for the level 1 cache
 	* @param ICache $cache
 	*/
-	public function SetLevel2Cache(ICache $cache)
+	public function SetLevel2CacheProvider(ICache $cache)
 	{
 		$this->_level2Cache = $cache;
+	}
+	
+	/**
+	* Caches a value in the 2nd level cache.  The timout is specified by 
+	* ValueCacheTimeout
+	* 
+	* @param string $sql
+	* @param variant $val
+	*/
+	public function SetValueCache($key, $val)
+	{
+		$this->_level2Cache->Set(md5($key),$val,0,$this->ValueCacheTimeout);
+	}
+	
+	/**
+	* Retreives a value from the 2nd level cache
+	* @param string $key
+	* @return variant
+	*/
+	public function GetValueCache($key)
+	{
+		return $this->_level2Cache->Get(md5($key));
+	}
+	
+	/**
+	* Sets value in the cache
+	* @param string $objectclass
+	* @param string $id
+	* @param Phreezable $val
+	*/
+	private function SetCache($objectclass,$id, Phreezable $val)
+	{
+		if ($val->NoCache) return false;
+		$this->_level1Cache->Set($objectclass . "_" . $id,$val);
+		$this->_level2Cache->Set($objectclass . "_" . $id,$val);
+	}
+	
+	/**
+	* Retrieves a value from the cache
+	* @param string $objectclass
+	* @param string $id
+	* @return Phreezable
+	*/
+	private function GetCache($objectclass,$id)
+	{
+		// include the model so any serialized classes will not throw an exception
+		$this->IncludeModel($objectclass);
+		
+		// see if this object was cached in the level 1 cache
+		$obj = $this->_level1Cache->Get($objectclass . "_" . $id);
+		
+		if ($obj)
+		{ 
+			$this->Observe("Retrieved TYPE='$objectclass' ID='$id' from 1st Level Cache",OBSERVE_DEBUG);
+			$obj->Refresh($this);
+			return $obj;
+		}
+		
+		// try the level 2 cahce
+		$obj = $this->_level2Cache->Get($objectclass . "_" . $id);
+		
+		if ($obj)
+		{ 
+			$this->Observe("Retrieved TYPE='$objectclass' ID='$id' from 2nd Level Cache",OBSERVE_DEBUG);
+			$obj->Refresh($this);
+			return $obj;
+		}
+		
+		$this->Observe("No Cache for TYPE='$objectclass' ID='$id'",OBSERVE_DEBUG);
+		return null;
 	}
 	
 	/**
@@ -209,30 +282,10 @@ class Phreezer extends Observable
 			throw new Exception("\$id argument is required for $objectclass");
 		}
 		
-		// include the model so any serialized classes will not throw an exception
-		$this->IncludeModel($objectclass);
-		
-		// see if this exists in the cache
-		$obj = $this->_level1Cache->Get($objectclass . "_" . $id);
-		
-		if ($obj)
-		{ 
-			$this->Observe("Obtaining '$objectclass' '$id' from 1st Level Cache",OBSERVE_DEBUG);
-			$obj->Refresh($this);
-			return $obj;
-		}
+		// see if this object was cached & if so return it
+		$obj = $this->GetCache($objectclass,$id);
+		if ($obj) return $obj;
 
-		$obj = $this->_level2Cache->Get($objectclass . "_" . $id);
-		
-		if ($obj)
-		{ 
-			$this->Observe("Obtaining '$objectclass' '$id' from 2nd Level Cache",OBSERVE_DEBUG);
-			$obj->Refresh($this);
-			return $obj;
-		}
-
-		$this->Observe("No cache for '$objectclass' '$id'",OBSERVE_DEBUG);
-		
 		$pkm = $this->GetPrimaryKeyMap($objectclass);
 
 		$criteria = new Criteria();
@@ -247,8 +300,7 @@ class Phreezer extends Observable
 		}
 		
 		// cache the object for future use
-		$this->_level2Cache->Set($objectclass . "_" . $id,$obj);
-		$this->_level1Cache->Set($objectclass . "_" . $id,$obj);
+		$this->SetCache($objectclass,$id,$obj);
 		
 		return $obj;
 	}
@@ -350,8 +402,7 @@ class Phreezer extends Observable
 		}
 
 		// cache the object for future use
-		$this->_level2Cache->Set($objectclass . "_" . $id,$obj);
-		$this->_level1Cache->Set($objectclass . "_" . $id,$obj);
+		$this->SetCache($objectclass,$id,$obj);
 		
 		return $returnval;
 	}
@@ -412,8 +463,13 @@ class Phreezer extends Observable
     */
 	public function GetFieldMaps($objectclass)
 	{
+		// this is a temporary ram cache
+		$fms = $this->_mapCache->Get($objectclass."FieldMaps");
+		if ($fms) return $fms;
+		
 		$this->IncludeModel($objectclass);
 		eval("\$fms = " . $objectclass . "Map::GetFieldMaps();");
+		$this->_mapCache->Set($objectclass."FieldMaps",$fms);
 		return $fms;
 	}
 
@@ -450,8 +506,13 @@ class Phreezer extends Observable
 		}
 		//*/
 		
+		// this is a temporary ram cache
+		$kms = $this->_mapCache->Get($objectclass."KeyMaps");
+		if ($kms) return $kms;
+		
 		$this->IncludeModel($objectclass);
 		eval("\$kms = " . $objectclass . "Map::GetKeyMaps();");
+		$this->_mapCache->Set($objectclass."KeyMaps",$kms);
 		return $kms;
 	}
 
@@ -583,23 +644,18 @@ class Phreezer extends Observable
     */
 	public function GetManyToOne($parent, $keyname)
 	{
-		// first check if this was eagerly loaded so we don't query the database again		
-		if ($parent->GetCache($keyname))
-		{
-			return $parent->GetCache($keyname);
-		}
-		
 		// get the keymap for this child relationship
 		$km = $this->GetKeyMap(get_class($parent), $keyname);
 		
 		// we need the value of the foreign key.  (ex. to get all orders for a customer, we need Customer.Id)
+		// we also need to know the class of the object we're retrieving because if it's cached, we need to 
+		// make sure the model file is loaded
+		$objectclass = $km->ForeignObject;
 		$parent_prop = $km->KeyProperty;
 		$key_value = $parent->$parent_prop;
 		
+		// get this object  Get uses caching so we don't need to bother
 		$obj = $this->Get($km->ForeignObject,$key_value);
-		
-		// cache this in case it gets queried again
-		$parent->SetCache($keyname,$obj);
 		
 		return $obj;
 
