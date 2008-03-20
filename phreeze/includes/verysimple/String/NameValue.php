@@ -44,6 +44,8 @@ class NameValue
 		$lines = str_replace("\r","\n",$lines);
 		$arr = explode("\n", $lines );
 		
+		if ($lines=="") return $return;
+		
 		foreach ($arr as $line)
 		{
 			$return[] = new NameValue($line,$delim,$nameonly);
