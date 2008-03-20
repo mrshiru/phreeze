@@ -28,9 +28,9 @@ abstract class Phreezable
     * @param      Phreezer $phreezer
     * @param      Array $row
     */
-    final function Phreezable($phreezer, $row = null)
+    final function Phreezable(&$phreezer, $row = null)
     {
-		$this->_phreezer =& $phreezer;
+		$this->_phreezer = $phreezer;
 		$this->_cache = Array();
 		
         if ($row)

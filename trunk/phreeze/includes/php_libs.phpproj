@@ -36,10 +36,6 @@
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\function.html_checkbox_options.php"
-    {
-    "ProjRelPath" = "T"
-    }
     "plugins\\function.html_dynamic_options.php"
     {
     "ProjRelPath" = "T"
@@ -260,6 +256,18 @@
     {
     "ProjRelPath" = "T"
     }
+    "verysimple\\phreeze\\cachememcache.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\cachenocache.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\cacheram.php"
+    {
+    "ProjRelPath" = "T"
+    }
     "verysimple\\phreeze\\connectionsetting.php"
     {
     "ProjRelPath" = "T"
@@ -289,6 +297,10 @@
     "ProjRelPath" = "T"
     }
     "verysimple\\phreeze\\fieldmap.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\phreeze\\icache.php"
     {
     "ProjRelPath" = "T"
     }

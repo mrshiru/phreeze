@@ -8,6 +8,8 @@ require_once("KeyMap.php");
 require_once("FieldMap.php");
 require_once("DataAdapter.php");
 require_once("NotFoundException.php");
+require_once("CacheRam.php");
+require_once("CacheNoCache.php");
 
 /**
  * The Phreezer class is a factory for obtaining and working with Phreezable (persistable)
@@ -16,9 +18,9 @@ require_once("NotFoundException.php");
  *
  * @package    verysimple::Phreeze 
  * @author     VerySimple Inc.
- * @copyright  1997-2007 VerySimple, Inc.
+ * @copyright  1997-2008 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    2.72
+ * @version    3.0
  */
 class Phreezer extends Observable
 {
@@ -29,9 +31,10 @@ class Phreezer extends Observable
 	 */
 	public $RenderEngine;
 	
-	public $Version = 2.7;
-	private $_cache;
-
+	public $Version = 3.0;
+	private $_level1Cache;
+	private $_level2Cache;
+	
     /**
     * Contructor initializes the object.  The database connection is opened upon instantiation
     * and an exception will be thrown if db connectivity fails, so it is advisable to 
@@ -43,13 +46,32 @@ class Phreezer extends Observable
     */
     public function Phreezer($csetting, $observer = null)
 	{
-		$this->_cache = Array();
+		$this->_level1Cache = new CacheRam();
+		$this->_level2Cache = new CacheNoCache();
 		
 		parent::AttachObserver($observer);
 		$this->Observe("Phreeze Instantiated", OBSERVE_DEBUG);
 		
 		$this->DataAdapter = new DataAdapter($csetting, $observer);
 		$this->DataAdapter->Open();
+	}
+	
+	/**
+	* Sets a cache provider for the level 1 cache
+	* @param ICache $cache
+	*/
+	public function SetLevel1Cache(ICache $cache)
+	{
+		$this->_level1Cache = $cache;
+	}
+
+	/**
+	* Sets a cache provider for the level 1 cache
+	* @param ICache $cache
+	*/
+	public function SetLevel2Cache(ICache $cache)
+	{
+		$this->_level2Cache = $cache;
 	}
 	
 	/**
@@ -184,9 +206,33 @@ class Phreezer extends Observable
 		}
 		if (strlen($id) < 1)
 		{
-			throw new Exception("\$id argument is required");
+			throw new Exception("\$id argument is required for $objectclass");
+		}
+		
+		// include the model so any serialized classes will not throw an exception
+		$this->IncludeModel($objectclass);
+		
+		// see if this exists in the cache
+		$obj = $this->_level1Cache->Get($objectclass . "_" . $id);
+		
+		if ($obj)
+		{ 
+			$this->Observe("Obtaining '$objectclass' '$id' from 1st Level Cache",OBSERVE_DEBUG);
+			$obj->Refresh($this);
+			return $obj;
 		}
 
+		$obj = $this->_level2Cache->Get($objectclass . "_" . $id);
+		
+		if ($obj)
+		{ 
+			$this->Observe("Obtaining '$objectclass' '$id' from 2nd Level Cache",OBSERVE_DEBUG);
+			$obj->Refresh($this);
+			return $obj;
+		}
+
+		$this->Observe("No cache for '$objectclass' '$id'",OBSERVE_DEBUG);
+		
 		$pkm = $this->GetPrimaryKeyMap($objectclass);
 
 		$criteria = new Criteria();
@@ -195,12 +241,14 @@ class Phreezer extends Observable
 		
 		$ds = $this->Query($objectclass, $criteria);
 		
-		$obj = null;
-		
 		if (!$obj = $ds->Next())
 		{
 			throw new NotFoundException("$objectclass with primary key of $id not found");
 		}
+		
+		// cache the object for future use
+		$this->_level2Cache->Set($objectclass . "_" . $id,$obj);
+		$this->_level1Cache->Set($objectclass . "_" . $id,$obj);
 		
 		return $obj;
 	}
@@ -218,19 +266,20 @@ class Phreezer extends Observable
 	public function Save($obj, $force_insert = false)
 	{
 	
-	$fms = $this->GetFieldMaps(get_class($obj));
-	
-	$pk = $obj->GetPrimaryKeyName();
-	$id = $obj->$pk;
-	$table = $fms[$pk]->TableName;
-	$pkcol = $fms[$pk]->ColumnName;
-	$returnval = "";
-	
-	// if there is no value for the primary key, this is an insert
-	$is_insert = $force_insert || strlen($id) == 0;
-	
-	// fire the OnSave event in case the object needs to prepare itself
-	// if OnSave returns false, then don't proceed with the save
+		$objectclass = get_class($obj);
+		$fms = $this->GetFieldMaps($objectclass);
+
+		$pk = $obj->GetPrimaryKeyName();
+		$id = $obj->$pk;
+		$table = $fms[$pk]->TableName;
+		$pkcol = $fms[$pk]->ColumnName;
+		$returnval = "";
+
+		// if there is no value for the primary key, this is an insert
+		$is_insert = $force_insert || strlen($id) == 0;
+
+		// fire the OnSave event in case the object needs to prepare itself
+		// if OnSave returns false, then don't proceed with the save
 		$this->Observe("Firing ".get_class($obj)."->OnSave($is_insert)",OBSERVE_DEBUG);
 		if (!$obj->OnSave($is_insert))
 		{
@@ -300,6 +349,10 @@ class Phreezer extends Observable
 			$obj->OnInsert(); // fire OnInsert event
 		}
 
+		// cache the object for future use
+		$this->_level2Cache->Set($objectclass . "_" . $id,$obj);
+		$this->_level1Cache->Set($objectclass . "_" . $id,$obj);
+		
 		return $returnval;
 	}
 	
@@ -567,13 +620,13 @@ class Phreezer extends Observable
 		$this->GetKeyMap($objectclass, $keyname)->LoadType = $load_type;
 	}
 	
-    /**
-    * If the type is not already defined, attempts to require_once the definition.
-    * If the Model file cannot be located, an exception is thrown
-    *
-    * @access public
-    * @param string $objectclass The name of the object class
-    */
+	/**
+	* If the type is not already defined, attempts to require_once the definition.
+	* If the Model file cannot be located, an exception is thrown
+	*
+	* @access public
+	* @param string $objectclass The name of the object class
+	*/
 	public function IncludeModel($objectclass)
 	{
 		if (class_exists($objectclass)) return true;
