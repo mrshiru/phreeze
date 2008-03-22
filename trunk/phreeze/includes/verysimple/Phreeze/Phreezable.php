@@ -204,9 +204,9 @@ abstract class Phreezable
     * @param      Phreezer $phreezer
     * @param      Array $row
     */
-    final function Refresh($phreezer, $row = null)
+    final function Refresh(&$phreezer, $row = null)
     {
-		$this->_phreezer =& $phreezer;
+		$this->_phreezer = $phreezer;
 		
 		// also refresh any children in the cache in case they are accessed
 		foreach ($this->_cache as $child)

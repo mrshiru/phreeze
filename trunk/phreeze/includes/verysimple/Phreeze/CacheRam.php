@@ -19,12 +19,17 @@ class CacheRam implements ICache
 	
 	public function Get($key,$flags=null)
 	{
-		return isset($ram[$key]) ? $ram[$key] : null;
+		return isset($this->ram[$key]) ? $this->ram[$key] : null;
+	}
+	
+	public function GetKeys()
+	{
+		return array_keys($this->ram);
 	}
 	
 	public function Set($key,$val,$flags=null,$timeout=null)
 	{
-		$ram[$key] = $val;
+		$this->ram[$key] = $val;
 	}
 	
 }
