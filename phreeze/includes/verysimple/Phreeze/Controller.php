@@ -153,6 +153,13 @@ abstract class Controller
 					$val = strtotime($val) ? date("m/d/Y",strtotime($val)) : $val;
 				}
 				
+				// if the developer has added a property that is not a simple type
+				// we need to serialize it
+				if (is_array($val) || is_object($val))
+				{
+					$val = serialize($val);
+				}
+				
 				// $val = htmlentities(print_r($_REQUEST,1) );
 				print "<" . htmlspecialchars($var) . ">" . htmlspecialchars($val) . "</" . htmlspecialchars($var) . ">\r\n";
 			}

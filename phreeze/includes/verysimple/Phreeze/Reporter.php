@@ -22,9 +22,9 @@ abstract class Reporter
     * @param      Phreezer $phreezer
     * @param      Array $row
     */
-    final function Reporter($phreezer, $row = null)
+    final function Reporter(&$phreezer, $row = null)
     {
-		$this->_phreezer =& $phreezer;
+		$this->_phreezer = $phreezer;
 		
         if ($row)
         {
