@@ -63,7 +63,7 @@ class Phreezer extends Observable
 	* Sets a cache provider for the level 1 cache
 	* @param ICache $cache
 	*/
-	public function SetLevel1CacheProvider(ICache $cache)
+	private function SetLevel1CacheProvider(ICache $cache)
 	{
 		$this->_level1Cache = $cache;
 	}
@@ -129,7 +129,7 @@ class Phreezer extends Observable
 		if ($obj)
 		{ 
 			$this->Observe("Retrieved TYPE='$objectclass' ID='$id' from 1st Level Cache",OBSERVE_DEBUG);
-			$obj->Refresh($this);
+			// $obj->Refresh($this); level 1 doesn't need to be refreshed
 			return $obj;
 		}
 		
@@ -144,6 +144,7 @@ class Phreezer extends Observable
 		}
 		
 		$this->Observe("No Cache for TYPE='$objectclass' ID='$id'",OBSERVE_DEBUG);
+		// $this->Observe("KEYS =" . serialize($this->_level1Cache->GetKeys()) ,OBSERVE_DEBUG);
 		return null;
 	}
 	
