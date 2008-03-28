@@ -26,6 +26,7 @@ class DataPage implements Iterator
     
 	/**
 	 * ObjectInstance is an instance of the class that is stored in Rows
+	 * @var Phreezable
 	 */
     public $ObjectInstance = null;
     
@@ -40,6 +41,9 @@ class DataPage implements Iterator
     public $PageSize = 0;
     
     
+    /**
+     * @return Phreezable
+     */
     public function Next()
     {
 		return next($this->Rows);
@@ -49,6 +53,9 @@ class DataPage implements Iterator
 		reset($this->Rows);
 	}
 	
+	/**
+	 * @return Phreezable
+	 */
 	public function current() {
 		return current($this->Rows);
 	}

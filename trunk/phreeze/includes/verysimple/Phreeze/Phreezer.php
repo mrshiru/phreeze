@@ -28,13 +28,26 @@ class Phreezer extends Observable
 	
 	/**
 	 * Render engine can hold any arbitrary object used to render views
+	 * @var Smarty
 	 */
 	public $RenderEngine;
+	
 	public $Version = 3.0;
 	public $ValueCacheTimeout = 5;
 	
+	/**
+	 * @var array
+	 */
 	private $_mapCache;
+
+	/**
+	 * @var ICache
+	 */
 	private $_level1Cache;
+
+	/**
+	 * @var ICache
+	 */
 	private $_level2Cache;
 	
     /**
@@ -161,6 +174,9 @@ class Phreezer extends Observable
 
 	/**
 	* Phreezer::Compare is used internally by Phreezer::Sort
+	* @param object
+	* @param object
+	* @return bool
 	*/
 	static function Compare($a, $b)
 	{
@@ -189,7 +205,7 @@ class Phreezer extends Observable
 	* @param string $objectclass the type of object that will be queried
     * @param Criteria $criteria a Criteria object to limit results
 	* @param bool $crash_if_multiple_found default value = true
-	* @return Phreezable object of type $objectclass
+	* @return Phreezable
 	*/
 	public function GetByCriteria($objectclass, $criteria, $crash_if_multiple_found = true)
 	{
@@ -220,7 +236,7 @@ class Phreezer extends Observable
     * @access public
     * @param string $objectclass the type of object that your DataSet will contain
     * @param Criteria $criteria a Criteria object to limit results
-    * @return DataSet object containing zero or more objects of type $objectclass
+    * @return DataSet
     */
  	public function Query($objectclass, $criteria = null)
 	{
@@ -270,7 +286,7 @@ class Phreezer extends Observable
     * @access public
     * @param string $objectclass the type of object that your DataSet will contain
     * @param variant $id the value of the primary key
-    * @return Phreezable object of type $objectclass
+    * @return Phreezable
     */
 	public function Get($objectclass, $id)
 	{
