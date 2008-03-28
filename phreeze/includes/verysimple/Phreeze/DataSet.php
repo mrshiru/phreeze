@@ -37,8 +37,9 @@ class DataSet implements Iterator
     * Contructor initializes the object
     *
     * @access     public
-    * @param object DBProvider
-    * @param object ResultSet
+    * @param Phreezer
+    * @param string class of object this DataSet contains
+    * @param string $sql code
     */
     function DataSet(&$preezer, $objectclass, $sql)
     {
@@ -57,7 +58,7 @@ class DataSet implements Iterator
     *
     * @access     private
     * @param      array $row array to use for populating a single object
-    * @return     object
+    * @return     Preezable
     */
     private function _getObject(&$row)
     {
@@ -69,7 +70,7 @@ class DataSet implements Iterator
     * Next returns the next object in the collection.
     *
     * @access     public
-    * @return     object
+    * @return     Preezable
     */
     function Next()
     {
@@ -233,7 +234,7 @@ class DataSet implements Iterator
      * @access     public
      * @param int $pagenum which page of the results to view
      * @param int $pagesize the size of the page (or zero to disable paging).
-     * @return array
+     * @return DataPage
      */
     function GetDataPage($pagenum, $pagesize)
     {

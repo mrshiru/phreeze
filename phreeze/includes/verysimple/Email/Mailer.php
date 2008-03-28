@@ -23,18 +23,17 @@ define("MAILER_METHOD_MAIL","MAIL");
 class Mailer
 {
     
-    var $_errors;
-    var $Method;
+    var $_log;
+	var $_errors;
+	var $Method;
     var $Path;
     var $Host;
     
     function Mailer($method = MAILER_METHOD_SENDMAIL, $path = "/usr/sbin/sendmail")
     {
-        $this->_log = Array();
-        $this->_errors = Array();
         $this->Method = $method;
         $this->Path = $path;
-        
+        $this->Reset();
     }
     
     function Send($message)
@@ -71,6 +70,16 @@ class Mailer
         
         return $result;
     }
+    
+    /**
+     * Clears log and error
+     */
+    function Reset()
+    {
+		
+		$this->_errors = array();
+		$this->_log = array();
+	}
     
     function QuickSend($to,$from,$subject,$body)
     {
