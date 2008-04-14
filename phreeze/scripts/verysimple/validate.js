@@ -20,18 +20,18 @@ function getFieldValue(fld)
 	{
 		return getCheckRadioValue(fld);
 	} 
-	else if (fld.type == "select-multiple") 
+	
+	if (fld.type == "select-multiple") 
 	{
 		return getMultiSelectValue(fld);
 	} 
-	else if (fld.type == "select") 
+	
+	if (fld.type == "select") 
 	{
 		return fld.options[fld.selectedIndex].value;
 	}
-	else
-	{
-		return fld.value;
-	}
+	
+	return fld.value;
 
 }
 

@@ -1,0 +1,84 @@
+"General"
+{
+"ProjectIdGuid" = "{26E629F5-4254-4ADB-B3E3-705A4E5B0734}"
+"ProjectVersion" = "2.4.4.4494"
+}
+"Configurations"
+{
+    "Local|PHP 5"
+    {
+    "IncludeDirs" = ""
+    }
+    "Local|PHP 4"
+    {
+    "IncludeDirs" = ""
+    }
+    "Remote|PHP 5"
+    {
+    "IncludeDirs" = ""
+    }
+    "Remote|PHP 4"
+    {
+    "IncludeDirs" = ""
+    }
+}
+"Files"
+{
+    "verysimple\\resources\\css\\clearfix.css"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\resources\\css\\forms.css"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\resources\\css\\render_dg.css"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\resources\\css\\tables.css"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\resources\\index.html"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\form.js"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\validate.js"
+    {
+    "ProjRelPath" = "T"
+    }
+    ".vsphpignore"
+    {
+    "ProjRelPath" = "T"
+    }
+    "featured.js"
+    {
+    "ProjRelPath" = "T"
+    }
+    "json.js"
+    {
+    "ProjRelPath" = "T"
+    }
+    "news.js"
+    {
+    "ProjRelPath" = "T"
+    }
+    "prototype.js"
+    {
+    "ProjRelPath" = "T"
+    }
+}
+"ProjStartupServices"
+{
+}
+"Globals"
+{
+}
+"References"
+{
+}
