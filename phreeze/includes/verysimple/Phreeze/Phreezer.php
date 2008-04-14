@@ -91,8 +91,9 @@ class Phreezer extends Observable
 	}
 	
 	/**
-	* Caches a value in the 2nd level cache.  The timout is specified by 
-	* ValueCacheTimeout
+	* ValueCache is a utility method allowing any object or value to 
+	* be stored in the 2nd Level cache.  The timout is specified by 
+	* ValueCacheTimeout.  This
 	* 
 	* @param string $sql
 	* @param variant $val
@@ -103,7 +104,8 @@ class Phreezer extends Observable
 	}
 	
 	/**
-	* Retreives a value from the 2nd level cache
+	* Retreives an object or value that was persisted using SetValueCache
+	* 
 	* @param string $key
 	* @return variant
 	*/
@@ -156,7 +158,7 @@ class Phreezer extends Observable
 			return $obj;
 		}
 		
-		$this->Observe("No Cache for TYPE='$objectclass' ID='$id'",OBSERVE_DEBUG);
+		$this->Observe("No L1/L2 Cache for TYPE='$objectclass' ID='$id'",OBSERVE_DEBUG);
 		// $this->Observe("KEYS =" . serialize($this->_level1Cache->GetKeys()) ,OBSERVE_DEBUG);
 		return null;
 	}

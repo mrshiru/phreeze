@@ -28,6 +28,7 @@ class XMLUtil
 	 * of allowing PHP to terminate or write errors to the browser
 	 *
 	 * @param $xml string
+	 * @return SimpleXMLElement
 	 */
 	static function SafeParse($xml)
 	{
@@ -61,26 +62,48 @@ class XMLUtil
 	
 	/**
 	 * UnEscapes special characters from XML that were Escaped
-	 * @param String to be unescaped
+	 * @param string to be unescaped
+	 * @return string
 	 */
 	static function UnEscape($str)
 	{
 		return str_replace(XmlUtil::$replacements,XmlUtil::$reserved,$str);
 	}
+
+	/**
+	 * converts a string containing xml into an array
+	 * @param string to be unescaped
+	 * @return array
+	 */
+	static function ToArray($xmlstring)
+	{
+		$xml = XMLUtil::SafeParse($xmlstring);
+		$array = array();
+		
+        foreach ($xml as $key => $val)
+        {
+			$array[strval($key)]=strval($val);
+        }
+
+		return $array;
+
+    }
+	
 	
 	/**
 	* Recurses value and serializes it as an XML string
-	* @param $var object, array or value to convert
-	* @param $key name of the root node (optional)
+	* @param variant $var object, array or value to convert
+	* @param string $root name of the root node (optional)
+	* @return string XML
 	*/
-	static function ToXML($var, $key="")
+	static function ToXML($var, $root="")
 	{
 		$xml = "";
 		
 		if (is_object($var))
 		{
 			// object have properties that we recurse
-			$name = strlen($key) > 0 && is_numeric($key) == false ? $key : get_class($var);
+			$name = strlen($root) > 0 && is_numeric($root) == false ? $root : get_class($var);
 			$xml .= "<".$name.">\n";
 			
 			$props = get_object_vars($var);
@@ -93,7 +116,7 @@ class XMLUtil
 		}
 		elseif (is_array($var))
 		{
-			$name = strlen($key) > 0 ? (is_numeric($key) ? "Array_".$key : $key) : "Array";
+			$name = strlen($root) > 0 ? (is_numeric($root) ? "Array_".$root : $root) : "Array";
 			$xml .= "<".$name.">\n";
 			
 			foreach (array_keys($var) as $key)
@@ -105,7 +128,7 @@ class XMLUtil
 		}
 		else
 		{
-			$name = strlen($key) > 0 ? (is_numeric($key) ? "Value_".$key : $key) : "Value";
+			$name = strlen($root) > 0 ? (is_numeric($root) ? "Value_".$root : $root) : "Value";
 			$xml .= "<".$name.">" . XmlUtil::Escape($var) . "</".$name.">\n";
 		}
 
