@@ -157,7 +157,7 @@ class DBConnection extends PEAR  // extend PEAR to use the destructor functional
 		
 		if ( !$rs = mysql_query($sql, $this->dbconn) )
 		{
-		   $this->handler->Crash('Error executing SQL: ' . mysql_error());
+		   $this->handler->Crash(0, 'Error executing SQL: ' . mysql_error());
 		}
 		
 		return $rs;
