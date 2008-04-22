@@ -10,9 +10,9 @@ require_once("PaymentProcessor.php");
  *
  * @package    verysimple::Payment
  * @author     VerySimple Inc.
- * @copyright  1997-2007 VerySimple, Inc.
+ * @copyright  1997-2008 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    2.0
+ * @version    2.1
  */
 class SkipJack extends PaymentProcessor
 {
@@ -38,6 +38,25 @@ class SkipJack extends PaymentProcessor
 	*/
 	function Process(PaymentRequest $req)
 	{
+
+		if ($this->_testMode)
+		{
+			if ($req->SerialNumber == "" || $req->DeveloperSerialNumber == "")
+			{
+				throw new Exception("SkipJack requires  a SerialNumber and DeveloperSerialNumber for test transactions.  Free developer accounts can be obtained through SkipJack.com");
+			}
+		}
+		else
+		{
+			if ($req->SerialNumber == "")
+			{
+				throw new Exception("SkipJack requires a SerialNumber for live transactions");
+			}
+		}
+		
+		// skipjack requires a funky formatted order string
+		if (!$req->OrderString) $req->OrderString = "1~None~0.00~0~N~||";
+		
 		$resp = new PaymentResponse();
 		$resp->OrderNumber = $req->OrderNumber;
 		
