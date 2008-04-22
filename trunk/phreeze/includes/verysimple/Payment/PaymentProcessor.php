@@ -12,15 +12,16 @@ include_once("PaymentResponse.php");
  *
  * @package    verysimple::Payment
  * @author     VerySimple Inc.
- * @copyright  1997-2007 VerySimple, Inc.
+ * @copyright  1997-2008 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    2.0
+ * @version    2.1
  */
 abstract class PaymentProcessor
 {
 	
 	public $Username;
 	public $Password;
+	protected $_testMode;
 	
 	/**
 	* Constructor
@@ -30,6 +31,7 @@ abstract class PaymentProcessor
 	{
 		$this->Username = $username;
 		$this->Password = $password;
+		$this->_testMode = $testmode;
 		$this->Init($testmode);
 	}
 	

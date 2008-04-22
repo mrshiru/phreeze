@@ -232,7 +232,7 @@ abstract class Controller
 	}
 	
 	/**
-	 * Returns an array of all property names in teh primary model
+	 * Returns an array of all property names in the primary model
 	 * 
 	 * @return array
 	 */
