@@ -99,15 +99,27 @@ $G_PHREEZER = new Phreezer($csetting, $observer);
  */
 function FormatTrace($tb, $join = " :: ", $show_lines = false)
 {ldelim}
-	$stack = "";
+	$msg = "";
 	$delim = "";
-	for ($x = 0; $x < count($tb); $x++)
+
+	$calling_function = "";
+	$calling_line = "[?]";
+	for ($x = count($tb); $x > 0; $x--)
 	{ldelim}
-		$stack .= $delim . (isset($tb[$x]['class']) ? ($tb[$x]['class'] . "-&gt;") : "") . $tb[$x]['function'];
-		$show_lines && isset($tb[$x]['file']) && $stack .= " (" . basename($tb[$x]['file']) . " Line " . (isset($tb[$x]['line']) ? $tb[$x]['line'] : "??") . ")";
+		$stack = $tb[$x-1];
+		$s_file = isset($stack['file']) ? basename($stack['file']) : "[?]";
+		$s_line = isset($stack['line']) ? $stack['line'] : "[?]";
+		$s_function = isset($stack['function']) ? $stack['function'] : "";
+		$s_class = isset($stack['class']) ? $stack['class'] : "";
+		$s_type = isset($stack['type']) ? $stack['type'] : "";
+
+		$msg .= $delim . "$calling_function" . ($show_lines ? " ($s_file Line $s_line)" : "");
+		$calling_function = $s_class . $s_type . $s_function;
+		
 		$delim = $join;
 	{rdelim}
-	return $stack;
+	
+	return $msg;
 {rdelim}
 
 ?>

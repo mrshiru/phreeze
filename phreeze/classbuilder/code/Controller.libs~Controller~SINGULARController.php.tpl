@@ -35,7 +35,7 @@ class {$singular}Controller extends Controller
 		// if a sort was specified, add it to the criteria
 		if ($sc)
 		{ldelim}
-			$criteria->SetOrder($sc, ($sd == "ASC") );
+			$criteria->SetOrder($sc, ($sd == "DESC") );
 		{rdelim}
 		
 		$datapage = $this->Phreezer->Query("{$singular}",$criteria)->GetDataPage($cp,$ps);
