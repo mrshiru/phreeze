@@ -74,8 +74,19 @@ function validateModel(frm, model)
 function processServerResponse(response)
 {ldelim}
 
-	var result = Ext.util.JSON.decode(response.responseText);
+	var result;
 	
+	try
+	{ldelim}
+		result = Ext.util.JSON.decode(response.responseText);
+	{rdelim}
+	catch(err)
+	{ldelim}
+		validate_in_progress = false;
+		if ( confirm('Unable to validate.  Do you want to continue anyway?') ) frm_ref.submit();
+		return false;
+	{rdelim}
+		
 	if (result.Success)
 	{ldelim}
 	    // submit the form
