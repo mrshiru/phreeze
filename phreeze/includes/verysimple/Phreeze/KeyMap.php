@@ -4,6 +4,7 @@
 /** import supporting libraries */
 define("KM_LOAD_LAZY",1);
 define("KM_LOAD_EAGER",2);
+define("KM_LOAD_INNER",4);
 define("KM_TYPE_ONETOMANY",1);
 define("KM_TYPE_MANYTOONE",2);
 
