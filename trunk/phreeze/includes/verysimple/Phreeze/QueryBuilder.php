@@ -82,7 +82,7 @@
 		// recursion to eagerly load as much of the graph as is desired
 		foreach ($kms as $km)
 		{
-			if ($km->LoadType == KM_LOAD_EAGER)
+			if ($km->LoadType == KM_LOAD_EAGER || $km->LoadType == KM_LOAD_INNER)
 			{
 				// check that we didn't eagerly join this already.
 				// TODO: use aliases to support multiple eager joins to the same table
@@ -97,11 +97,13 @@
 				$this->RecurseFieldMaps($km->ForeignObject, $ffms);
 				
 				// lastly we need to add the join information for this foreign field map
+				$jointype = $km->LoadType == KM_LOAD_INNER ? "inner" : "left";
+				
 				foreach ($ffms as $ffm)
 				{
 					if (!isset($this->Joins[$ffm->TableName]))
 					{
-						$this->Joins[$ffm->TableName] = " on `" . $fms[$km->KeyProperty]->TableName . "`.`" .  $fms[$km->KeyProperty]->ColumnName . "` = `" . $ffms[$km->ForeignKeyProperty]->TableName . "`.`" . $ffms[$km->ForeignKeyProperty]->ColumnName . "`";
+						$this->Joins[$ffm->TableName] = " ".$jointype." join `".$ffm->TableName."` on `" . $fms[$km->KeyProperty]->TableName . "`.`" .  $fms[$km->KeyProperty]->ColumnName . "` = `" . $ffms[$km->ForeignKeyProperty]->TableName . "`.`" . $ffms[$km->ForeignKeyProperty]->ColumnName . "`";
 					}
 
 				}
@@ -141,13 +143,12 @@
 			$sql .= " from `" . $tablenames[0] . "`";
 			
 			// TODO: if a table is being added in the wrong sequence, check that the field maps
-			// do not include colunns from foreight tables in the wrong order
+			// do not include colunns from foreign tables in the wrong order
 			//for ($i = count($tablenames) -1; $i > 0 ; $i--) // this iterates backwards
 			for ($i = 1; $i < count($tablenames); $i++)      // this iterates forwards
 			{
 				// (LL) added backticks here
-				$sql .= " left join `" . $tablenames[$i] 
-				. "` " . $this->Joins[$tablenames[$i]];
+				$sql .= $this->Joins[$tablenames[$i]];
 			}
 		}
 		else
@@ -158,7 +159,50 @@
 		}
 
 		$sql .= $criteria->GetJoin();
-		$sql .= $criteria->GetWhere();
+		
+		$ands = $criteria->GetAnds();
+		$ors = $criteria->GetOrs();
+		
+		
+		// TODO: this all needs to move to the criteria object so it will recurse properly  ....
+		$where = str_replace("where", "", $criteria->GetWhere());
+		
+		if (count($ands))
+		{
+			$wdelim = ($where) ? " and " : "";
+			foreach($ands as $c)
+			{
+				$tmp = $c->GetWhere();
+				$buff = str_replace("where", "", $tmp);
+				if ($buff)
+				{
+					$where .= $wdelim . $buff;
+					$wdelim = " and ";
+				}
+			}			
+		}
+
+		if (count($ors))
+		{
+			$where = "(" . $where . ")";
+			
+			$wdelim = ($where) ? " or " : "";
+			foreach($ors as $c)
+			{
+				$tmp = $c->GetWhere();
+				$buff = str_replace("where", "", $tmp);
+				if ($buff)
+				{
+					$where .= $wdelim . "(" . $buff . ")";
+					$wdelim = " or ";
+				}
+			}
+		}
+		
+		// .. end of stuff that should be in criteria
+		
+		$sql .= $where ?  " where " . $where : "";
+		
 		$sql .= $criteria->GetOrder();
 		
 		return $sql;

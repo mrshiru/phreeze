@@ -22,6 +22,10 @@ class Criteria
 	protected $_is_prepared;
 	
 	private $_fieldmaps;
+	private $_keymaps;
+	
+	private $_and = array();
+	private $_or = array();
 	
 	public $PrimaryKeyField;
 	public $PrimaryKeyValue;
@@ -30,6 +34,42 @@ class Criteria
 	{
 		$this->_where = $where;
 		$this->_order = $order;
+	}
+	
+	/**
+	 * Adds a criteria to be joined w/ an "and" statement.
+	 * Criterias to foreign objects may be added as long as they
+	 * have an immediate relationship to the foreign table
+	 * 
+	 * @param Criteria
+	 * @param string [optional] id of the foreign key map
+	 */
+	public function AddAnd(Criteria $criteria, $keymap_id = null)
+	{
+		$this->_and[] = $criteria;
+	}
+	
+	public function GetAnds()
+	{
+		return $this->_and;
+	}
+
+	/**
+	 * Adds a criteria to be joined w/ an "or" statement.
+	 * Criterias to foreign objects may be added as long as they
+	 * have an immediate relationship to the foreign table
+	 * 
+	 * @param Criteria
+	 * @param string [optional] id of the foreign key map
+	 */
+	public function AddOr(Criteria $criteria, $keymap_id)
+	{
+		$this->_or[] = $criteria;
+	}
+	
+	public function GetOrs()
+	{
+		return $this->_or;
 	}
 	
 	/** Prepare is called just prior to execution and will fire OnPrepare after it completes
@@ -177,14 +217,8 @@ class Criteria
 
 	}
 	
-	protected function GetFieldFromProp($propname)
+	private function InitMaps()
 	{
-
-		if (get_class($this) == "Criteria")
-		{
-			throw new Exception("Phreeze is unable to determine field mapping.  The base Criteria class should only be used to query by primary key without sorting");
-		}
-
 		if (!$this->_fieldmaps)
 		{
 			// we have to open the file to get the fieldmaps
@@ -197,15 +231,39 @@ class Criteria
 			
 			include_once("Model/DAO/".$mapname.".php");
 			eval("\$this->_fieldmaps = $mapname::GetFieldMaps();");
+			eval("\$this->_keymaps = $mapname::GetKeyMaps();");
 		}
-		
+	}
+	
+	protected function GetFieldMaps()
+	{
+		$this->InitMaps();
+		return $this->_fieldmaps;
+	}
+	
+	protected function GetKeyMaps()
+	{
+		$this->InitMaps();
+		return $this->_keymaps;
+	}
+	
+
+	protected function GetFieldFromProp($propname)
+	{
+		if (get_class($this) == "Criteria")
+		{
+			throw new Exception("Phreeze is unable to determine field mapping.  The base Criteria class should only be used to query by primary key without sorting");
+		}
+
+		$fms = $this->GetFieldMaps();
+				
 		// make sure this property is defined
-		if (!isset($this->_fieldmaps[$propname]))
+		if (!isset($fms[$propname]))
 		{
 			throw new Exception("Unknown Property '$propname' specified.");
 		}
 		//print_r($this->_fieldmaps);
-		$fm = $this->_fieldmaps[$propname];
+		$fm = $fms[$propname];
 		
 		return $fm->FieldType == FM_CALCULATION ? "(" . $fm->ColumnName . ")" : "`" . $fm->TableName . "`.`" . $fm->ColumnName . "`";
 
