@@ -35,6 +35,12 @@ class Mailer
         $this->Path = $path;
         $this->Reset();
     }
+
+	function FixBareLB($str) 
+	{
+		$str = str_replace("\r\n", "\n", $str);
+		return str_replace("\r", "\n", $str);
+	}
     
     function Send($message)
     {
@@ -43,7 +49,7 @@ class Mailer
         $mailer->From = $message->From->Email;
         $mailer->FromName = $message->From->RealName;
         $mailer->Subject = $message->Subject;
-        $mailer->Body = $mailer->FixEOL($message->Body);
+        $mailer->Body = $this->FixBareLB($message->Body);
         $mailer->ContentType = ($message->Format == MESSAGE_FORMAT_TEXT) ? "text/plain" : "text/html";
         $mailer->Mailer = strtolower($this->Method);
         $mailer->Host = $this->Path;
