@@ -1,8 +1,12 @@
 <?php
 /** @package    verysimple::Encryption::GPG */
 
+/** require supporting files */
 require_once("Cipher.php");
 
+/**
+ * @package    verysimple::Encryption::GPG
+ */
 class Expanded_Key {
     var $rounds;
     var $rk;

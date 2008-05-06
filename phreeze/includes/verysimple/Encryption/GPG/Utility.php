@@ -1,10 +1,13 @@
 <?php
 /** @package    verysimple::Encryption::GPG */
 
-// seed rand
+/** seed rand */
 list($gpg_usec, $gpg_sec) = explode(' ', microtime());
 srand((float) $gpg_sec + ((float) $gpg_usec * 100000));
 
+/**
+ * @package    verysimple::Encryption::GPG
+ */
 class GPG_Utility
 {
 	static function B0($x) {

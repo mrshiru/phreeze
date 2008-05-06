@@ -1,6 +1,7 @@
 <?php
 /** @package    verysimple::Encryption */
 
+/** assign globals */
 global $bs;
 global $bx2;
 global $bm;
@@ -15,6 +16,8 @@ $bx = $bx2 >> 1;
 $bd = $bs >> 1;
 $bdm = (1 << $bd) - 1;
 
+/**
+ */
 function mpi2b($s)
 {
     global $bs;
@@ -57,6 +60,8 @@ function mpi2b($s)
     return $r;
 }
 
+/**
+ */
 function b2mpi($b)
 {
     global $bs;
@@ -97,6 +102,8 @@ function b2mpi($b)
     return $rr;
 }
 
+/**
+ */
 function bmodexp($xx, $y, $m) {
     global $bs;
     global $bx2;
@@ -127,6 +134,8 @@ function bmodexp($xx, $y, $m) {
     return $r;
 }
 
+/**
+ */
 function simplemod($i, $m) // returns the mod where m < 2^bd
 {
     $c = 0;
@@ -141,6 +150,8 @@ function simplemod($i, $m) // returns the mod where m < 2^bd
     return $c;
 }
 
+/**
+ */
 function bmod($p, $m) // binary modulo
 {
     global $bdm;
@@ -154,6 +165,8 @@ function bmod($p, $m) // binary modulo
     return $r->mod;
 }
 
+/**
+ */
 function bmod2($x, $m, $mu) {
     $xl = count($x) - (count($m) << 1);
     if ($xl > 0) return bmod2(array_concat(array_slice($x, 0, $xl), bmod2(array_slice($x, $xl), $m, $mu)), $m, $mu);
@@ -181,6 +194,8 @@ function bmod2($x, $m, $mu) {
     return $r;
 }
 
+/**
+ */
 function toppart($x, $start, $len) {
     global $bx2;
 
@@ -190,104 +205,112 @@ function toppart($x, $start, $len) {
     return $n;
 }
 
+/**
+ */
 function zeros($n) {
     $r = array_fill(0, $n, 0);
     while ($n-- > 0) $r[$n] = 0;
     return $r;
 }
 
+/**
+ * @package    verysimple::Encryption
+ */
 class bdiv {
-var $q;
-var $mod;
-function bdiv($x, $y)
-{
-    global $bs;
-    global $bx2;
-    global $bm;
-    global $bx;
-    global $bd;
-    global $bdm;
+	var $q;
+	var $mod;
+	function bdiv($x, $y)
+	{
+		global $bs;
+		global $bx2;
+		global $bm;
+		global $bx;
+		global $bd;
+		global $bdm;
 
-    $n = count($x) - 1;
-    $t = count($y) - 1;
-    $nmt = $n - $t;
+		$n = count($x) - 1;
+		$t = count($y) - 1;
+		$nmt = $n - $t;
 
-    if ($n < $t || $n == $t && ($x[$n] < $y[$n] || $n > 0 && $x[$n] == $y[$n] && $x[$n - 1] < $y[$n - 1])) {
-        $this->q = array(0);
-        $this->mod = array($x);
-        return;
-    }
+		if ($n < $t || $n == $t && ($x[$n] < $y[$n] || $n > 0 && $x[$n] == $y[$n] && $x[$n - 1] < $y[$n - 1])) {
+			$this->q = array(0);
+			$this->mod = array($x);
+			return;
+		}
 
-    if ($n == $t && toppart($x, $t, 2) / toppart($y, $t, 2) < 4) {
-        $qq = 0;
-        $xx = 0;
-        for(;;) {
-            $xx = bsub($x, $y);
-            if(count($xx) == 0) break;
-            $x = $xx; $qq++;
-        }
-        $this->q = array($qq);
-        $this->mod = $x;
-        return;
-    }
+		if ($n == $t && toppart($x, $t, 2) / toppart($y, $t, 2) < 4) {
+			$qq = 0;
+			$xx = 0;
+			for(;;) {
+				$xx = bsub($x, $y);
+				if(count($xx) == 0) break;
+				$x = $xx; $qq++;
+			}
+			$this->q = array($qq);
+			$this->mod = $x;
+			return;
+		}
 
-    $shift2 = floor(log($y[$t]) / M_LN2) + 1;
-    $shift = $bs - $shift2;
-    if ($shift) {
-        $x = array_merge($x); $y = array_merge($y);
-        for($i = $t; $i > 0; $i--) $y[$i] = (($y[$i] << $shift) & $bm) | ($y[$i - 1] >> $shift2);
-        $y[0] = ($y[0] << $shift) & $bm;
-        if($x[$n] & (($bm << $shift2) & $bm)) {
-            $x[++$n] = 0; $nmt++;
-        }
-        for($i = $n; $i > 0; $i--) $x[$i] = (($x[$i] << $shift) & $bm) | ($x[$i - 1] >> $shift2);
-        $x[0] = ($x[0] << $shift) & $bm;
-    }
+		$shift2 = floor(log($y[$t]) / M_LN2) + 1;
+		$shift = $bs - $shift2;
+		if ($shift) {
+			$x = array_merge($x); $y = array_merge($y);
+			for($i = $t; $i > 0; $i--) $y[$i] = (($y[$i] << $shift) & $bm) | ($y[$i - 1] >> $shift2);
+			$y[0] = ($y[0] << $shift) & $bm;
+			if($x[$n] & (($bm << $shift2) & $bm)) {
+				$x[++$n] = 0; $nmt++;
+			}
+			for($i = $n; $i > 0; $i--) $x[$i] = (($x[$i] << $shift) & $bm) | ($x[$i - 1] >> $shift2);
+			$x[0] = ($x[0] << $shift) & $bm;
+		}
 
-    $i = 0;
-    $j = 0;
-    $x2 = 0;
-    $q = zeros($nmt + 1);
-    $y2 = array_merge(zeros($nmt), $y);
-    for (;;) {
-        $x2 = bsub($x, $y2);
-        if(count($x2) == 0) break;
-        $q[$nmt]++;
-        $x = $x2;
-    }
+		$i = 0;
+		$j = 0;
+		$x2 = 0;
+		$q = zeros($nmt + 1);
+		$y2 = array_merge(zeros($nmt), $y);
+		for (;;) {
+			$x2 = bsub($x, $y2);
+			if(count($x2) == 0) break;
+			$q[$nmt]++;
+			$x = $x2;
+		}
 
-    $yt = $y[$t];
-    $top =toppart($y, $t, 2);
-    for ($i = $n; $i > $t; $i--) {
-        $m = $i - $t - 1;
-        if ($i >= count($x)) $q[$m] = 1;
-        else if($x[$i] == $yt) $q[$m] = $bm;
-        else $q[$m] = floor(toppart($x, $i, 2) / $yt);
+		$yt = $y[$t];
+		$top =toppart($y, $t, 2);
+		for ($i = $n; $i > $t; $i--) {
+			$m = $i - $t - 1;
+			if ($i >= count($x)) $q[$m] = 1;
+			else if($x[$i] == $yt) $q[$m] = $bm;
+			else $q[$m] = floor(toppart($x, $i, 2) / $yt);
 
-        $topx = toppart($x, $i, 3);
-        while ($q[$m] * $top > $topx) $q[$m]--;
+			$topx = toppart($x, $i, 3);
+			while ($q[$m] * $top > $topx) $q[$m]--;
 
-        $y2 = array_slice($y2, 1);
-        $x2 = bsub($x, bmul(array($q[$m]), $y2));
-        if (count($x2) == 0) {
-            $q[$m]--;
-            $x2 =bsub($x, bmul(array($q[m]), $y2));
-        }
-        $x = $x2;
-    }
+			$y2 = array_slice($y2, 1);
+			$x2 = bsub($x, bmul(array($q[$m]), $y2));
+			if (count($x2) == 0) {
+				$q[$m]--;
+				$x2 =bsub($x, bmul(array($q[m]), $y2));
+			}
+			$x = $x2;
+		}
 
-    if ($shift) {
-        for($i = 0; $i < count($x) - 1; $i++) $x[$i] = ($x[$i] >> $shift) | (($x[$i + 1] << $shift2) & $bm);
-        $x[count($x) - 1] >>= $shift;
-    }
-    $n = count($q);
-    while ($n > 1 && $q[$n - 1] == 0) $n--;
-    $this->q = array_slice($q, 0, $n);
-    $n = count($x);
-    while ($n > 1 && $x[$n - 1] == 0) $n--;
-    $this->mod = array_slice($x, 0, $n);
-}}
+		if ($shift) {
+			for($i = 0; $i < count($x) - 1; $i++) $x[$i] = ($x[$i] >> $shift) | (($x[$i + 1] << $shift2) & $bm);
+			$x[count($x) - 1] >>= $shift;
+		}
+		$n = count($q);
+		while ($n > 1 && $q[$n - 1] == 0) $n--;
+		$this->q = array_slice($q, 0, $n);
+		$n = count($x);
+		while ($n > 1 && $x[$n - 1] == 0) $n--;
+		$this->mod = array_slice($x, 0, $n);
+	}
+}
 
+/**
+ */
 function bsub($a, $b) {
     global $bs;
     global $bx2;
@@ -326,6 +349,8 @@ function bsub($a, $b) {
     return array_slice($r, 0, $n);
 }
 
+/**
+ */
 function bmul($a, $b) {
     global $bs;
     global $bx2;
