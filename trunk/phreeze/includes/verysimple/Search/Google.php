@@ -1,8 +1,7 @@
 <?php
-/**
- * @package    verysimple::Search
- */
+/** @package    verysimple::Search */
 
+/** include required files */
 require_once("SearchEngine.php");
 require_once('SOAP/Client.php');  // PEAR::SOAP::Client
 
@@ -11,7 +10,7 @@ require_once('SOAP/Client.php');  // PEAR::SOAP::Client
  * a convenient way to execute search queries, get results, ranking and inbound
  * links from google
  *
- * @example	
+ * example	
  *   $google = new Google($API_KEY);  // Google API Key must be obtained from Google
  *
  *   $rank = $google->GetRank($url,$searchterm,$MAX_RESULTS);

@@ -1,12 +1,16 @@
 <?php
 /** @package    verysimple::Encryption::GPG */
 
+/** require supporting files */
 require_once("Expanded_Key.php");
 
 define("PK_TYPE_ELGAMAL", 1);
 define("PK_TYPE_RSA", 0);
 define("PK_TYPE_UNKNOWN", -1);
 
+/**
+ * @package    verysimple::Encryption::GPG
+ */
 class GPG_Public_Key {
     var $version;
 	var $fp;

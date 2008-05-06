@@ -1,6 +1,7 @@
 <?php
 /** @package    verysimple::XML */
 
+/** require supporting files */
 require_once("ParseException.php");
 
 /**

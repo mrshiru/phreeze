@@ -1,8 +1,12 @@
 <?php
 /** @package    verysimple::Encryption::GPG */
 
+/** require supporting files */
 require_once("Utility.php");
 
+/**
+ * @package    verysimple::Encryption::GPG
+ */
 class GPG_Cipher
 {
 	/*

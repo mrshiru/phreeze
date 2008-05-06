@@ -3,6 +3,7 @@
  * @package    verysimple::Search
  */
 
+/** include required files */
 require_once("SearchRank.php");
 
 /**
