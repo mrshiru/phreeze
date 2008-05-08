@@ -129,7 +129,7 @@ class SkipJack extends PaymentProcessor
 		$data["email"] = $req->CustomerEmail;
 		$data["ordernumber"] = "CC" . substr(md5(time()),0,20);
 		$data["transactionamount"] = $req->TransactionAmount;
-		$data["accountnumber"] = $req->CCNumber;
+		$data["accountnumber"] = str_replace(array("-"," "),array("",""), $req->CCNumber);
 		$data["month"] = $req->CCExpMonth;
 		$data["year"] = $req->CCExpYear;
 		$data["cvv2"] = $req->CCSecurityCode;
