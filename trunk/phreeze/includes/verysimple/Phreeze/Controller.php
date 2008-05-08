@@ -60,6 +60,10 @@ abstract class Controller
 		$this->Assign("CURRENT_USER",$this->GetCurrentUser());
 		$this->Assign("URL",$this->UrlWriter);
 		
+		// if feedback was persisted, set it
+		$this->Assign("feedback",$this->Context->Get("feedback"));
+		$this->Context->Set("feedback",null);
+		
 		$this->Init();
 		
 		if (!$this->ModelName)
@@ -400,7 +404,8 @@ abstract class Controller
 	
 		if ($feedback)
 		{
-			$params["feedback"] = $feedback; 
+			// $params["feedback"] = $feedback; 
+			$this->Context->Set("feedback",$feedback);
 		}
 		
 		// support for deprecated Controller/Method format
