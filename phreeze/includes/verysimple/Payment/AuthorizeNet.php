@@ -37,7 +37,7 @@ class AuthorizeNet extends PaymentProcessor
 	{
 		// convert the request object into compatible param list
 		$params = Array();
-		$params['x_amount'] = $req->TransactionAmount;
+		$params['x_amount'] = number_format($req->TransactionAmount,2,".","");
 		$params['x_card_num'] = str_replace(array("-"," "),array("",""), $req->CCNumber);
 		$params['x_card_code'] = $req->CCSecurityCode;
 		$params['x_exp_date'] = $req->CCExpMonth . "/" . $req->CCExpYear;
