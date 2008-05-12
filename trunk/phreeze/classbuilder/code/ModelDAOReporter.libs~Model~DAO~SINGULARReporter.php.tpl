@@ -1,16 +1,19 @@
 <?php
+/** @package    {$connection->DBName|studlycaps}::Model::DAO */
+
+/** import supporting libraries */
+require_once("verysimple/Phreeze/Reporter.php");
+require_once("verysimple/Phreeze/DataAdapter.php");
+
 /**
  * This is an example Reporter based on the {$singular} object.  The reporter object
  * allows you to run arbitrary queries that return data which may or may not fith within
  * the data access API.  This can include aggregate data or subsets of data.
  *
- * @package    Model::DAO
+ * @package {$connection->DBName|studlycaps}::Model::DAO
  * @author ClassBuilder
+ * @version 1.0
  */
-
-require_once("verysimple/Phreeze/Reporter.php");
-require_once("verysimple/Phreeze/DataAdapter.php");
-
 class {$singular}Reporter extends Reporter
 {ldelim}
 	

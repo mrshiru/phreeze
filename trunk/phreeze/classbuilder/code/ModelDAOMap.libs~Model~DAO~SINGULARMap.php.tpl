@@ -1,4 +1,9 @@
 <?php
+/** @package    {$connection->DBName|studlycaps}::Model::DAO */
+
+/** import supporting libraries */
+require_once("verysimple/Phreeze/IDaoMap.php");
+
 /**
  * {$singular}Map is a static class with functions used to get FieldMap and KeyMap information that
  * is used by Phreeze to map the {$singular}DAO to the {$table->Name} datastore.
@@ -9,20 +14,16 @@
  * You can override the default fetching strategies for KeyMaps in _config.php.
  * Leaving this file alone will allow easy re-generation of all DAOs in the event of schema changes
  *
- * @package    Model::DAO
+ * @package {$connection->DBName|studlycaps}::Model::DAO
  * @author ClassBuilder
  * @version 1.0
  */
- 
-require_once("verysimple/Phreeze/IDaoMap.php");
-
-	
 class {$singular}Map implements IDaoMap
 {ldelim}
 	/**
 	 * Returns a singleton array of FieldMaps for the {$singular} object
 	 *
-	 * @access static
+	 * @access public
 	 * @return array of FieldMaps
 	 */
 	public static function GetFieldMaps()
@@ -40,7 +41,7 @@ class {$singular}Map implements IDaoMap
 	/**
 	 * Returns a singleton array of KeyMaps for the {$singular} object
 	 *
-	 * @access static
+	 * @access public
 	 * @return array of KeyMaps
 	 */
 	public static function GetKeyMaps()

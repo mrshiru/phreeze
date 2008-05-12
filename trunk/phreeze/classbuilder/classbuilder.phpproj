@@ -1,7 +1,7 @@
 "General"
 {
 "ProjectIdGuid" = "{CB36EE14-8FA4-4B11-95E8-06A3D17B3673}"
-"ProjectVersion" = "2.4.2.4402"
+"ProjectVersion" = "2.4.5.4617"
 }
 "Configurations"
 {
@@ -133,6 +133,10 @@
     "ProjRelPath" = "T"
     }
     "code\\_styles_stylesheet.styles~dbname.css.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\_temp.temp~index.html.tpl"
     {
     "ProjRelPath" = "T"
     }
