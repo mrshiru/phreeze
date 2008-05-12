@@ -1,14 +1,16 @@
 <?php
+/** @package {$connection->DBName|studlycaps}::Controller */
+ 
+/** import supporting libraries */
+require_once("verysimple/Phreeze/Controller.php");
+
 /**
- * DefaultController is a basic controller object that displays the ListAll view
- * This controller is not bound to any specific Model.
+ * DefaultController is the entry point to the application
  *
+ * @package {$connection->DBName|studlycaps}::Controller
  * @author ClassBuilder
  * @version 1.0
  */
- 
-require_once("verysimple/Phreeze/Controller.php");
-
 class DefaultController extends Controller
 {ldelim}
 	function ListAll()

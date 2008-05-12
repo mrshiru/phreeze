@@ -1,5 +1,7 @@
 <?php
-// instantiate necesary configuration options
+/** @package    {$connection->DBName|studlycaps} */
+
+/** instantiate necesary configuration options */
 include("_config.php");
 
 // dispatch the action and catch any unhandled exceptions
