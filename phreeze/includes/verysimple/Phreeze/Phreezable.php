@@ -22,6 +22,27 @@ abstract class Phreezable
 	public $IsPartiallyLoaded;
 	public $NoCache = false;
 	
+	/** prevent serialization of _phreezer */
+	function __sleep()
+	{
+		$keys = array();
+		foreach (array_keys( get_object_vars($this) ) as $key)
+		{
+			if ($key != "_phreezer")
+			{
+				$keys[] = $key;
+			}
+		}
+		return $keys;
+	}
+	
+	/** put object back into stable state after deserialization */
+	function __wakeup()
+	{
+		if (!$this->_cache) $this->_cache = array();
+	}
+	
+	
     /**
     * constructor
     *
@@ -334,7 +355,7 @@ abstract class Phreezable
 		$this->_phreezer->Observe("Loading " . get_class($this),OBSERVE_DEBUG);
 
         $this->IsLoaded = true; // assume true until fail occurs
-		$this->IsPartiallyLoaded = true; // at least we tried
+		$this->IsPartiallyLoaded = false; // at least we tried
 		
 		// in order to prevent collisions on fields, QueryBuilder appends __tablename__rand to the
 		// sql statement.  We need to strip that out so we can match it up to the property names 
@@ -373,6 +394,7 @@ abstract class Phreezable
                 // there is a required column missing from this $row array - mark as partially loaded
                 $this->_phreezer->Observe("Missing column '".$fm->ColumnName."' while loading " . get_class($this), OBSERVE_WARN);
                 $this->IsLoaded = false;
+				$this->IsPartiallyLoaded = true;
             }
         }
         
@@ -383,10 +405,12 @@ abstract class Phreezable
 		{
 			if ($km->LoadType == KM_LOAD_EAGER)
 			{
-				// we want to cache these so we don't reload them every time someone requests the object
+				// load the child object that was obtained eagerly and cache so we 
+				// won't ever grab the same object twice in one page load
 				$this->_phreezer->IncludeModel($km->ForeignObject);
-				eval("\$this->_cache[\$km->KeyName] = new " . $km->ForeignObject . "(\$this->_phreezer);");
-				$this->_cache[$km->KeyName]->Load($row);
+				$foclass = $km->ForeignObject;
+				$fo = new $foclass($this->_phreezer,$row);
+				$this->_phreezer->SetCache($foclass, $fo->GetPrimaryKeyValue(), $fo);
 			}
 		}
 		$this->_phreezer->Observe("Firing " . get_class($this) . "->OnLoad()",OBSERVE_DEBUG);

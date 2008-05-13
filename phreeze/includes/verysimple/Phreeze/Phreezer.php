@@ -120,7 +120,7 @@ class Phreezer extends Observable
 	* @param string $id
 	* @param Phreezable $val
 	*/
-	private function SetCache($objectclass,$id, Phreezable $val)
+	public function SetCache($objectclass,$id, Phreezable $val)
 	{
 		if ($val->NoCache) return false;
 		$this->_level1Cache->Set($objectclass . "_" . $id,$val);
@@ -133,7 +133,7 @@ class Phreezer extends Observable
 	* @param string $id
 	* @return Phreezable
 	*/
-	private function GetCache($objectclass,$id)
+	public function GetCache($objectclass,$id)
 	{
 		// include the model so any serialized classes will not throw an exception
 		$this->IncludeModel($objectclass);
