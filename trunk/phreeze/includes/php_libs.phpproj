@@ -1,7 +1,7 @@
 "General"
 {
 "ProjectIdGuid" = "{573967F2-91CA-47A3-B938-8A92E50CFFD3}"
-"ProjectVersion" = "2.4.3.4467"
+"ProjectVersion" = "2.4.5.4617"
 }
 "Configurations"
 {
@@ -168,14 +168,6 @@
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\email\\class.phpmailer.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\email\\class.smtp.php"
-    {
-    "ProjRelPath" = "T"
-    }
     "verysimple\\encryption\\gpg\\aes.php"
     {
     "ProjRelPath" = "T"
@@ -209,6 +201,10 @@
     "ProjRelPath" = "T"
     }
     "verysimple\\http\\fileupload.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\http\\formvalidator.php"
     {
     "ProjRelPath" = "T"
     }

@@ -15,6 +15,31 @@ abstract class Reporter
 {
     protected $_phreezer;
     
+	/** prevent serialization of _phreezer */
+	function __sleep()
+	{
+		$keys = array();
+		foreach (array_keys( get_object_vars($this) ) as $key)
+		{
+			if ($key != "_phreezer")
+			{
+				$keys[] = $key;
+			}
+		}
+		return $keys;
+	}
+	
+	/** put object back into stable state after deserialization */
+	function __wakeup()
+	{
+
+	}
+	
+	function Refresh(Phreezer $phreezer, $row = null)
+	{
+		$this->_phreezer = $phreezer;
+	}
+	
     /**
     * constructor
     *
