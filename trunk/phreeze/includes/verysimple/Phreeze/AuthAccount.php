@@ -100,11 +100,8 @@ class AuthAccount extends AccountDAO implements IAuthenticatable
 		if ($account = $ds->Next())
 		{
 			// we can't do $this = $account, so instead just clone all the properties:
-			$props = get_object_vars($account);
-			foreach (array_keys($props) as $prop)
-			{
-				$this->$prop = $account->$prop;	
-			}
+			$this->LoadFromObject($account);
+			$this->GetRole(); // this triggers the role to load so it will be cached
 			
 			// we need to update the login date and count
 			//$this->LastLogin = date('Y-m-d H:i:s');
