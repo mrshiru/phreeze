@@ -328,6 +328,10 @@
     {
     "ProjRelPath" = "T"
     }
+    "verysimple\\phreeze\\observetofile.php"
+    {
+    "ProjRelPath" = "T"
+    }
     "verysimple\\phreeze\\observetosmarty.php"
     {
     "ProjRelPath" = "T"

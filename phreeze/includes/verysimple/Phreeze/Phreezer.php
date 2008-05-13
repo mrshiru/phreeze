@@ -33,7 +33,7 @@ class Phreezer extends Observable
 	public $RenderEngine;
 	
 	public $Version = 3.0;
-	public $ValueCacheTimeout = 5;
+	public $ValueCacheTimeout = 15;
 	
 	/**
 	 * @var array

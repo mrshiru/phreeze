@@ -107,9 +107,7 @@ class DataSet implements Iterator
         if ($this->_rs == null)
         {
 			$this->_phreezer->IncludeModel($this->_objectclass);
-            //$this->_phreezer->Observe("Importing object definition " . $this->_objectclass . ".php", OBSERVE_DEBUG);
-            //require_once($this->_objectclass . ".php");
-            $this->_rs = $this->_phreezer->DataAdapter->Select($this->_sql);
+			$this->_rs = $this->_phreezer->DataAdapter->Select($this->_sql);
         }
     }
     
@@ -147,28 +145,28 @@ class DataSet implements Iterator
     */
     function Count()
     {
-        if ($this->_totalcount == -1)
-        {
-			$sql = "select count(1) as counter from (" . $this->_sql . ") tmptable";
+		if ($this->_totalcount == -1)
+		{
+			// check the cache
+			$cachekey = $this->_sql . " COUNT";
+			$this->_totalcount = $this->_phreezer->GetValueCache($cachekey);
 			
-			// try to get this from the cache first
-			$this->_totalcount = $this->_phreezer->GetValueCache($sql);
-			
-			if (!empty($this->_totalcount))
+			// if no cache, go to the db
+			if ($this->_totalcount != null)
 			{
-				$this->_phreezer->Observe("DataSet.Count Found Total '".$this->_totalcount."' in ValueCache",OBSERVE_DEBUG);
+				$this->_phreezer->Observe("(CACHED QUERY) " . $this->_sql,OBSERVE_QUERY);
 			}
 			else
 			{
-				// no cache, get the count
+				$sql = "select count(1) as counter from (" . $this->_sql . ") tmptable";
 				$rs = $this->_phreezer->DataAdapter->Select($sql);
 				$row = $this->_phreezer->DataAdapter->Fetch($rs);
 				$this->_phreezer->DataAdapter->Release($rs);
 				$this->_totalcount = $row["counter"];
 
-				$this->_phreezer->SetValueCache($sql,$this->_totalcount);
+				$this->_phreezer->SetValueCache($cachekey,$this->_totalcount);
 			}
-        }
+		}
 
 		return $this->_totalcount;
     }
@@ -181,11 +179,26 @@ class DataSet implements Iterator
     */
     function ToObjectArray()
     {
-        $arr = Array();
-        while ($object =& $this->Next())
-        {
-            $arr[] = $object;
-        }
+ 		// check the cache
+		$cachekey = $this->_sql . " OBJECTARRAY";
+		$arr = $this->_phreezer->GetValueCache($cachekey);
+		
+		// if no cache, go to the db
+		if ($arr != null)
+		{
+			$this->_phreezer->Observe("(CACHED QUERY) " . $this->_sql,OBSERVE_QUERY);
+		}
+		else
+		{
+			$arr = Array();
+			while ($object =& $this->Next())
+			{
+				$arr[] = $object;
+			}
+			
+			$this->_phreezer->SetValueCache($cachekey,$arr);
+			
+		}
         return $arr;
     }
     
@@ -209,12 +222,26 @@ class DataSet implements Iterator
     */
     function GetLabelArray($val_prop, $label_prop)
     {
-        $arr = Array();
-        while ($object =& $this->Next())
-        {
-            $arr[$object->$val_prop] =& $object->$label_prop;
-            // $arr[] =& $object->$label_prop;
-        }
+		// check the cache
+		$cachekey = $this->_sql . " VAL=".$val_prop." LABEL=" . $label_prop;
+		$arr = $this->_phreezer->GetValueCache($cachekey);
+		
+		// if no cache, go to the db
+		if ($arr != null)
+		{
+			$this->_phreezer->Observe("(CACHED QUERY) " . $this->_sql,OBSERVE_QUERY);
+		}
+		else
+		{
+			$arr = Array();
+			while ($object =& $this->Next())
+			{
+				$arr[$object->$val_prop] =& $object->$label_prop;
+				// $arr[] =& $object->$label_prop;
+			}
+
+			$this->_phreezer->SetValueCache($cachekey,$arr);
+		}
         return $arr;
     }
 
@@ -238,60 +265,74 @@ class DataSet implements Iterator
      */
     function GetDataPage($pagenum, $pagesize)
     {
-        $page = new DataPage();
-        $page->ObjectName = $this->_objectclass;
-        $page->ObjectInstance =& new $this->_objectclass($this->_phreezer);
-        $page->PageSize = $pagesize;
-        $page->CurrentPage = $pagenum;
-        $page->TotalResults = $this->Count();
-        
-       
-        // first check if we have less than or exactly the same number of
-        // results as the pagesize.  if so, don't bother doing the math.
-        // we know we just have one page
-        if ($page->TotalPages > 0 && $page->TotalPages <= $page->PageSize)
-        {
-            $page->TotalPages = 1;
-        }
-        else if ($pagesize == 0)
-        {
-			// we don't want paging to occur in this case
-			$page->TotalPages = 1;
-		}
-        else
-        {
-            // we have more than one page.  we always need to round up
-            // here because 5.1 pages means we are spilling out into 
-            // a 6th page.  (this will also handle zero results properly)
-            $page->TotalPages = ceil( $page->TotalResults / $pagesize );
-        }
-        
-        // now enumerate through the rows in the page that we want.
-        // decrement the requested pagenum here so that we will be 
-        // using a zero-based array - which saves us from having to 
-        // decrement on every iteration
-		$pagenum--;
+		// check the cache
+		$cachekey = $this->_sql . " PAGE=".$pagenum." SIZE=" . $pagesize;
+		$page = $this->_phreezer->GetValueCache($cachekey);
 		
-		$start = $pagesize * $pagenum;
-		
-		// ~~~ more efficient method where we limit the data queried ~~~  
-        // since we are doing paging, we want to get only the records that we
-        // want from the database, so we wrap the original query with a 
-        // limit query.
-        // $sql = "select * from (" . $this->_sql . ") page limit $start,$pagesize";
-        $sql = $this->_sql . ($pagesize == 0 ? "" : " limit $start,$pagesize");
-        $this->_rs = $this->_phreezer->DataAdapter->Select($sql);
-        
-        
-		// transfer all of the results into the page object
-		while ( $obj = $this->Next() )
+		// if no cache, go to the db
+		if ($page != null)
 		{
-			$page->Rows[] = $obj;
+			$this->_phreezer->Observe("(CACHED QUERY) " . $this->_sql,OBSERVE_QUERY);
 		}
-		// ~~~ 
+		else
+		{
+			$page = new DataPage();
+			$page->ObjectName = $this->_objectclass;
+			$page->ObjectInstance =& new $this->_objectclass($this->_phreezer);
+			$page->PageSize = $pagesize;
+			$page->CurrentPage = $pagenum;
+			$page->TotalResults = $this->Count();
+	        
+	       
+			// first check if we have less than or exactly the same number of
+			// results as the pagesize.  if so, don't bother doing the math.
+			// we know we just have one page
+			if ($page->TotalPages > 0 && $page->TotalPages <= $page->PageSize)
+			{
+				$page->TotalPages = 1;
+			}
+			else if ($pagesize == 0)
+			{
+				// we don't want paging to occur in this case
+				$page->TotalPages = 1;
+			}
+			else
+			{
+				// we have more than one page.  we always need to round up
+				// here because 5.1 pages means we are spilling out into 
+				// a 6th page.  (this will also handle zero results properly)
+				$page->TotalPages = ceil( $page->TotalResults / $pagesize );
+			}
+	        
+			// now enumerate through the rows in the page that we want.
+			// decrement the requested pagenum here so that we will be 
+			// using a zero-based array - which saves us from having to 
+			// decrement on every iteration
+			$pagenum--;
+			
+			$start = $pagesize * $pagenum;
+			
+			// ~~~ more efficient method where we limit the data queried ~~~  
+			// since we are doing paging, we want to get only the records that we
+			// want from the database, so we wrap the original query with a 
+			// limit query.
+			// $sql = "select * from (" . $this->_sql . ") page limit $start,$pagesize";
+			$sql = $this->_sql . ($pagesize == 0 ? "" : " limit $start,$pagesize");
+			$this->_rs = $this->_phreezer->DataAdapter->Select($sql);
+	        
+	        
+			// transfer all of the results into the page object
+			while ( $obj = $this->Next() )
+			{
+				$page->Rows[] = $obj;
+			}
+			// ~~~ 
 
-		
-		$this->Clear();
+			$this->_phreezer->SetValueCache($cachekey,$page);
+
+			$this->Clear();
+			
+		}
 		
 		return $page;
 	}
