@@ -22,18 +22,17 @@ abstract class Phreezable
 	public $IsPartiallyLoaded;
 	public $NoCache = false;
 	
-	/** prevent serialization of _phreezer */
+	/** prevent serialization of _phreezer & private properties */
 	function __sleep()
 	{
-		$keys = array();
-		foreach (array_keys( get_object_vars($this) ) as $key)
+		$props = array();
+		$ro = new ReflectionObject($this);
+		
+		foreach ($ro->getProperties() as $rp)
 		{
-			if ($key != "_phreezer")
-			{
-				$keys[] = $key;
-			}
+			if ($rp->name != "_phreezer") $props[] = $rp->name;
 		}
-		return $keys;
+		return $props;
 	}
 	
 	/** put object back into stable state after deserialization */
