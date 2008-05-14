@@ -25,6 +25,10 @@ class CacheNoCache implements ICache
 	public function Set($key,$val,$flags=null,$timeout=null)
 	{
 	}
+
+	public function Delete($key)
+	{
+	}
 	
 }
 

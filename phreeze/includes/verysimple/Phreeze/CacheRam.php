@@ -31,6 +31,11 @@ class CacheRam implements ICache
 	{
 		$this->ram[$key] = $val;
 	}
+
+	public function Delete($key)
+	{
+		if (isset($this->ram[$key])) unset($this->ram[$key]);
+	}
 	
 }
 

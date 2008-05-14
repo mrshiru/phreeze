@@ -113,6 +113,17 @@ class Phreezer extends Observable
 	{
 		return $this->_level2Cache->Get(md5($key));
 	}
+
+	/**
+	* Deletes a value from the cache
+	* @param string $objectclass
+	* @param string $id
+	*/
+	public function DeleteCache($objectclass,$id)
+	{
+		$this->_level1Cache->Delete($objectclass . "_" . $id);
+		$this->_level2Cache->Delete($objectclass . "_" . $id);
+	}
 	
 	/**
 	* Sets value in the cache
@@ -450,6 +461,10 @@ class Phreezer extends Observable
 		$sql = "delete from $table where $pkcol = '" . DataAdapter::Escape($id) . "'";
 		$returnval = $this->DataAdapter->Execute($sql);
 		$obj->OnDelete(); // fire OnDelete event
+
+		// remove from cache
+		$this->DeleteCache(get_class($obj),$id);
+		
 		return $returnval;
 
 	}
