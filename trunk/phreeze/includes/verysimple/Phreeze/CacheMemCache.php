@@ -35,6 +35,11 @@ class CacheMemCache implements ICache
 	{
 		return $this->_memcache->set($key,$val,$flags,$timeout);
 	}
+
+	public function Delete($key)
+	{
+		return $this->_memcache->delete($key);
+	}
 	
 }
 

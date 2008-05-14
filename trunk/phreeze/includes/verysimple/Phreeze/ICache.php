@@ -18,7 +18,7 @@ interface ICache
 	* @access     public
 	* @param string $key
 	*/
-	public function get($key);
+	public function Get($key);
 	
 	/**
 	* Stores a value in the cache
@@ -30,7 +30,15 @@ interface ICache
 	* @param int $timout in miliseconds
 	* @return variant
 	*/
-	public function set($key,$val,$flags=null,$timeout=null);
+	public function Set($key,$val,$flags=null,$timeout=null);
+
+	/**
+	* Removes a value from the cache
+	*
+	* @access     public
+	* @param string $key
+	*/
+	public function Delete($key);
 }
 
 ?>
