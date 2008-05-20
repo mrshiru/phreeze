@@ -416,7 +416,9 @@ abstract class Controller
 		$this->Smarty->assign("url",$url);
 		$this->Smarty->display("_redirect.tpl");
 		
-		exit;
+		// don't exit if we are unit testing because it will stop all further tests
+		if (!(defined("UNIT_TEST") && UNIT_TEST == true)) exit;
+
 	}
 	
     /**
