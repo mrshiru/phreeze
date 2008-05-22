@@ -28,6 +28,9 @@ abstract class Controller
 	protected $UrlWriter;
 	private $_cu;
 	public $GUID;
+	public $DebugOutput = "";
+	public $UnitTestMode = false;
+	public $CaptureOutputMode = false;
 	
 	/**
 	 * Constructor initializes the controller.  This method cannot be overriden.  If you need
@@ -124,25 +127,25 @@ abstract class Controller
 	 */
 	protected function RenderXML($page,$additionalProps = null)
 	{
-		header('Content-type: text/xml');
-		print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
+		$xml = "";
+		$xml .= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
 
-		print "<DataPage>\r\n";
-		print "<ObjectName>".htmlspecialchars($page->ObjectName)."</ObjectName>\r\n";
-		print "<ObjectKey>".htmlspecialchars($page->ObjectKey)."</ObjectKey>\r\n";
-		print "<TotalRecords>".htmlspecialchars($page->TotalResults)."</TotalRecords>\r\n";
-		print "<TotalPages>".htmlspecialchars($page->TotalPages)."</TotalPages>\r\n";
-		print "<CurrentPage>".htmlspecialchars($page->CurrentPage)."</CurrentPage>\r\n";
-		print "<PageSize>".htmlspecialchars($page->PageSize)."</PageSize>\r\n";
+		$xml .= "<DataPage>\r\n";
+		$xml .= "<ObjectName>".htmlspecialchars($page->ObjectName)."</ObjectName>\r\n";
+		$xml .= "<ObjectKey>".htmlspecialchars($page->ObjectKey)."</ObjectKey>\r\n";
+		$xml .= "<TotalRecords>".htmlspecialchars($page->TotalResults)."</TotalRecords>\r\n";
+		$xml .= "<TotalPages>".htmlspecialchars($page->TotalPages)."</TotalPages>\r\n";
+		$xml .= "<CurrentPage>".htmlspecialchars($page->CurrentPage)."</CurrentPage>\r\n";
+		$xml .= "<PageSize>".htmlspecialchars($page->PageSize)."</PageSize>\r\n";
 	
-		print "<Records>\r\n";
+		$xml .= "<Records>\r\n";
 		
 		// get the fieldmap for this object type
 		$fms = $this->Phreezer->GetFieldMaps($page->ObjectName);
 		
 		foreach ($page->Rows as $obj) 
 		{
-			print "<" . htmlspecialchars($page->ObjectName) . ">\r\n";
+			$xml .= "<" . htmlspecialchars($page->ObjectName) . ">\r\n";
 			foreach (get_object_vars($obj) as $var => $val)
 			{
 				// depending on what type of field this is, do some special formatting
@@ -165,7 +168,7 @@ abstract class Controller
 				}
 				
 				// $val = htmlentities(print_r($_REQUEST,1) );
-				print "<" . htmlspecialchars($var) . ">" . htmlspecialchars($val) . "</" . htmlspecialchars($var) . ">\r\n";
+				$xml .= "<" . htmlspecialchars($var) . ">" . htmlspecialchars($val) . "</" . htmlspecialchars($var) . ">\r\n";
 			}
 			
 			
@@ -177,16 +180,28 @@ abstract class Controller
 					$props = explode(",",$propPair);
 					foreach ($props as $prop)
 					{
-						print "<" . htmlspecialchars($meth . $prop) . ">" . htmlspecialchars($obj->$meth()->$prop) . "</" . htmlspecialchars($meth . $prop) . ">\r\n";
+						$xml .= "<" . htmlspecialchars($meth . $prop) . ">" . htmlspecialchars($obj->$meth()->$prop) . "</" . htmlspecialchars($meth . $prop) . ">\r\n";
 					}
 				}
 		}
 					
-			print "</" . htmlspecialchars($page->ObjectName) . ">\r\n";
+			$xml .= "</" . htmlspecialchars($page->ObjectName) . ">\r\n";
 		}
-		print "</Records>\r\n";
+		$xml .= "</Records>\r\n";
 		
-		print "</DataPage>\r\n";
+		$xml .= "</DataPage>\r\n";
+		
+		// capture output instead of rendering if specified
+		if ($this->CaptureOutputMode)
+		{
+			$this->DebugOutput = $xml;
+		}
+		else
+		{
+			header('Content-type: text/xml');
+			print $xml;
+		}
+		
 	}
 	
 	/**
@@ -362,7 +377,15 @@ abstract class Controller
 			$view = str_replace("Controller","", $backtrace[1]['class']) . $backtrace[1]['function'];
 		}
 		
-		$this->Smarty->display("View".$view.".tpl");
+		// capture output instead of rendering if specified
+		if ($this->CaptureOutputMode)
+		{
+			$this->DebugOutput = $this->Smarty->fetch("View".$view.".tpl");
+		}
+		else
+		{
+			$this->Smarty->display("View".$view.".tpl");
+		}
 	}
 	
 	/**
@@ -374,7 +397,16 @@ abstract class Controller
 	{
 		require_once("JSON.php");
 		$json = new Services_JSON();
-		print $json->encode($var);
+
+		// capture output instead of rendering if specified
+		if ($this->CaptureOutputMode)
+		{
+			$this->DebugOutput = $json->encode($var);
+		}
+		else
+		{
+			print $json->encode($var);
+		}
 	}
 	
 	/**
@@ -417,7 +449,7 @@ abstract class Controller
 		$this->Smarty->display("_redirect.tpl");
 		
 		// don't exit if we are unit testing because it will stop all further tests
-		if (!(defined("UNIT_TEST") && UNIT_TEST == true)) exit;
+		if (!$this->UnitTestMode) exit;
 
 	}
 	
