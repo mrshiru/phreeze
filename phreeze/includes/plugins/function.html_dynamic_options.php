@@ -16,10 +16,10 @@
  * Name:     html_dynamic_options<br>
  * Input:<br>
  *           - name       (optional) - string default "select"
- *           - values     (required if no options supplied) - array
- *           - options    (required if no values supplied) - array - OR STRING IN THIS FORMAT "key1=val1,key2=val2" ...
+ *           - values     (required if no options supplied) - array, OR STRING IN THIS FORMAT "val1,val2,val3" ...
+ *           - options    (required if no values supplied) - array, OR STRING IN THIS FORMAT "key1=val1,key2=val2" ...
  *           - selected   (optional) - string default not set
- *           - output     (required if not options supplied) - array
+ *           - output     (optional) - if not supplied, will be set to the same as "values"
  * Purpose:  Prints the list of <option> tags generated from
  *           the passed parameters
  * @link http://smarty.php.net/manual/en/language.function.html.options.php {html_image}
@@ -34,7 +34,7 @@ function smarty_function_html_dynamic_options($params, &$smarty)
 {
 	require_once("function.html_options.php");
 	
-	if (!is_array($params["options"]))
+	if (isset($params["options"]) && (!is_array($params["options"])) )
 	{
 		$pairs = explode(",",$params["options"]);
 		$params["options"] = array();
@@ -43,6 +43,20 @@ function smarty_function_html_dynamic_options($params, &$smarty)
 			$keyval = explode("=",$pair);
 			$params["options"][$keyval[0]] = isset($keyval[1]) ? $keyval[1] : $keyval[0];
 		}
+	}
+
+	if ( isset($params["values"]) )
+	{
+		if (!is_array($params["values"]))
+		{
+			$params["values"] = explode(",",$params["values"]);
+		}
+
+		if (!isset($params["output"]))
+		{
+			$params["output"] = $params["values"];
+		}
+
 	}
 	
 	return smarty_function_html_options($params, $smarty);
