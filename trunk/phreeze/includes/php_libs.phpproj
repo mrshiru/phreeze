@@ -1,7 +1,9 @@
 "General"
 {
+"ProjectType" = "lccal"
+"AutoLoadTemplate" = "%s.php;class.%s.php;"
 "ProjectIdGuid" = "{573967F2-91CA-47A3-B938-8A92E50CFFD3}"
-"ProjectVersion" = "2.4.5.4617"
+"ProjectVersion" = "2.5.1.4684"
 }
 "Configurations"
 {
@@ -19,7 +21,7 @@
     }
     "Remote|PHP 5"
     {
-    "IncludeDirs" = ""
+    "IncludeDirs" = "C:\\PHP\\includes;C:\\PHP\\PEAR;.\\libs"
     }
 }
 "Files"
