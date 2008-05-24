@@ -74,6 +74,8 @@ var StandardGrid = {ldelim}
 		    handler: newRecordClick
 		{rdelim}));
 
+		// return the grid so the caller can have a reference if they want
+		return grid;
 		
         // grid.getSelectionModel().selectFirstRow();
     {rdelim}
