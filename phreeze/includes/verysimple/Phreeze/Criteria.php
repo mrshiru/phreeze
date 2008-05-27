@@ -247,7 +247,7 @@ class Criteria
 		set_error_handler(array("Criteria", "ModelException"),E_ALL);
 		
 		// use include instead of require so we can catch runtime exceptions
-		include_once("Model/" . $objectclass . ".php");
+		include_once("Model/DAO/" . $objectclass . ".php");
 		
 		// reset error handling back to whatever it was
 		restore_error_handler();
