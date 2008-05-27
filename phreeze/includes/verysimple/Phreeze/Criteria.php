@@ -224,15 +224,52 @@ class Criteria
 			// we have to open the file to get the fieldmaps
 			$mapname = str_replace("Criteria","Map",get_class($this));
 			
-			if (!file_exists("Model/DAO/".$mapname.".php") && !file_exists("libs/Model/DAO/".$mapname.".php"))
-			{
-				throw new Exception("Model/DAO/".$mapname.".php" . " could not be found.  If your model file isn't located here, then you must implement GetFieldFromProp manually");
-			}
+			$this->IncludeMap($mapname);
 			
-			include_once("Model/DAO/".$mapname.".php");
 			eval("\$this->_fieldmaps = $mapname::GetFieldMaps();");
 			eval("\$this->_keymaps = $mapname::GetKeyMaps();");
 		}
+	}
+	
+	
+	/**
+	* If the map class is not already defined, attempts to require_once the definition.
+	* If the Map file cannot be located, an exception is thrown
+	*
+	* @access public
+	* @param string $objectclass The name of the object map class
+	*/
+	public function IncludeMap($objectclass)
+	{
+		if (class_exists($objectclass)) return true;
+		
+		// re-route error handling temporarily so we can catch errors
+		set_error_handler(array("Criteria", "ModelException"),E_ALL);
+		
+		// use include instead of require so we can catch runtime exceptions
+		include_once("Model/" . $objectclass . ".php");
+		
+		// reset error handling back to whatever it was
+		restore_error_handler();
+		
+		if (!class_exists($objectclass))
+		{
+			// the class still isn't defined so there was a problem including the model
+			throw new Exception("Unable to locate Map for '$objectclass'");
+		}
+	}
+	
+	/**
+	* Handler for catching IncludeMap file-not-found errors
+	*/
+	public static function ModelException($code, $string, $file, $line, $context)
+	{
+		$tmp1 = explode(")",$string);
+		$tmp2 = explode("(",$tmp1[0]);
+		$mfile = $tmp2[1];
+		$msg = "Criteria was unable to locate the Map file: ~/" . $mfile;
+		
+		throw new Exception($msg,$code);
 	}
 	
 	protected function GetFieldMaps()
