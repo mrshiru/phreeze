@@ -18,6 +18,8 @@ require_once("FileUpload.php");
 class Request
 {
 
+	static $TestMode = false;
+	
 	/** In the case of URL re-writing, sometimes querystrings appended to a URL can get
 	 * lost.  This function examines the original request URI and updates $_REQUEST
 	 * superglobal to ensure that it contains all of values in the qeurtystring
@@ -124,7 +126,7 @@ class Request
 		}
 		
 		// make sure this is a legit file request
-		if (!is_uploaded_file($upload['tmp_name']))
+		if (is_uploaded_file($upload['tmp_name']) == false && Request::$TestMode == false )
 		{
 			throw new Exception("Unable to access this upload: " . $fieldname);
 		}
