@@ -176,6 +176,25 @@ class Request
 		return ($fupload) ? $fupload->ToXML($b64encode) : null;
 	}
 	
+	/**
+	* Sets a value as if it was sent from the browser - primarily used for unit testing
+	*
+	* @param    string $key
+	* @param    variant $val
+	*/
+	public static function Set($key, $val)
+	{
+		$_REQUEST[$key] = $val;
+	}
+	
+	/**
+	* Clears all browser input - primarily used for unit testing
+	*
+	*/
+	public static function ClearAll()
+	{
+		$_REQUEST = array();
+	}
 	
 	/**
 	* Returns a form parameter as a string, handles null values
