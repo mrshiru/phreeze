@@ -458,7 +458,7 @@ class Phreezer extends Observable
 		$table = $fms[$pk]->TableName;
 		$pkcol = $fms[$pk]->ColumnName;
 		
-		$sql = "delete from $table where $pkcol = '" . DataAdapter::Escape($id) . "'";
+		$sql = "delete from `$table` where `$pkcol` = '" . DataAdapter::Escape($id) . "'";
 		$returnval = $this->DataAdapter->Execute($sql);
 		$obj->OnDelete(); // fire OnDelete event
 
@@ -481,7 +481,7 @@ class Phreezer extends Observable
 		$pk = $obj->GetPrimaryKeyName();
 		$table = $fms[$pk]->TableName;
 		
-		$sql = "delete from $table";
+		$sql = "delete from `$table`";
 		$returnval = $this->DataAdapter->Execute($sql);
 		$obj->OnDelete(); // fire OnDelete event
 		return $returnval;

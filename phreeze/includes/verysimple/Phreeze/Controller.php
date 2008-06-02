@@ -91,7 +91,10 @@ abstract class Controller
 	 * @param variant $pk the primary key (optional)
 	 * @return Phreezable a phreezable object
 	 */
-	abstract protected function LoadFromForm($pk = null);
+	protected function LoadFromForm($pk = null)
+	{
+		return null;
+	}
 	
 	/**
 	 * Displays the ListAll view for the primary model object.  Because the 
@@ -236,7 +239,13 @@ abstract class Controller
 		
 		$obj = $this->LoadFromForm();
 
-		if ($obj->Validate())
+		if (!is_object($obj))
+		{
+			$vr->Success = false;
+			$vr->Errors = $obj->GetValidationErrors();
+			$vr->Message = "LoadFromForm does not appear to be implemented.  Unable to validate";
+		}
+		elseif ($obj->Validate())
 		{
 			$vr->Success = true;
 		}
