@@ -8,7 +8,7 @@ form input
 .x-form-item div input {margin-left: -3px;} /* drop-downs align right in IE */
 .x-combo-list {text-align: left;}
 
-.x-form-field-wrap{display: inline;}
+/* .x-form-field-wrap{display: inline;} */ /* this goofs up combo boxes in grids */
 .date-picker {display:inline;}
 .x-form-trigger {display: inline;vertical-align: middle; border-left: solid 1px red; margin-top: -1px;}
 
