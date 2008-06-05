@@ -301,8 +301,9 @@ abstract class Controller
 	/**
 	 * Clears the current authenticated user from the session
 	 */
-	protected function ClearCurrentUser()
+	public function ClearCurrentUser()
 	{
+		$this->_cu = null;
 		Authenticator::ClearAuthentication($this->GUID);
 	}
 	
@@ -314,6 +315,7 @@ abstract class Controller
 	 */
 	protected function SetCurrentUser(IAuthenticatable $user)
 	{
+		$this->_cu = $user;
 		$this->Assign("CURRENT_USER",$user);
 		Authenticator::SetCurrentUser($user,$this->GUID);
 	}

@@ -348,6 +348,9 @@ class Phreezer extends Observable
 	public function Save($obj, $force_insert = false)
 	{
 	
+		// remove this class from the cache before saving
+		$this->DeleteCache($objectclass,$id);
+		
 		$objectclass = get_class($obj);
 		$fms = $this->GetFieldMaps($objectclass);
 
@@ -430,9 +433,6 @@ class Phreezer extends Observable
 			}
 			$obj->OnInsert(); // fire OnInsert event
 		}
-
-		// cache the object for future use
-		$this->SetCache($objectclass,$id,$obj);
 		
 		return $returnval;
 	}
@@ -445,6 +445,9 @@ class Phreezer extends Observable
     */
 	public function Delete($obj)
 	{
+		// remove from cache
+		$this->DeleteCache(get_class($obj),$id);
+
 		if (!$obj->OnBeforeDelete())
 		{
 			$this->Observe("Delete was cancelled because OnBeforeDelete did not return true");
@@ -462,9 +465,6 @@ class Phreezer extends Observable
 		$returnval = $this->DataAdapter->Execute($sql);
 		$obj->OnDelete(); // fire OnDelete event
 
-		// remove from cache
-		$this->DeleteCache(get_class($obj),$id);
-		
 		return $returnval;
 
 	}
