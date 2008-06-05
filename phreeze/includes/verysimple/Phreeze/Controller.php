@@ -453,9 +453,17 @@ abstract class Controller
 		list($controller,$method) = explode(".", str_replace("/",".",$action));
 		
 		$url = $this->UrlWriter->Get($controller,$method,$params);
-
 		$this->Smarty->assign("url",$url);
-		$this->Smarty->display("_redirect.tpl");
+		
+		// capture output instead of rendering if specified
+		if ($this->CaptureOutputMode)
+		{
+			$this->DebugOutput = $this->Smarty->fetch("_redirect.tpl");
+		}
+		else
+		{
+			$this->Smarty->display("_redirect.tpl");
+		}
 		
 		// don't exit if we are unit testing because it will stop all further tests
 		if (!$this->UnitTestMode) exit;
