@@ -17,7 +17,8 @@ require_once("AuthenticationException.php");
  */
 class Authenticator
 {
-
+	static $user = null;
+	
 	/**
 	 * Returns the currently authenticated user or null
 	 *
@@ -26,24 +27,25 @@ class Authenticator
 	 */
 	public static function GetCurrentUser($guid = "CURRENT_USER")
 	{
-		static $user = null;
-		if ($user == null)
+		if (Authenticator::$user == null)
 		{
 			if (isset($_SESSION[$guid]))
 			{
-				$user = unserialize($_SESSION[$guid]);
+				Authenticator::$user = unserialize($_SESSION[$guid]);
 			}		
 		}
-		return $user;
+		return Authenticator::$user;
 	}
 
 	public static function SetCurrentUser(IAuthenticatable $user, $guid = "CURRENT_USER")
 	{
+		Authenticator::$user = $user;
 		$_SESSION[$guid] = serialize($user);
 	}
 
 	public static function ClearAuthentication($guid = "CURRENT_USER")
 	{
+		Authenticator::$user = null;
 		unset($_SESSION[$guid]);
 		@session_destroy();
 	}
