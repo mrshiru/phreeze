@@ -102,7 +102,15 @@ abstract class Controller
 	 */
 	public function ListAll()
 	{
-		$this->Smarty->display("View" . $this->ModelName .  "ListAll.tpl");
+		// capture output instead of rendering if specified
+		if ($this->CaptureOutputMode)
+		{
+			$this->DebugOutput = $this->Smarty->fetch("View" . $this->ModelName .  "ListAll.tpl");
+		}
+		else
+		{
+			$this->Smarty->display("View" . $this->ModelName .  "ListAll.tpl");
+		}
 		//$this->_ListAll(null, Request::Get("page",1), Request::Get("limit",20));
 	}
 
@@ -300,11 +308,13 @@ abstract class Controller
 	
 	/**
 	 * Sets the given user as the authenticatable user for this session.
+	 * Additional, the view variable CURRENT_USER is assigned.
 	 *
 	 * @param IAuthenticatable The user object that has authenticated
 	 */
 	protected function SetCurrentUser(IAuthenticatable $user)
 	{
+		$this->Assign("CURRENT_USER",$user);
 		Authenticator::SetCurrentUser($user,$this->GUID);
 	}
 
