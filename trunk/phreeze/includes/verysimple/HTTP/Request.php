@@ -196,6 +196,7 @@ class Request
 	public static function ClearAll()
 	{
 		$_REQUEST = array();
+		$_FILES = array();
 	}
 	
 	/**
