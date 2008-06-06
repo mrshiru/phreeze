@@ -43,15 +43,15 @@ abstract class Controller
 	 */
 	final function Controller($phreezer, $smarty, $context = null, $urlwriter = null)
 	{
-		$this->Phreezer = $phreezer;
-		$this->Smarty = $smarty;
+		$this->Phreezer =& $phreezer;
+		$this->Smarty =& $smarty;
 		$this->GUID = $this->Phreezer->DataAdapter->GetDBName() . "_" . str_replace(".","_", $_SERVER['REMOTE_ADDR']);
 		
 		$this->UrlWriter = $urlwriter ? $urlwriter : new UrlWriter();
 
 		if ($context)
 		{
-			$this->Context = $context;
+			$this->Context =& $context;
 		}
 		else
 		{

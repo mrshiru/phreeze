@@ -123,6 +123,7 @@ class Phreezer extends Observable
 	{
 		$this->_level1Cache->Delete($objectclass . "_" . $id);
 		$this->_level2Cache->Delete($objectclass . "_" . $id);
+		$this->Observe("Deleted TYPE='$objectclass' ID='$id' from Cache",OBSERVE_DEBUG);
 	}
 	
 	/**
@@ -447,9 +448,6 @@ class Phreezer extends Observable
 	{
 		$objectclass = get_class($obj);
 		
-		// remove from cache
-		$this->DeleteCache($objectclass,$id);
-
 		if (!$obj->OnBeforeDelete())
 		{
 			$this->Observe("Delete was cancelled because OnBeforeDelete did not return true");
@@ -465,8 +463,12 @@ class Phreezer extends Observable
 		
 		$sql = "delete from `$table` where `$pkcol` = '" . DataAdapter::Escape($id) . "'";
 		$returnval = $this->DataAdapter->Execute($sql);
-		$obj->OnDelete(); // fire OnDelete event
 
+		// remove from cache
+		$this->DeleteCache($objectclass,$id);
+		
+		$obj->OnDelete(); // fire OnDelete event
+		
 		return $returnval;
 
 	}
