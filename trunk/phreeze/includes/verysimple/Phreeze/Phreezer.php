@@ -347,10 +347,6 @@ class Phreezer extends Observable
 	 */
 	public function Save($obj, $force_insert = false)
 	{
-	
-		// remove this class from the cache before saving
-		$this->DeleteCache($objectclass,$id);
-		
 		$objectclass = get_class($obj);
 		$fms = $this->GetFieldMaps($objectclass);
 
@@ -377,6 +373,10 @@ class Phreezer extends Observable
 		if (!$is_insert)
 		{
 			// this is an update
+
+			// remove this class from the cache before saving
+			$this->DeleteCache($objectclass,$id);
+
 			$sql = "update `$table` set ";
 			$delim = "";
 			foreach ($fms as $fm)
@@ -445,8 +445,10 @@ class Phreezer extends Observable
     */
 	public function Delete($obj)
 	{
+		$objectclass = get_class($obj);
+		
 		// remove from cache
-		$this->DeleteCache(get_class($obj),$id);
+		$this->DeleteCache($objectclass,$id);
 
 		if (!$obj->OnBeforeDelete())
 		{
@@ -454,7 +456,7 @@ class Phreezer extends Observable
 			return 0;
 		}
 		
-		$fms = $this->GetFieldMaps(get_class($obj));
+		$fms = $this->GetFieldMaps($objectclass);
 
 		$pk = $obj->GetPrimaryKeyName();
 		$id = $obj->$pk;
