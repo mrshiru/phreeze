@@ -81,7 +81,7 @@ class HttpRequest
 		$qs = HttpRequest::ArrayToQueryString($data);
 		$url = $url . ($qs ? "?" . $qs : "");
 		
-		$headers = false;
+		$show_headers = false;
 		$url = parse_url($url);
 		
 		if (!isset($url['port'])) {
@@ -100,16 +100,19 @@ class HttpRequest
 			"Content-Length: ".strlen($url['query']).$eol.
 			$eol.$url['query'];
 		$fp = fsockopen($url['host'], $url['port'], $errno, $errstr, 30);
-		if($fp) {
+		if($fp) 
+		{
 			fputs($fp, $headers);
 			$result = '';
 			while(!feof($fp)) { $result .= fgets($fp, 128); }
 			fclose($fp);
-			if (!$headers) {
+			if (!$show_headers) 
+			{
 				//removes headers
-				$pattern="/^.*\r\n\r\n/s";
-				$result=preg_replace($pattern,'',$result);
+				$match = preg_split("/\r\n\r\n/s",$result,2);
+				$result = $match[1];
 			}
+
 			return $result;
 		}
 	}
