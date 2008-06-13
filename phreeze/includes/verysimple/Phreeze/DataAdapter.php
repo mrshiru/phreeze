@@ -78,7 +78,7 @@ class DataAdapter implements IObservable
 		}
 		else
 		{
-			if ( !$this->_dbconn = mysql_connect($this->_csetting->ConnectionString, $this->_csetting->Username, $this->_csetting->Password) )
+			if ( !$this->_dbconn = @mysql_connect($this->_csetting->ConnectionString, $this->_csetting->Username, $this->_csetting->Password) )
 			{
 				$this->Observe("Error connecting to database: " . mysql_error(),OBSERVE_FATAL);
 				throw new Exception("Error connecting to database: " . mysql_error());
@@ -86,7 +86,7 @@ class DataAdapter implements IObservable
 
 			$this->_dbopen = true;
 			
-			if (!mysql_select_db($this->_csetting->DBName, $this->_dbconn))
+			if (!@mysql_select_db($this->_csetting->DBName, $this->_dbconn))
 			{
 				$this->Observe("Unable to select database " . $this->_csetting->DBName,OBSERVE_FATAL);
 				throw new Exception("Unable to select database " . $this->_csetting->DBName);
@@ -137,8 +137,8 @@ class DataAdapter implements IObservable
 			}
 			else
 			{
-				$this->Observe("DB is not connected.  Please call DBConnection->Connect() first.",OBSERVE_FATAL);
-				throw new Exception("DB is not connected.  Please call DBConnection->Connect() first.");
+				$this->Observe("DB is not connected.  Please call DBConnection->Open() first.",OBSERVE_FATAL);
+				throw new Exception("DB is not connected.  Please call DBConnection->Open() first.");
 			}
 		}
 	}
