@@ -506,7 +506,10 @@ class Phreezer extends Observable
 		if ($fms) return $fms;
 		
 		$this->IncludeModel($objectclass);
-		eval("\$fms = " . $objectclass . "Map::GetFieldMaps();");
+		
+		if (!class_exists($objectclass."Map")) throw new Exception("Class '" . $objectclass."Map' is not defined.");
+		$fms = call_user_func( array($objectclass."Map","GetFieldMaps") );
+		
 		$this->_mapCache->Set($objectclass."FieldMaps",$fms);
 		return $fms;
 	}
@@ -521,7 +524,7 @@ class Phreezer extends Observable
 	public function GetCustomQuery($objectclass, $criteria)
 	{
 		$this->IncludeModel($objectclass);
-		eval("\$sql = " . $objectclass . "::GetCustomQuery(\$criteria);");
+		$sql = call_user_func( array($objectclass,"GetCustomQuery"),$criteria );
 		return $sql;
 	}
 
@@ -549,7 +552,9 @@ class Phreezer extends Observable
 		if ($kms) return $kms;
 		
 		$this->IncludeModel($objectclass);
-		eval("\$kms = " . $objectclass . "Map::GetKeyMaps();");
+		if (!class_exists($objectclass."Map")) throw new Exception("Class '" . $objectclass."Map' is not defined.");
+		$kms = call_user_func( array($objectclass."Map","GetKeyMaps") );
+
 		$this->_mapCache->Set($objectclass."KeyMaps",$kms);
 		return $kms;
 	}

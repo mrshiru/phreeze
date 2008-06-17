@@ -6,6 +6,9 @@ require_once("verysimple/HTTP/UrlWriter.php");
 require_once("verysimple/HTTP/Request.php");
 require_once("verysimple/HTTP/Context.php");
 require_once("verysimple/Authentication/Authenticator.php");
+require_once("DataPage.php");
+require_once("Phreezer.php");
+require_once("Criteria.php");
 
 /**
  * Controller is a base controller object used for an MVC pattern
@@ -41,7 +44,7 @@ abstract class Controller
 	 * @param Context (optional) a context object for persisting the state of the current page
 	 * @param UrlWriter (optional) a custom writer for URL formatting
 	 */
-	final function Controller($phreezer, $smarty, $context = null, $urlwriter = null)
+	final function Controller(Phreezer $phreezer, $smarty, $context = null, $urlwriter = null)
 	{
 		$this->Phreezer =& $phreezer;
 		$this->Smarty =& $smarty;
@@ -122,7 +125,7 @@ abstract class Controller
 	 * @param int $current_page number of the current page (for pagination)
 	 * @param int $limit size of the page (for pagination)
 	 */
-	protected function _ListAll($criteria, $current_page, $limit)
+	protected function _ListAll(Criteria $criteria, $current_page, $limit)
 	{
 		$page = $this->Phreezer->Query($this->ModelName,$criteria)->GetDataPage($current_page,$limit);
 		$this->Smarty->assign($this->ModelName . "DataPage", $page);
@@ -136,8 +139,9 @@ abstract class Controller
 	 * @param DataPage $page
 	 * @param Array $additionalProps (In the format Array("GetObjName1"=>"PropName","GetObjName2"=>"PropName1,PropName2")
 	 */
-	protected function RenderXML($page,$additionalProps = null)
+	protected function RenderXML(DataPage $page,$additionalProps = null)
 	{
+		
 		$xml = "";
 		$xml .= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
 
@@ -152,7 +156,14 @@ abstract class Controller
 		$xml .= "<Records>\r\n";
 		
 		// get the fieldmap for this object type
+		try
+		{
 		$fms = $this->Phreezer->GetFieldMaps($page->ObjectName);
+		}
+		catch (exception $ex)
+		{
+			throw new Exception("The objects contained in this DataPage do not have a FieldMap: " . $ex->getMessage());
+		}
 		
 		foreach ($page->Rows as $obj) 
 		{
