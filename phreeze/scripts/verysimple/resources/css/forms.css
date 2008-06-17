@@ -8,9 +8,15 @@ form input
 .x-form-item div input {margin-left: -3px;} /* drop-downs align right in IE */
 .x-combo-list {text-align: left;}
 
-/* .x-form-field-wrap{display: inline;} */ /* this goofs up combo boxes in grids */
-.date-picker {display:inline;}
-.x-form-trigger {display: inline;vertical-align: middle; border-left: solid 1px red; margin-top: -1px;}
+/* this fixes weird datepicker icon stuff in safari */
+.x-form-item .x-form-element .x-form-field-wrap {display: inline;}
+.date-picker { display:inline; margin-top: 0px; margin-bottom: 1px;}
+.x-form-trigger {display: inline; margin-top: -1px;}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+	/* Safari 3.0 and Opera 9 rules here */
+	.x-form-item .x-form-trigger {margin-top: -2px; margin-right: -17px;}
+}
 
 legend
 {
