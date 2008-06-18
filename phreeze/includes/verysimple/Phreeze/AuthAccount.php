@@ -52,6 +52,11 @@ class AuthAccount extends AccountDAO implements IAuthenticatable
 		return (!$this->Id);
 	}
 	
+	function PasswordWasChanged()
+	{
+		return ($this->Password != $this->_original_password && $this->Password != "");
+	}
+	
 	/**
 	 * Returns true if the current account has the specified permission
 	 * @param int $permission a bitwise integer representing a unique permission in the application
@@ -127,7 +132,7 @@ class AuthAccount extends AccountDAO implements IAuthenticatable
 	{
 		// if the password has changed since load, then we want to crypt it
 		// otherwise we don't want to touch it because it is already crypted
-		if ($is_insert || ($this->Password != $this->_original_password && $this->Password != "") )
+		if ($is_insert || $this->PasswordWasChanged() )
 		{
 			$this->_phreezer->Observe("Account-&gt;OnSave: The password has changed");
 			$this->Password = base64_encode(crypt($this->Password,$this->Username));
