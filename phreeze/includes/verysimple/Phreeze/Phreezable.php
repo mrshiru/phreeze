@@ -133,7 +133,8 @@ abstract class Phreezable
     */
 	public function Validate()
 	{
-		$this->_val_errors = array(); // reset this
+		$this->_val_errors = Array();
+		$this->GetValidationErrors();
 		return $this->HasValidationErrors();
 	}
 
@@ -159,10 +160,10 @@ abstract class Phreezable
     */
 	public function GetValidationErrors()
 	{
-		if (!$this->_val_errors)
+		// if this function is being called it is probably because Validate returned false.
+		// if the array is empty, though, we should check again.
+		if (!count($this->_val_errors))
 		{
-			$this->_val_errors = Array();
-
 			$fms = $this->_phreezer->GetFieldMaps(get_class($this));
 			
 			foreach ($fms as $fm)
