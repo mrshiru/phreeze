@@ -184,9 +184,9 @@
 
 		if (count($ors))
 		{
-			$where = "(" . $where . ")";
+			$where = trim($where) ? "(" . $where . ")" : ""; // no primary criteria.  kinda strange
+			$wdelim = $where ? " or " : "";
 			
-			$wdelim = ($where) ? " or " : "";
 			foreach($ors as $c)
 			{
 				$tmp = $c->GetWhere();
@@ -201,7 +201,7 @@
 		
 		// .. end of stuff that should be in criteria
 		
-		$sql .= $where ?  " where " . $where : "";
+		$sql .= $where ?  " where (" . trim($where) . ") " : "";
 		
 		$sql .= $criteria->GetOrder();
 		

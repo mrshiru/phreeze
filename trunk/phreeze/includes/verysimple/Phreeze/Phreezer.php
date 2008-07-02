@@ -672,6 +672,13 @@ class Phreezer extends Observable
 			// the current criteria "Equals" format "FieldName_Equals" 
 			$foreign_prop .= "_Equals";
 			$criteria->$foreign_prop = $key_value;
+			
+			// if this criteria has any or criterias attached, we need to set the foreign key to these
+			// as well or else we'll get unexpected results
+			foreach ($criteria->GetOrs() as $oc)
+			{
+				$oc->$foreign_prop = $key_value;
+			}
 		}
 
 		return $this->Query($km->ForeignObject,$criteria);
