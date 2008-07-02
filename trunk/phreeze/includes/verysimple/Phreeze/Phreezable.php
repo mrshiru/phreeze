@@ -16,8 +16,9 @@ abstract class Phreezable
 {
     private $_cache;
     protected $_phreezer;
-	protected $_val_errors = array();
-
+	protected $_val_errors = Array();
+	protected $_base_validation_complete = false;
+	
     public $IsLoaded;
 	public $IsPartiallyLoaded;
 	public $NoCache = false;
@@ -133,12 +134,15 @@ abstract class Phreezable
     */
 	public function Validate()
 	{
+		// force re-validation
 		$this->_val_errors = Array();
-		$this->GetValidationErrors();
-		return $this->HasValidationErrors();
+		$this->_base_validation_complete = false;
+		
+		return !$this->HasValidationErrors();
 	}
 
 	/**
+	 * Add a validation error to the error array
 	 * @param string property name
 	 * @param string error message
 	 */
@@ -147,22 +151,36 @@ abstract class Phreezable
 		$this->_val_errors[$prop] = $msg;
 	}
 	
+	/**
+	 * Returns true if this object has validation errors
+	 * @return bool
+	 */
 	protected function HasValidationErrors()
 	{
-		return count($this->_val_errors);
+		$this->_DoBaseValidation();
+		return count($this->_val_errors) > 0;
+	}
+	
+	/**
+	* Returns the error array - containing an array of fields with invalid values.
+	*
+	* @access     public
+	* @return     array
+	*/
+	public function GetValidationErrors()
+	{
+		$this->_DoBaseValidation();
+		return $this->_val_errors;
 	}
 	
     /**
-    * Returns an array of fields with invalid values.
+    * populates the _val_errors array w/ phreezer
     *
-    * @access     public
-    * @return     array
+    * @access     private
     */
-	public function GetValidationErrors()
+	private function _DoBaseValidation()
 	{
-		// if this function is being called it is probably because Validate returned false.
-		// if the array is empty, though, we should check again.
-		if (!count($this->_val_errors))
+		if (!$this->_base_validation_complete)
 		{
 			$fms = $this->_phreezer->GetFieldMaps(get_class($this));
 			
@@ -208,9 +226,10 @@ abstract class Phreezable
 				}
 			}
 		}
-
-		return $this->_val_errors;
-
+		
+		// print_r($this->_val_errors);
+		
+		$this->_base_validation_complete = true;
 	}
     
     /**
