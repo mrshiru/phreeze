@@ -21,7 +21,7 @@ class McryptUtil
 	{
 		if (!McryptUtil::$IV)
 		{
-			if (!function_exists(mcrypt_get_iv_size))
+			if (!function_exists("mcrypt_get_iv_size"))
 			{
 				throw new Exception("The mcrypt extension does not appear to be enabled.");
 			}
