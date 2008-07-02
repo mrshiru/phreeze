@@ -16,7 +16,7 @@ abstract class Phreezable
 {
     private $_cache;
     protected $_phreezer;
-	protected $_val_errors;
+	protected $_val_errors = array();
 
     public $IsLoaded;
 	public $IsPartiallyLoaded;
@@ -133,16 +133,24 @@ abstract class Phreezable
     */
 	public function Validate()
 	{
-		$this->_val_errors = null; // reset this
-		
-		if (count($this->GetValidationErrors()))
-		{
-			return false;
-		}
-		
-		return true;
+		$this->_val_errors = array(); // reset this
+		return $this->HasValidationErrors();
 	}
 
+	/**
+	 * @param string property name
+	 * @param string error message
+	 */
+	protected function AddValidationError($prop,$msg)
+	{
+		$this->_val_errors[$prop] = $msg;
+	}
+	
+	protected function HasValidationErrors()
+	{
+		return count($this->_val_errors);
+	}
+	
     /**
     * Returns an array of fields with invalid values.
     *
@@ -163,7 +171,7 @@ abstract class Phreezable
 				
 				if ($fm->FieldSize && (strlen($this->$prop) > $fm->FieldSize))
 				{
-					$this->_val_errors[$prop] = "$prop exceeds the maximum length of " . $fm->FieldSize . "";
+					$this->AddValidationError($prop,"$prop exceeds the maximum length of " . $fm->FieldSize . "");
 				}
 				
 				if ($this->$prop == "" && ($fm->DefaultValue || $fm->IsAutoInsert) )
@@ -183,14 +191,14 @@ abstract class Phreezable
 						case FM_TYPE_DECIMAL:
 							if (!is_numeric($this->$prop))
 							{
-								$this->_val_errors[$prop] = "$prop is not a valid number";
+								$this->AddValidationError($prop,"$prop is not a valid number");
 							}
 							break;
 						case FM_TYPE_DATE:
 						case FM_TYPE_DATETIME:
 							if (!strtotime($this->$prop))
 							{
-								$this->_val_errors[$prop] = "$prop is not a valid date/time value";
+								$this->AddValidationError($prop,"$prop is not a valid date/time value");
 							}
 							break;
 						default:

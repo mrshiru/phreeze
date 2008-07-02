@@ -42,7 +42,8 @@ class Criteria
 	 * have an immediate relationship to the foreign table
 	 * 
 	 * @param Criteria
-	 * @param string [optional] id of the foreign key map
+	 * @param string [optional] id of the foreign key map. If the same table is joined
+	 * multiple times, then you should specify which keymap to use
 	 */
 	public function AddAnd(Criteria $criteria, $keymap_id = null)
 	{
@@ -60,9 +61,10 @@ class Criteria
 	 * have an immediate relationship to the foreign table
 	 * 
 	 * @param Criteria
-	 * @param string [optional] id of the foreign key map
+	 * @param string [optional] id of the foreign key map. If the same table is joined
+	 * multiple times, then you should specify which keymap to use
 	 */
-	public function AddOr(Criteria $criteria, $keymap_id)
+	public function AddOr(Criteria $criteria, $keymap_id = null)
 	{
 		$this->_or[] = $criteria;
 	}
