@@ -100,6 +100,22 @@ abstract class Controller
 	}
 	
 	/**
+	 * Use as an alterative to print in order to capture debug output
+	 * @param string text to print
+	 */
+	protected function PrintOut($text)
+	{
+		if ($this->CaptureOutputMode)
+		{
+			$this->DebugOutput .= $text;
+		}
+		else
+		{
+			print $text;
+		}
+	}
+	
+	/**
 	 * Displays the ListAll view for the primary model object.  Because the 
 	 * datagrid is populated via ajax, no model data is populated here
 	 */
