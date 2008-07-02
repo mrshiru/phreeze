@@ -28,12 +28,14 @@ class Mailer
 	var $Method;
     var $Path;
     var $Host;
+	var $LangPath;
     
     function Mailer($method = MAILER_METHOD_SENDMAIL, $path = "/usr/sbin/sendmail")
     {
         $this->Method = $method;
         $this->Path = $path;
         $this->Reset();
+		$this->LangPath = $this->_GetLangPath();
     }
 
 	function FixBareLB($str) 
@@ -41,11 +43,34 @@ class Mailer
 		$str = str_replace("\r\n", "\n", $str);
 		return str_replace("\r", "\n", $str);
 	}
+	
+	/**
+	 * This function attempts to locate the language file path for 
+	 * PHPMailer because it's a whiney-ass bitch about finding it's
+	 * language file during unit testing
+	 */
+	private function _GetLangPath()
+	{
+		$lang_path = "";	
+		$paths = explode(PATH_SEPARATOR,get_include_path());
+		
+		foreach ($paths as $path)
+		{
+			if (file_exists($path . '/language/phpmailer.lang-en.php'))
+			{
+				$lang_path = $path . '/language/';
+			}
+		}
+		return $lang_path;
+	}
     
     function Send($message)
     {
         $mailer = new PHPMailer();
-        
+		
+		// this prevents problems with phpmailer not being able to locate the language path
+		$mailer->SetLanguage("en", $this->LangPath );
+		
         $mailer->From = $message->From->Email;
         $mailer->FromName = $message->From->RealName;
         $mailer->Subject = $message->Subject;
@@ -55,12 +80,25 @@ class Mailer
         $mailer->Host = $this->Path;
         $mailer->Sendmail = $this->Path;
         
-        // add the recipients
+		if (!$this->IsValid($mailer->From))
+		{
+			$this->_errors[] = "Sender '".$mailer->From."' is not a valid email address.";
+			return MAILER_RESULT_FAIL;
+		}
+
+		// add the recipients
         foreach ($message->Recipients as $recipient)
         {
-            $this->_log[] = "Adding Recipient ".$recipient->RealName." [".$recipient->Email."]";
-            $mailer->AddAddress($recipient->Email,$recipient->RealName);
-        }
+			$this->_log[] = "Adding Recipient ".$recipient->RealName." [".$recipient->Email."]";
+
+			if (!$this->IsValid($recipient->Email))
+			{
+				$this->_errors[] = "Recipient '".$recipient->Email."' is not a valid email address.";
+				return MAILER_RESULT_FAIL;
+			}
+
+			$mailer->AddAddress($recipient->Email,$recipient->RealName);
+		}
         
         $result = MAILER_RESULT_OK;
         
@@ -76,6 +114,18 @@ class Mailer
         
         return $result;
     }
+	
+	/**
+	 * returns true if the provided email appears to be valid
+	 * @return bool
+	 */
+	function IsValid($email)
+	{
+		return (
+			eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$", $email)
+			);
+		
+	}
     
     /**
      * Clears log and error
