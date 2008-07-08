@@ -10,6 +10,7 @@ require_once("DataAdapter.php");
 require_once("NotFoundException.php");
 require_once("CacheRam.php");
 require_once("CacheNoCache.php");
+require_once("verysimple/IO/Includer.php");
 
 /**
  * The Phreezer class is a factory for obtaining and working with Phreezable (persistable)
@@ -20,7 +21,7 @@ require_once("CacheNoCache.php");
  * @author     VerySimple Inc.
  * @copyright  1997-2008 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    3.0
+ * @version    3.1
  */
 class Phreezer extends Observable
 {
@@ -32,7 +33,7 @@ class Phreezer extends Observable
 	 */
 	public $RenderEngine;
 	
-	public $Version = 3.0;
+	public $Version = 3.1;
 	public $ValueCacheTimeout = 15;
 	
 	/**
@@ -735,36 +736,7 @@ class Phreezer extends Observable
 	*/
 	public function IncludeModel($objectclass)
 	{
-		if (class_exists($objectclass)) return true;
-		
-		// re-route error handling temporarily so we can catch errors
-		set_error_handler(array("Phreezer", "ModelException"),E_ALL);
-		
-		// use include instead of require so we can catch runtime exceptions
-		include_once("Model/" . $objectclass . ".php");
-		
-		// reset error handling back to whatever it was
-		restore_error_handler();
-		
-		if (!class_exists($objectclass))
-		{
-			// the class still isn't defined so there was a problem including the model
-			$this->Observe("Unable to locate Model definition for '$objectclass'",OBSERVE_FATAL);
-			throw new Exception("Unable to locate Model definition for '$objectclass'");
-		}
-	}
-
-	/**
-	 * Handler for catching IncludeModel file-not-found errors
-	 */
-	public static function ModelException($code, $string, $file, $line, $context)
-	{
-		$tmp1 = explode(")",$string);
-		$tmp2 = explode("(",$tmp1[0]);
-		$mfile = $tmp2[1];
-		$msg = "Phreeze was unable to locate the Model file: ~/" . $mfile;
-		
-		throw new Exception($msg,$code);
+		Includer::RequireClass($objectclass, array("Model/","Reporter/") );
 	}
 
 }

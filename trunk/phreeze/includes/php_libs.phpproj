@@ -232,6 +232,14 @@
     {
     "ProjRelPath" = "T"
     }
+    "verysimple\\io\\includeexception.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\io\\includer.php"
+    {
+    "ProjRelPath" = "T"
+    }
     "verysimple\\payment\\authorizenet.php"
     {
     "ProjRelPath" = "T"

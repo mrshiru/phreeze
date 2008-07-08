@@ -3,6 +3,7 @@
 
 /** import supporting libraries */
 require_once("DataAdapter.php");
+require_once("verysimple/IO/Includer.php");
 
 /**
  * Criteria is a base object that is passed into Phreeze->Query for retreiving
@@ -12,7 +13,7 @@ require_once("DataAdapter.php");
  * @author     VerySimple Inc.
  * @copyright  1997-2007 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    2.1
+ * @version    2.2
  */
 class Criteria
 {
@@ -243,35 +244,7 @@ class Criteria
 	*/
 	public function IncludeMap($objectclass)
 	{
-		if (class_exists($objectclass)) return true;
-		
-		// re-route error handling temporarily so we can catch errors
-		set_error_handler(array("Criteria", "ModelException"),E_ALL);
-		
-		// use include instead of require so we can catch runtime exceptions
-		include_once("Model/DAO/" . $objectclass . ".php");
-		
-		// reset error handling back to whatever it was
-		restore_error_handler();
-		
-		if (!class_exists($objectclass))
-		{
-			// the class still isn't defined so there was a problem including the model
-			throw new Exception("Unable to locate Map for '$objectclass'");
-		}
-	}
-	
-	/**
-	* Handler for catching IncludeMap file-not-found errors
-	*/
-	public static function ModelException($code, $string, $file, $line, $context)
-	{
-		$tmp1 = explode(")",$string);
-		$tmp2 = explode("(",$tmp1[0]);
-		$mfile = $tmp2[1];
-		$msg = "Criteria was unable to locate the Map file: ~/" . $mfile;
-		
-		throw new Exception($msg,$code);
+		Includer::RequireClass($objectclass,"Model/DAO/");
 	}
 	
 	protected function GetFieldMaps()
