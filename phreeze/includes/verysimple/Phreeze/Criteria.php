@@ -55,6 +55,14 @@ class Criteria
 	{
 		return $this->_and;
 	}
+	
+	/**
+	 * 
+	 */
+	public function Escape($val)
+	{
+		return DataAdapter::Escape($val);
+	}
 
 	/**
 	 * Adds a criteria to be joined w/ an "or" statement.
