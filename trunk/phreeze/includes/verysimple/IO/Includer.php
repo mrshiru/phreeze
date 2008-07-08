@@ -25,13 +25,17 @@ class Includer
 	public static function IncludeFile($path)
 	{
 		// re-route error handling temporarily so we can catch errors
-		set_error_handler(array("Includer", "IncludeException"),E_ALL);
-		
 		// use include instead of require so we can catch runtime exceptions
-		include_once($path);
-		
 		// reset error handling back to whatever it was
+		//*
+		set_error_handler(array("Includer", "IncludeException"), E_WARNING);
+		include_once($path);
 		restore_error_handler();
+		//*/
+		
+		// this doesn't work but it seems like it should
+		// if (@include_once($path) === false) throw new IncludeException("Unable to include file: " . $path);
+
 	}
 
 	/**
@@ -46,15 +50,10 @@ class Includer
 	public static function RequireClass($classname, $classpath = "")
 	{
 		if (class_exists($classname)) return true;
-				
-		if (is_array($classpath))
-		{
-			$classpaths = $classpath;
-		}
-		else
-		{
-			$classpaths = array($classpath);
-		}
+		
+		// normalize this as an array
+		$classpaths = is_array($classpath) ? $classpath : array($classpath);
+		$attempts = "";
 		
 		foreach ($classpaths as $path)
 		{
@@ -66,14 +65,14 @@ class Includer
 				if ($path && substr($path,-1) != "/") $path .= "/";
 				Includer::IncludeFile($path . $classname . ".php");
 			}
-			catch (IncludeException $ex) {}
+			catch (IncludeException $ex) {$attempts .= " " . $ex->getMessage();}
 
 		}
 		
 		if (!class_exists($classname))
 		{
 			// the class still isn't defined so there was a problem including the model
-			throw new IncludeException("Unable to locate class '$classname'");
+			throw new IncludeException("Unable to locate class '$classname': " . $attempts);
 		}
 	}	
 	
@@ -82,11 +81,14 @@ class Includer
 	*/
 	public static function IncludeException($code, $string, $file, $line, $context)
 	{
+		// check for repressed errors
+		if (error_reporting() == 0) return;
+		
 		$tmp1 = explode(")",$string);
 		$tmp2 = explode("(",$tmp1[0]);
-		$mfile = $tmp2[1];
+		$mfile = isset($tmp2[1]) ? $tmp2[1] : "";
 		
-		$msg = $string ? "Unable to include file: '" . $mfile . "'" : $string;
+		$msg = "Error $code: " .  ($mfile ? "Unable to include file: '" . $mfile . "'" : $string);
 		
 		throw new IncludeException($msg,$code);
 	}
