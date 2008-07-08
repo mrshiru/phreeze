@@ -48,7 +48,8 @@ abstract class Controller
 	{
 		$this->Phreezer =& $phreezer;
 		$this->Smarty =& $smarty;
-		$this->GUID = $this->Phreezer->DataAdapter->GetDBName() . "_" . str_replace(".","_", $_SERVER['REMOTE_ADDR']);
+		$ra = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "0.0.0.0";
+		$this->GUID = $this->Phreezer->DataAdapter->GetDBName() . "_" . str_replace(".","_", $ra);
 		
 		$this->UrlWriter = $urlwriter ? $urlwriter : new UrlWriter();
 
