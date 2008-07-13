@@ -19,8 +19,11 @@ class Criteria
 {
 	protected $_join;
 	protected $_where;
+	protected $_where_delim;
 	protected $_order;
 	protected $_is_prepared;
+
+	protected $_map_object_class;
 	
 	private $_fieldmaps;
 	private $_keymaps;
@@ -35,6 +38,18 @@ class Criteria
 	{
 		$this->_where = $where;
 		$this->_order = $order;
+		$this->Init();
+	}
+	
+	/**
+	 * Init is called directly after construction and can be overridden.  If the
+	 * name of the Criteria class is not ObjectClassCriteria, then this method
+	 * must be overriden and _map_object_class should be set to the correct
+	 * name of the DAO Map class
+	 */
+	protected function Init()
+	{
+		$this->_map_object_class = str_replace("Criteria","Map",get_class($this));
 	}
 	
 	/**
@@ -108,7 +123,7 @@ class Criteria
 			{
 				// loop through all of the properties and attempt to 
 				// build a query based on any values that have been set
-				$delim = "";
+				$this->_where_delim = "";
 				$this->_where = "";
 
 				$props = get_object_vars($this);
@@ -118,44 +133,44 @@ class Criteria
 					if (substr($prop,-7) == "_Equals" && strlen($this->$prop))
 					{
 						$dbfield = $this->GetFieldFromProp(str_replace("_Equals","",$prop));
-						$this->_where .= $delim . " " . $dbfield ." = '". DataAdapter::Escape($val) . "'";
-						$delim = " and";
+						$this->_where .= $this->_where_delim . " " . $dbfield ." = '". DataAdapter::Escape($val) . "'";
+						$this->_where_delim = " and";
 					}
 					elseif (substr($prop,-10) == "_NotEquals" && strlen($this->$prop))
 					{
 						$dbfield = $this->GetFieldFromProp(str_replace("_NotEquals","",$prop));
-						$this->_where .= $delim . " " . $dbfield ." != '". DataAdapter::Escape($val) . "'";
-						$delim = " and";
+						$this->_where .= $this->_where_delim . " " . $dbfield ." != '". DataAdapter::Escape($val) . "'";
+						$this->_where_delim = " and";
 					}
 					elseif (substr($prop,-7) == "_IsLike" && strlen($this->$prop))
 					{
 						$dbfield = $this->GetFieldFromProp(str_replace("_IsLike","",$prop));
-						$this->_where .= $delim . " " . $dbfield ." like '%". DataAdapter::Escape($val) . "%'";
-						$delim = " and";
+						$this->_where .= $this->_where_delim . " " . $dbfield ." like '%". DataAdapter::Escape($val) . "%'";
+						$this->_where_delim = " and";
 					}
 					elseif (substr($prop,-11) == "_BeginsWith" && strlen($this->$prop))
 					{
 						$dbfield = $this->GetFieldFromProp(str_replace("_BeginsWith","",$prop));
-						$this->_where .= $delim . " " . $dbfield ." like '". DataAdapter::Escape($val) . "%'";
-						$delim = " and";
+						$this->_where .= $this->_where_delim . " " . $dbfield ." like '". DataAdapter::Escape($val) . "%'";
+						$this->_where_delim = " and";
 					}
 					elseif (substr($prop,-9) == "_EndsWith" && strlen($this->$prop))
 					{
 						$dbfield = $this->GetFieldFromProp(str_replace("_EndsWith","",$prop));
-						$this->_where .= $delim . " " . $dbfield ." like '%". DataAdapter::Escape($val) . "'";
-						$delim = " and";
+						$this->_where .= $this->_where_delim . " " . $dbfield ." like '%". DataAdapter::Escape($val) . "'";
+						$this->_where_delim = " and";
 					}
 					elseif (substr($prop,-12) == "_GreaterThan" && strlen($this->$prop))
 					{
 						$dbfield = $this->GetFieldFromProp(str_replace("_GreaterThan","",$prop));
-						$this->_where .= $delim . " " . $dbfield ." > '". DataAdapter::Escape($val) . "'";
-						$delim = " and";
+						$this->_where .= $this->_where_delim . " " . $dbfield ." > '". DataAdapter::Escape($val) . "'";
+						$this->_where_delim = " and";
 					}
 					elseif (substr($prop,-9) == "_LessThan" && strlen($this->$prop))
 					{
 						$dbfield = $this->GetFieldFromProp(str_replace("_LessThan","",$prop));
-						$this->_where .= $delim . " " . $dbfield ." < '". DataAdapter::Escape($val) . "'";
-						$delim = " and";
+						$this->_where .= $this->_where_delim . " " . $dbfield ." < '". DataAdapter::Escape($val) . "'";
+						$this->_where_delim = " and";
 					}
 				}
 			}
@@ -214,16 +229,16 @@ class Criteria
 			return;
 		}
 		
-		$delim = ($this->_order) ? "," : "";
+		$this->_where_delim = ($this->_order) ? "," : "";
 		
 		if($property == '?')
 		{
-			$this->_order = "RAND()" . $delim . $this->_order;
+			$this->_order = "RAND()" . $this->_where_delim . $this->_order;
 		}
 		else
 		{
 			$colname = $this->GetFieldFromProp($property);
-			$this->_order .= $delim . $colname . ($desc ? " desc" : "");	
+			$this->_order .= $this->_where_delim . $colname . ($desc ? " desc" : "");	
 		}
 
 	}
@@ -233,12 +248,12 @@ class Criteria
 		if (!$this->_fieldmaps)
 		{
 			// we have to open the file to get the fieldmaps
-			$mapname = str_replace("Criteria","Map",get_class($this));
-			
+			$mapname = $this->_map_object_class;
 			$this->IncludeMap($mapname);
 			
-			eval("\$this->_fieldmaps = $mapname::GetFieldMaps();");
-			eval("\$this->_keymaps = $mapname::GetKeyMaps();");
+			$this->_fieldmaps = call_user_func(array($mapname,"GetFieldMaps"));
+			$this->_keymaps = call_user_func(array($mapname,"GetKeyMaps"));
+			
 		}
 	}
 	
