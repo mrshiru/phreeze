@@ -124,6 +124,7 @@ abstract class Phreezable
 			}
 		}
 		
+		$this->OnLoad();
 	}
 	
     /**
