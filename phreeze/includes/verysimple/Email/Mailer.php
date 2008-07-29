@@ -18,7 +18,7 @@ define("MAILER_METHOD_MAIL","MAIL");
  * @author     VerySimple Inc.
  * @copyright  1997-2007 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    1.0
+ * @version    2.0
  */
 class Mailer
 {
@@ -79,6 +79,17 @@ class Mailer
         $mailer->Mailer = strtolower($this->Method);
         $mailer->Host = $this->Path;
         $mailer->Sendmail = $this->Path;
+		
+		if ($message->Sender)
+		{
+			$this->_log[] = "Adding Sender ".$message->Sender;
+			$mailer->Sender = $message->Sender;
+			
+			// phpmailer does this for sendmail, but seemingly not consistently
+			// so add them here just in case
+			$mailer->AddCustomHeader("Sender: " . $message->Sender);
+			$mailer->AddCustomHeader("Return-Path: " . $message->Sender);
+		}
         
 		if (!$this->IsValid($mailer->From))
 		{
@@ -124,7 +135,6 @@ class Mailer
 		return (
 			eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$", $email)
 			);
-		
 	}
     
     /**

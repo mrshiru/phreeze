@@ -13,18 +13,19 @@ define("MESSAGE_FORMAT_HTML",1);
  * @author     VerySimple Inc.
  * @copyright  1997-2007 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    1.0
+ * @version    2.0
  */
 class Message
 {
-    var $Recipients;
-    var $CCRecipients;
-    var $BCCRecipients;
-    var $From;
-    var $Subject;
-    var $Body;
-    var $Format;
-    var $Attachments;
+    public $Recipients;
+    public $CCRecipients;
+    public $BCCRecipients;
+    public $From;
+    public $Subject;
+    public $Body;
+    public $Format;
+    public $Attachments;
+	public $Sender;
     
     function Message()
     {
@@ -34,7 +35,12 @@ class Message
         $this->Attachments = Array();
         $this->Format = MESSAGE_FORMAT_TEXT;
     }
-    
+	
+	function SetSender($email)
+	{
+		$this->Sender = $email;
+	}
+	
     function SetFrom($email,$name="")
     {
         $this->From = new Recipient($email,$name);
