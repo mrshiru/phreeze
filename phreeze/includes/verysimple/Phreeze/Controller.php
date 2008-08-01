@@ -267,11 +267,16 @@ abstract class Controller
 	/**
 	 * This method calls LoadFromForm to retrieve a model object populated with user
 	 * input.  The input is validated and a ValidationResponse is rendered in JSON format
+	 * 
+	 * if Request::Get("SaveInline") is set then validate will call Save instead of 
+	 * rendering JSON.  In which case, your Save method should render the ValidationResponse
 	 */
 	function ValidateInput()
 	{
 		require_once("ValidationResponse.php");
 		$vr = new ValidationResponse();
+		
+		$save = Request::Get("SaveInline");
 		
 		$obj = $this->LoadFromForm();
 
@@ -291,7 +296,34 @@ abstract class Controller
 			$vr->Errors = $obj->GetValidationErrors();
 			$vr->Message = "Validation Errors Occured";
 		}
-
+		
+		// if the user requested to save inline, their Save method will take over from here
+		if ($vr->Success && $save)
+		{
+			$this->Save();
+		}
+		else
+		{
+			$this->RenderJSON($vr);
+		}
+	}
+	
+	
+	/**
+	 * Stub method
+	 */
+	function Save()
+	{
+		if ( !Request::Get("SaveInline") )
+		{
+			throw new Exception("SaveInline was specified, but Save is not implemented");
+		}
+		
+		require_once("ValidationResponse.php");
+		$vr = new ValidationResponse();
+		$vr->Success = false;
+		$vr->Errors = array();
+		$vr->Message = "SaveInline was specified, but Save is not implemented";
 		$this->RenderJSON($vr);
 	}
 	
