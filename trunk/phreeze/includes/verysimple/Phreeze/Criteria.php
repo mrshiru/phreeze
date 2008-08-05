@@ -172,6 +172,19 @@ class Criteria
 						$this->_where .= $this->_where_delim . " " . $dbfield ." < '". DataAdapter::Escape($val) . "'";
 						$this->_where_delim = " and";
 					}
+					elseif (substr($prop,-3) == "_In" && isset($this->$prop) && count($this->$prop))
+					{
+						$dbfield = $this->GetFieldFromProp(str_replace("_In","",$prop));
+						$this->_where .= $this->_where_delim . " " . $dbfield ." in (";
+						$indelim = "";
+						foreach ($val as $n)
+						{ 
+							$this->_where .= $indelim . "'" . DataAdapter::Escape($n) . "'";
+							$indelim = ",";
+						}
+						$this->_where .= ")";
+						$this->_where_delim = " and";
+					}
 				}
 			}
 
