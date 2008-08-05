@@ -83,10 +83,11 @@ class Mailer
 		if ($message->Sender)
 		{
 			$this->_log[] = "Adding Sender ".$message->Sender;
-			$mailer->Sender = $message->Sender;
 			
-			// phpmailer does this for sendmail, but seemingly not consistently
-			// so add them here just in case
+			// phpmailer accepts this but it seems to not work consistently..?
+			// $mailer->Sender = $message->Sender;
+			
+			// instead add the dang headers ourselves
 			$mailer->AddCustomHeader("Sender: " . $message->Sender);
 			$mailer->AddCustomHeader("Return-Path: " . $message->Sender);
 		}
