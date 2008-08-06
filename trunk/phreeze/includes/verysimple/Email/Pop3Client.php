@@ -52,7 +52,8 @@ class Pop3Client
 	}
 	
 	/**
-	*
+	* Returns an object with the following properties: 
+	* Date, Driver, Mailbox, Nmsgs, Recent
 	*/
 	function GetSummary()
 	{
@@ -67,6 +68,14 @@ class Pop3Client
 		return imap_headers($this->mbox);
 	}
 	
+	
+	/**
+	 * Returns an object containing message header information
+	 *
+	 * @param int $msgno message number to retrieve
+	 * @return object 
+	 * @link http://www.php.net/imap_headerinfo
+	 */
 	function GetHeader($msgno)
 	{
 		return imap_headerinfo($this->mbox, $msgno);
