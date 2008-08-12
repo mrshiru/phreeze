@@ -4,7 +4,7 @@
 /**
  * A abstraction of NameValue pairs with static functions for parsing simple text structures
  *
- * @package    verysimple::IO
+ * @package    verysimple::String
  * @author Jason Hinkle
  * @copyright  1997-2008 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
