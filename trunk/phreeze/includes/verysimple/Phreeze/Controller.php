@@ -20,7 +20,7 @@ require_once("Criteria.php");
  * @author     VerySimple Inc.
  * @copyright  1997-2007 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    2.2
+ * @version    2.3
  */
 abstract class Controller
 {
@@ -155,9 +155,11 @@ abstract class Controller
 	 *
 	 * @param DataPage $page
 	 * @param Array $additionalProps (In the format Array("GetObjName1"=>"PropName","GetObjName2"=>"PropName1,PropName2")
+	 * @param Array $supressProps (In the format Array("PropName1","PropName2")
 	 */
-	protected function RenderXML(DataPage $page,$additionalProps = null)
+	protected function RenderXML(DataPage $page,$additionalProps = null, $supressProps = null)
 	{
+		if (!is_array($supressProps)) $supressProps = array();
 		
 		$xml = "";
 		$xml .= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
@@ -187,27 +189,30 @@ abstract class Controller
 			$xml .= "<" . htmlspecialchars($page->ObjectName) . ">\r\n";
 			foreach (get_object_vars($obj) as $var => $val)
 			{
-				// depending on what type of field this is, do some special formatting
-				$fm = isset($fms[$var]) ? $fms[$var]->FieldType : FM_TYPE_UNKNOWN;
-				
-				if ($fm == FM_TYPE_DATETIME)
+				if (!in_array($var,$supressProps))
 				{
-					$val = strtotime($val) ? date("m/d/Y h:i A",strtotime($val)) : $val;
+					// depending on what type of field this is, do some special formatting
+					$fm = isset($fms[$var]) ? $fms[$var]->FieldType : FM_TYPE_UNKNOWN;
+					
+					if ($fm == FM_TYPE_DATETIME)
+					{
+						$val = strtotime($val) ? date("m/d/Y h:i A",strtotime($val)) : $val;
+					}
+					elseif ($fm == FM_TYPE_DATE)
+					{
+						$val = strtotime($val) ? date("m/d/Y",strtotime($val)) : $val;
+					}
+					
+					// if the developer has added a property that is not a simple type
+					// we need to serialize it
+					if (is_array($val) || is_object($val))
+					{
+						$val = serialize($val);
+					}
+					
+					// $val = htmlentities(print_r($_REQUEST,1) );
+					$xml .= "<" . htmlspecialchars($var) . ">" . htmlspecialchars($val) . "</" . htmlspecialchars($var) . ">\r\n";
 				}
-				elseif ($fm == FM_TYPE_DATE)
-				{
-					$val = strtotime($val) ? date("m/d/Y",strtotime($val)) : $val;
-				}
-				
-				// if the developer has added a property that is not a simple type
-				// we need to serialize it
-				if (is_array($val) || is_object($val))
-				{
-					$val = serialize($val);
-				}
-				
-				// $val = htmlentities(print_r($_REQUEST,1) );
-				$xml .= "<" . htmlspecialchars($var) . ">" . htmlspecialchars($val) . "</" . htmlspecialchars($var) . ">\r\n";
 			}
 			
 			
