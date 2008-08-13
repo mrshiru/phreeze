@@ -1,6 +1,8 @@
 <?php
 /** @package    verysimple::RSS */
 
+require_once("verysimple/XML/XMLUtil.php");
+
 /**
  * A API for writing RSS feeds
  *
@@ -54,6 +56,8 @@ class RSS_Writer
 	
 	private function elementCreate($parent_node,$node_name,$content='',$attributes = false, $return = true)
 	{
+		$content = XMLUtil::Escape($content);
+		
 		$element = $this->rss_dom->createElement($node_name,$content);
 		if ( $attributes )
 		{
