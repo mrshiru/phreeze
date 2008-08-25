@@ -31,12 +31,12 @@ class Pop3Client
 	/**
 	*
 	*/
-	function Open($user, $pass, $host, $port = "110", $mbtype = "pop3",$mbfolder = "INBOX")
+	function Open($user, $pass, $host, $port = "110", $mbtype = "pop3",$mbfolder = "INBOX", $flags=null)
 	{
 		$this->mbox = imap_open(
 			"{".$host."/".$mbtype.":".$port."}".$mbfolder."",
 			$user,
-			$pass);
+			$pass, $flags);
 	}
 	
 	function DeleteMessage($msgnum)
