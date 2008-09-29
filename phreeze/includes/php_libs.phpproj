@@ -9,7 +9,7 @@
 {
     "Local|PHP 4"
     {
-    "IncludeDirs" = ""
+    "IncludeDirs" = "c:\\php\\pear;c:\\php\\includes"
     }
     "Local|PHP 5"
     {

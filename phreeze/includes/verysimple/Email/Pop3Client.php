@@ -2,21 +2,20 @@
 /** @package    verysimple::Email */
 
 /**
- * Generic interface for connecting to a Pop3 Server
- * GetPart and GetMimeType based on code by Kevin Steffer 
+ * Generic interface for connecting to a POP3 or IMAP Server
+ * GetPart, GetMimeType & GetAttachments based on code by Kevin Steffer 
  * <http://www.linuxscope.net/articles/mailAttachmentsPHP.html>
- * GetAttachments based on code by developers@steffer.dk
- * <http://www.php.net/manual/en/function.imap-bodystruct.php>
  * @package    verysimple::Email
  * @author     VerySimple Inc.
  * @copyright  1997-2007 VerySimple, Inc.
  * @license    LGPL
- * @version    1.0
+ * @version    1.1
  */
 class Pop3Client
 {
 	private $mbox;
 	private $do_delete = false;
+	public static $VERSION = "1.1";
 	
 	function Pop3Client()
 	{
@@ -25,29 +24,50 @@ class Pop3Client
 			require_once('PEAR.php');
 			if (!pear::loadExtension('imap')) throw new Exception("Pop3Client: Unable to load imap extension");
 		}
-		
 	}
 	
+	
 	/**
-	*
-	*/
-	function Open($user, $pass, $host, $port = "110", $mbtype = "pop3",$mbfolder = "INBOX", $flags=null)
+	 * Opens a connection to the mail server
+	 *
+	 * @param string $user username
+	 * @param string $pass password
+	 * @param string $host host (ex mail.server.com)
+	 * @param int $port port (default = 110)
+	 * @param string $mbtype type of mailbox (default = pop3) (refer to www.php.net/imap_open)
+	 * @param string $mbfolder name of folder to read (default = INBOX)
+	 * @param int $options Flags for opening connect (refer to www.php.net/imap_open)
+	 * @param int $retries Number of times to retry the connection (default = 1)
+	 *
+	 */
+	function Open($user, $pass, $host, $port = "110", $mbtype = "pop3",$mbfolder = "INBOX",$options = null, $retries = 1)
 	{
 		$this->mbox = imap_open(
 			"{".$host."/".$mbtype.":".$port."}".$mbfolder."",
 			$user,
-			$pass, $flags);
+			$pass, $options, $retries);
 	}
 	
+	
+	/**
+	 * Delete a message from the mailbox
+	 *
+	 * @param int $msgnum The id of the message within the mailbox
+	 *
+	 */
 	function DeleteMessage($msgnum)
 	{
 		imap_delete($this->mbox,$msgnum);
 		$this->do_delete = true;
 	}
 	
+	
 	/**
-	*
-	*/
+	 * Close the connection to the mail server
+	 *
+	 * @param bool $empty_trash (default true) whether to empty the trash upon exit
+	 *
+	 */
 	function Close($empty_trash = true)
 	{
 		if ($this->do_delete && $empty_trash) {imap_expunge($this->mbox);}
@@ -55,6 +75,13 @@ class Pop3Client
 		imap_close($this->mbox);
 	}
 	
+	
+	/**
+	 * Returns the number of messages in the mail account folder
+	 *
+	 * @return int Number of messages
+	 *
+	 */
 	function GetMessageCount()
 	{
 		$summary = $this->GetSummary();
@@ -64,6 +91,7 @@ class Pop3Client
 	/**
 	* Returns an object with the following properties: 
 	* Date, Driver, Mailbox, Nmsgs, Recent
+	* @return stdClass
 	*/
 	function GetSummary()
 	{
@@ -71,7 +99,10 @@ class Pop3Client
 	}
 	
 	/**
-	*
+	* Returns an array containing summary information about the messages.
+	* Use this function to list messages without downloading the entire
+	* contents of each one
+	* @return Array
 	*/
 	function GetQuickHeaders()
 	{
@@ -83,7 +114,7 @@ class Pop3Client
 	 * Returns an object containing message header information
 	 *
 	 * @param int $msgno message number to retrieve
-	 * @return object 
+	 * @return stdClass 
 	 * @link http://www.php.net/imap_headerinfo
 	 */
 	function GetHeader($msgno)
@@ -91,9 +122,15 @@ class Pop3Client
 		return imap_headerinfo($this->mbox, $msgno);
 	}
 	
+	
 	/**
-	*
-	*/
+	 * Returns an array containing all files attached to message
+	 *
+	 * @param int $msgno The index of the message to retrieve
+	 * @param bool $include_raw_data The raw data is the actual contents of the attachment file.  Setting this to FALSE will allow you to display the name, size, type, etc of all attachments without actually downloading the contents of the files.  Use GetAttachmentRawData to retrieve the raw data for an individual attachment.
+	 * @return array An array of attachments
+	 *
+	 */
 	function GetAttachments($msgno, $include_raw_data = true)
 	{
 		$struct = imap_fetchstructure($this->mbox,$msgno);
@@ -140,6 +177,16 @@ class Pop3Client
 		return $part;
 	}
 	
+	
+	/**
+	 * Returns the raw data for an attachment.  The raw data is the actual file contents of an attachment.
+	 *
+	 * @param int $msgno message number
+	 * @param int $partnum which attachment to retrieve
+	 * @param int $encoding_id 0 = no encoding, 3 = base64, 4 = qprint
+	 * @return mixed file contents of the attachment
+	 *
+	 */
 	function GetAttachmentRawData($msgno, $partnum, $encoding_id = 0)
 	{
 		$content = imap_fetchbody($this->mbox, $msgno, $partnum);
@@ -156,15 +203,28 @@ class Pop3Client
 		return $content;
 	}
 	
+	
+	/**
+	 * Returns a text representation of the MIME type of the primary part of a message
+	 *
+	 * @param object $structure message structure
+	 * @return string
+	 *
+	 */
 	function GetPrimaryType(&$structure) 
 	{
 		$primary_mime_type = array("TEXT", "MULTIPART", "MESSAGE", "APPLICATION", "AUDIO", "IMAGE", "VIDEO", "OTHER");
 		return $primary_mime_type[(int) $structure->type];
 	}
 	
+	
 	/**
-	*
-	*/
+	 * Returns the MimeType of the primary part of the given message
+	 *
+	 * @param object $structure The message to inspect
+	 * @return string Mime Type
+	 *
+	 */
 	function GetMimeType(&$structure) 
 	{
 		if($structure->subtype) 
@@ -174,6 +234,15 @@ class Pop3Client
 		return "TEXT/PLAIN";
 	}
 	
+	
+	/**
+	 * Returns what is best determined to be the body text of the messages
+	 *
+	 * @param int $msgnum Message number in the mailbox
+	 * @param bool $prefer_html If an html version is provided, return that
+	 * @return string The contents of the message body
+	 *
+	 */
 	function GetMessageBody($msgnum, $prefer_html = true)
 	{
 		if ($prefer_html)
@@ -190,9 +259,17 @@ class Pop3Client
 		return $body;
 	}
 
+	
 	/**
-	*
-	*/
+	 * Returns a single part of a message
+	 *
+	 * @param int $msg_number The message number in the mailbox
+	 * @param string $mime_type The mime type of the part to retrieve
+	 * @param object $structure The message structure
+	 * @param int $part_number The id of the part number within the message
+	 * @return object The message part, or false if no match exists
+	 *
+	 */
 	function GetPart($msg_number, $mime_type, $structure = false, $part_number = false) 
 	{
 		$stream = $this->mbox;

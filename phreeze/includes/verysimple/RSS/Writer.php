@@ -8,7 +8,7 @@ require_once("verysimple/XML/XMLUtil.php");
  *
  * @package    verysimple::RSS
  * @link http://www.110mb.com/forum/how-to-make-a-rss-feed-with-php-t11030.0.html
- * @version 1.0
+ * @version 1.1
  * @example
  *     require_once('verysimple/RSS/Writer.php');
  *     $rss_writer = new RSS_Writer('Channel','www.dev.nul','Feed Title');
