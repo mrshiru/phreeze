@@ -20,7 +20,7 @@ require_once("Criteria.php");
  * @author     VerySimple Inc.
  * @copyright  1997-2007 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    2.3
+ * @version    2.4
  */
 abstract class Controller
 {
@@ -156,8 +156,9 @@ abstract class Controller
 	 * @param DataPage $page
 	 * @param Array $additionalProps (In the format Array("GetObjName1"=>"PropName","GetObjName2"=>"PropName1,PropName2")
 	 * @param Array $supressProps (In the format Array("PropName1","PropName2")
+	 * @param bool noMap set to true to render this DataPage regardless of whether there is a FieldMap
 	 */
-	protected function RenderXML(DataPage $page,$additionalProps = null, $supressProps = null)
+	protected function RenderXML(DataPage $page,$additionalProps = null, $supressProps = null, $noMap = false)
 	{
 		if (!is_array($supressProps)) $supressProps = array();
 		
@@ -174,14 +175,21 @@ abstract class Controller
 	
 		$xml .= "<Records>\r\n";
 		
-		// get the fieldmap for this object type
-		try
+		// get the fieldmap for this object type unless not specified
+		if ($noMap)
 		{
-		$fms = $this->Phreezer->GetFieldMaps($page->ObjectName);
+			$fms = array();
 		}
-		catch (exception $ex)
+		else
 		{
-			throw new Exception("The objects contained in this DataPage do not have a FieldMap: " . $ex->getMessage());
+			try
+			{
+				$fms = $this->Phreezer->GetFieldMaps($page->ObjectName);
+			}
+			catch (exception $ex)
+			{
+				throw new Exception("The objects contained in this DataPage do not have a FieldMap.  Set noMap argument to true to supress this error: " . $ex->getMessage());
+			}
 		}
 		
 		foreach ($page->Rows as $obj) 
