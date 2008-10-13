@@ -44,7 +44,7 @@ abstract class Controller
 	 * @param Context (optional) a context object for persisting the state of the current page
 	 * @param UrlWriter (optional) a custom writer for URL formatting
 	 */
-	final function Controller(Phreezer $phreezer, $smarty, $context = null, $urlwriter = null)
+	final function Controller(Phreezer &$phreezer, &$smarty, &$context = null, &$urlwriter = null)
 	{
 		$this->Phreezer =& $phreezer;
 		$this->Smarty =& $smarty;

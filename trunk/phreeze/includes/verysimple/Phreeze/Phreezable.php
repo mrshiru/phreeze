@@ -50,7 +50,7 @@ abstract class Phreezable
     * @param      Phreezer $phreezer
     * @param      Array $row
     */
-    final function Phreezable(&$phreezer, $row = null)
+	final function Phreezable(Phreezer &$phreezer, $row = null)
     {
 		$this->_phreezer = $phreezer;
 		$this->_cache = Array();
@@ -139,7 +139,16 @@ abstract class Phreezable
 		$this->_val_errors = Array();
 		$this->_base_validation_complete = false;
 		
-		return !$this->HasValidationErrors();
+		$is_valid = (!$this->HasValidationErrors());
+		
+		// if validation fails, remove this object from the cache otherwise invalid values can
+		// hang around and cause troubles.
+		if (!$is_valid) 
+		{
+			$this->_phreezer->DeleteCache(get_class($this), $this->GetPrimaryKeyValue());
+		}
+
+		return $is_valid;
 	}
 
 	/**
