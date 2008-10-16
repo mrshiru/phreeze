@@ -43,10 +43,22 @@ class Authenticator
 		$_SESSION[$guid] = serialize($user);
 	}
 
+	
+	/**
+	 * Forcibly clear all _SESSION variables and destroys the session
+	 *
+	 * @param string $guid The GUID of this user
+	 */
 	public static function ClearAuthentication($guid = "CURRENT_USER")
 	{
 		Authenticator::$user = null;
 		unset($_SESSION[$guid]);
+		
+		foreach (array_keys($_SESSION) as $key)
+		{
+			unset($_SESSION[$key]);
+		}
+		
 		@session_destroy();
 	}
 
