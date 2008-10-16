@@ -37,12 +37,34 @@ class Authenticator
 		return Authenticator::$user;
 	}
 
+	
+	/**
+	 * Set the given IAuthenticable object as the currently authenticated user.
+	 * UnsetAllSessionVars will be called before setting the current user
+	 *
+	 * @param IAuthenticatable $user
+	 * @param mixed $guid a unique id for this session
+	 *
+	 */
 	public static function SetCurrentUser(IAuthenticatable $user, $guid = "CURRENT_USER")
 	{
+		Authenticator::UnsetAllSessionVars();
 		Authenticator::$user = $user;
 		$_SESSION[$guid] = serialize($user);
 	}
 
+	
+	/**
+	 * Unsets all session variables without destroying the session
+	 *
+	 */
+	public static function UnsetAllSessionVars()
+	{
+		foreach (array_keys($_SESSION) as $key)
+		{
+			unset($_SESSION[$key]);
+		}
+	}
 	
 	/**
 	 * Forcibly clear all _SESSION variables and destroys the session
@@ -54,10 +76,7 @@ class Authenticator
 		Authenticator::$user = null;
 		unset($_SESSION[$guid]);
 		
-		foreach (array_keys($_SESSION) as $key)
-		{
-			unset($_SESSION[$key]);
-		}
+		Authenticator::UnsetAllSessionVars();
 		
 		@session_destroy();
 	}
