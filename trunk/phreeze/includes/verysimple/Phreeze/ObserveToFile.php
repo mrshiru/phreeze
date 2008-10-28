@@ -3,7 +3,7 @@
 
 /** import supporting libraries */
 require_once("IObserver.php");
-require_once("verysimple/HTTP/Request.php");
+require_once("verysimple/HTTP/RequestUtil.php");
 /**
  * ObserverToBrowser is an implementation of IObserver that prints all
  * messages to the browser
@@ -36,7 +36,7 @@ class ObserveToFile implements IObserver
 	function Init()
 	{
 		$this->fh = fopen($this->filepath,"a");
-		fwrite($this->fh,"\r\n########## ObserveToFile Initialized: " . Request::GetCurrentURL() . " ##########\r\n");
+		fwrite($this->fh,"\r\n########## ObserveToFile Initialized: " . RequestUtil::GetCurrentURL() . " ##########\r\n");
 	}
 	
 	public function Observe($obj, $ltype = OBSERVE_INFO)
