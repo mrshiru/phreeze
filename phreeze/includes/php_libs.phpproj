@@ -222,6 +222,10 @@
     {
     "ProjRelPath" = "T"
     }
+    "verysimple\\http\\requestutil.php"
+    {
+    "ProjRelPath" = "T"
+    }
     "verysimple\\http\\urlwriter.php"
     {
     "ProjRelPath" = "T"
@@ -387,6 +391,10 @@
     "ProjRelPath" = "T"
     }
     "verysimple\\string\\namevalue.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\util\\exceptionformatter.php"
     {
     "ProjRelPath" = "T"
     }
