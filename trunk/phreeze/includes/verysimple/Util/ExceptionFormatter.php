@@ -20,14 +20,18 @@ class ExceptionFormatter
 	* @param string $join the string used to join the array
 	* @return string
 	*/
-	static function FormatTrace($tb, $join = " :: ", $show_lines = true)
+	static function FormatTrace($tb, $depth = 0, $join = " :: ", $show_lines = true)
 	{
 		$msg = "";
 		$delim = "";
 		
 		$calling_function = "";
 		$calling_line = "[?]";
-		for ($x = count($tb); $x > 0; $x--)
+		$levels = count($tb);
+		
+		if ($depth == 0) $depth = $levels;
+		
+		for ($x = $levels; $x > 0; $x--)
 		{
 			$stack = $tb[$x-1];
 			$s_file = isset($stack['file']) ? basename($stack['file']) : "[?]";
@@ -36,15 +40,20 @@ class ExceptionFormatter
 			$s_class = isset($stack['class']) ? $stack['class'] : "";
 			$s_type = isset($stack['type']) ? $stack['type'] : "";
 			
-			$msg .= $delim . "$calling_function" . ($show_lines ? " ($s_file Line $s_line)" : "");
+			if ($depth >= $x)
+			{ 
+				$msg .= "$calling_function" . ($show_lines ? " ($s_file Line $s_line)" : "");
+				$delim = $join;
+			}
+
 			$calling_function = $s_class . $s_type . $s_function;
-			
-			$delim = $join;
+
 		}
 		
 		return $msg;
 		
 	}
+	
 }
 
 ?>
