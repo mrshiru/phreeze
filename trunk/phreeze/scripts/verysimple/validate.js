@@ -1,5 +1,5 @@
 /**
- * generic form validation functions
+ * generic form validation functions 
  * 
  * @author: Jason M Hinkle http://www.verysimple.com/
  * @version 1.0
