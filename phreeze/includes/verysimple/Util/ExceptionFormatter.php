@@ -15,7 +15,7 @@ class ExceptionFormatter
 	/**
 	* Formats the debug_backtrace array into a printable string
 	*
-	* @access     public
+	* @access public
 	* @param array  debug_backtrace array
 	* @param string $join the string used to join the array
 	* @return string
