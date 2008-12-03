@@ -250,6 +250,10 @@
     {
     "ProjRelPath" = "T"
     }
+    "verysimple\\payment\\currencyconverter.php"
+    {
+    "ProjRelPath" = "T"
+    }
     "verysimple\\payment\\paymentprocessor.php"
     {
     "ProjRelPath" = "T"
