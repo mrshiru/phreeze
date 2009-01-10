@@ -13,7 +13,7 @@ require_once("FileUpload.php");
  * @author     VerySimple Inc.
  * @copyright  1997-2007 VerySimple, Inc. http://www.verysimple.com
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    1.0
+ * @version    1.1
  */
 class RequestUtil
 {
@@ -56,7 +56,7 @@ class RequestUtil
 	public static function GetCurrentURL($include_querystring = true)
 	{
 		$protocol = substr($_SERVER["SERVER_PROTOCOL"], 0, strpos($_SERVER["SERVER_PROTOCOL"], "/")) 
-			. ($_SERVER["HTTPS"] == "on" ? "S" : "");
+			. (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" ? "S" : "");
 		$domain = $_SERVER['HTTP_HOST'];
 		$port = ($_SERVER["SERVER_PORT"] == "80" || $_SERVER["SERVER_PORT"] == "443") ? "" : (":" . $_SERVER["SERVER_PORT"]); 
 		
