@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{1863889A-00DF-4350-BA39-669CA949CB81}") = "classbuilder", "classbuilder.phpproj", "{CB36EE14-8FA4-4B11-95E8-06A3D17B3673}"
 EndProject
 Project("{1863889A-00DF-4350-BA39-669CA949CB81}") = "php_libs", "..\..\..\PHP5\includes\php_libs.phpproj", "{573967F2-91CA-47A3-B938-8A92E50CFFD3}"
@@ -29,14 +29,6 @@ Global
 		{573967F2-91CA-47A3-B938-8A92E50CFFD3}.Remote|PHP 4.Deploy.0 = Remote|PHP 4
 		{573967F2-91CA-47A3-B938-8A92E50CFFD3}.Remote|PHP 5.ActiveCfg = Remote|PHP 5
 		{573967F2-91CA-47A3-B938-8A92E50CFFD3}.Remote|PHP 5.Deploy.0 = Remote|PHP 5
-		{54C2E173-4132-4894-AFE0-0867B45791BC}.Local|PHP 4.ActiveCfg = Local|PHP 4
-		{54C2E173-4132-4894-AFE0-0867B45791BC}.Local|PHP 4.Deploy.0 = Local|PHP 4
-		{54C2E173-4132-4894-AFE0-0867B45791BC}.Local|PHP 5.ActiveCfg = Local|PHP 5
-		{54C2E173-4132-4894-AFE0-0867B45791BC}.Local|PHP 5.Deploy.0 = Local|PHP 5
-		{54C2E173-4132-4894-AFE0-0867B45791BC}.Remote|PHP 4.ActiveCfg = Remote|PHP 4
-		{54C2E173-4132-4894-AFE0-0867B45791BC}.Remote|PHP 4.Deploy.0 = Remote|PHP 4
-		{54C2E173-4132-4894-AFE0-0867B45791BC}.Remote|PHP 5.ActiveCfg = Remote|PHP 5
-		{54C2E173-4132-4894-AFE0-0867B45791BC}.Remote|PHP 5.Deploy.0 = Remote|PHP 5
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

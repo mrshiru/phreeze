@@ -63,6 +63,22 @@ foreach ($templateNames as $templateName)
 		$G_SMARTY->assign("tables",$schema->Tables);
 		$G_SMARTY->assign("connection",$G_CONNECTION);
 		
+		$tableInfos = Array();
+		
+		// enumerate all selected tables and merge them with the selected template
+		// append each to the zip file for output
+		foreach ($tableNames as $tableName)
+		{
+			$tableInfos[$tableName] = Array();
+			$tableInfos[$tableName]['table'] = $schema->Tables[$tableName];
+			$tableInfos[$tableName]['singular'] = $_REQUEST[$tableName."_singular"];
+			$tableInfos[$tableName]['plural'] = $_REQUEST[$tableName."_plural"];
+			$tableInfos[$tableName]['prefix'] = $_REQUEST[$tableName."_prefix"];
+			$tableInfos[$tableName]['templateFilename'] = str_replace(array("~","SINGULAR","PLURAL","TABLE","DBNAME"),array("/",$tableInfos[$tableName]['singular'],$tableInfos[$tableName]['plural'],$tableName,$G_CONNECTION->DBName), $templateFile->MiddleBit);
+		}
+		
+		$G_SMARTY->assign("tableInfos",$tableInfos);
+		
 		if ($debug)
 		{
 			$debug_output .= "\r\n###############################################################\r\n"
