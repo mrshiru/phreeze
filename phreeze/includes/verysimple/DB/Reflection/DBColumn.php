@@ -57,6 +57,42 @@
 		$tmp = explode(",",$this->Size);
 		$this->MaxSize = count($tmp) > 1 ? ($tmp[0] + $tmp[1]) : $this->Size;
 	}
+	
+	function GetPhpType()
+	{
+		return "PHP";
+	}
+	
+	function GetFlexType()
+	{
+		$rt = $this->Type;
+		switch ($this->Type)
+		{
+			case "int":
+				$rt = "Integer";
+				break;
+			case "tinyint":
+				$rt = "Integer";
+				break;
+			case "varchar":
+				$rt = "String";
+				break;
+			case "text":
+				$rt = "String";
+				break;
+			case "datetime":
+				$rt = "Date";
+				break;
+			case "int":
+				$rt = "Integer";
+				break;
+			default;
+				break;
+		}
+		
+		return $rt;
+	}
+
 }
 
 ?>
