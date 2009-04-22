@@ -59,8 +59,19 @@ class DBSchema
 		{
 			$table->LoadKeys();
 		}
-		
+
 		$this->Server->Connection->Release($rs);
+		
+		$sql = "show table status from `" . $this->Name . "`";
+		$rs2 = $this->Server->Connection->Select($sql);
+		
+		// load the extra data
+		while ($row = $this->Server->Connection->Next($rs2))
+		{
+			$this->Tables[$row["Name"]]->Engine = $row["Engine"]; 
+			$this->Tables[$row["Name"]]->Comment = $row["Comment"];
+		}
+		$this->Server->Connection->Release($rs2);
 	}
 }
 

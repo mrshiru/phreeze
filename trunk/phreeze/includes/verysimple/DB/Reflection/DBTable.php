@@ -21,6 +21,7 @@ class DBTable
 	public $Schema;
 	public $Name;
 	public $Engine;
+	public $Comment;
 	public $DefaultCharacterSet;
 	public $Columns;
 	public $ColumnPrefix;
@@ -239,6 +240,26 @@ class DBTable
 				// Add constraints to the column for convenience
 				$this->Columns[$matches[1][1]]->Constraints[] = $matches[1][0];
 			}
+			elseif ( strstr( $line, "COMMENT ") )
+			{
+				// TODO: this is pretty fragile... ?
+				// table comments and column comments are seemingly differentiated by "COMMENT="  vs "COMMENT "
+				$parts = split("`",$line);
+				$column = $parts[1];
+				$comment = strstr( $line, "COMMENT ");
+				$comment = substr($comment,9,strlen($comment)-11);
+				$comment = str_replace("''","'",$comment);
+				$this->Columns[$column]->Comment = $comment;
+				
+				if ($this->Columns[$column]->Default == "" && substr($comment,0,8) == "default=")
+				{
+					$this->Columns[$column]->Default = substr($comment,9, strlen($comment)-10 );
+				}
+				
+				// print "<pre>" . $column . "=" . htmlspecialchars( $this->Columns[$column]->Default );
+				
+			}
+			// TODO: look for COMMENT
 		}
 	}
 	

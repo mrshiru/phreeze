@@ -7,7 +7,7 @@
  * @author     VerySimple Inc.
  * @copyright  1997-2007 VerySimple, Inc.
  * @license    LGPL
- * @version    1.0
+ * @version    1.1
  */
 class Recipient
 {
@@ -51,7 +51,7 @@ class Recipient
 	 */
 	function IsValidEmail()
 	{
-		return eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$", $this->Email);
+		return eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$", $this->Email);
 	}
 }
 
