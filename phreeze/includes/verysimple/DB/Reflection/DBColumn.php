@@ -20,6 +20,7 @@
 	public $Null;
 	public $Default;
 	public $Extra;
+	public $Comment;
 	public $NameWithoutPrefix; // populated by DBTable if there is a prefix
 	public $MaxSize;
 	public $Keys = array();
@@ -63,16 +64,68 @@
 		return "PHP";
 	}
 	
+	function GetSqliteType()
+	{
+		$rt = $this->Type;
+		switch ($this->Type)
+		{
+			case "int":
+				$rt = "integer";
+				break;
+			case "smallint":
+				$rt = "integer";
+				break;
+			case "tinyint":
+				$rt = "integer";
+				break;
+			case "varchar":
+				$rt = "text";
+				break;
+			case "text":
+				$rt = "text";
+				break;
+			case "tinytext":
+				$rt = "text";
+				break;
+			case "date":
+				$rt = "datetime";
+				break;
+			case "datetime":
+				$rt = "datetime";
+				break;
+			case "mediumint":
+				$rt = "integer";
+				break;
+			case "bigint":
+				$rt = "integer";
+				break;
+			case "decimal":
+				$rt = "real";
+				break;
+			case "float":
+				$rt = "real";
+				break;
+			default;
+				// die("unknown vartype = " . $this->Type);
+				break;
+		}
+		
+		return $rt;
+	}
+	
 	function GetFlexType()
 	{
 		$rt = $this->Type;
 		switch ($this->Type)
 		{
 			case "int":
-				$rt = "Integer";
+				$rt = "int";
+				break;
+			case "smallint":
+				$rt = "int";
 				break;
 			case "tinyint":
-				$rt = "Integer";
+				$rt = $this->MaxSize > 1 ? "int" : "Boolean";
 				break;
 			case "varchar":
 				$rt = "String";
@@ -80,13 +133,26 @@
 			case "text":
 				$rt = "String";
 				break;
+			case "tinytext":
+				$rt = "String";
+				break;
 			case "datetime":
 				$rt = "Date";
 				break;
-			case "int":
-				$rt = "Integer";
+			case "mediumint":
+				$rt = "int";
+				break;
+			case "bigint":
+				$rt = "int";
+				break;
+			case "decimal":
+				$rt = "Number";
+				break;
+			case "float":
+				$rt = "Number";
 				break;
 			default;
+				// die("unknown vartype = " . $this->Type);
 				break;
 		}
 		
