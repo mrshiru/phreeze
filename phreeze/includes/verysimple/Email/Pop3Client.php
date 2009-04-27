@@ -43,7 +43,7 @@ class Pop3Client
 	function Open($user, $pass, $host, $port = "110", $mbtype = "pop3", $mbfolder = "INBOX",$options = null, $retries = 1)
 	{
 		$this->mbox = imap_open(
-			"{".$host.":".$port."/".$mbtype."}".$mbfolder."",
+			"{".$host.":".$port."/".$mbtype."/notls}".$mbfolder."",
 			$user,
 			$pass, $options, $retries);
 	}
