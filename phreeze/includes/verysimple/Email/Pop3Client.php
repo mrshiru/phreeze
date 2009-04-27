@@ -40,10 +40,10 @@ class Pop3Client
 	 * @param int $retries Number of times to retry the connection (default = 1)
 	 *
 	 */
-	function Open($user, $pass, $host, $port = "110", $mbtype = "pop3",$mbfolder = "INBOX",$options = null, $retries = 1)
+	function Open($user, $pass, $host, $port = "110", $mbtype = "pop3", $mbfolder = "INBOX",$options = null, $retries = 1)
 	{
 		$this->mbox = imap_open(
-			"{".$host."/".$mbtype.":".$port."}".$mbfolder."",
+			"{".$host.":".$port."/".$mbtype."}".$mbfolder."",
 			$user,
 			$pass, $options, $retries);
 	}
