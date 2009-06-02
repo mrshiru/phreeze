@@ -41,6 +41,9 @@
 		$tablealias = $fm->TableName;
 		if (!array_key_exists($tablealias, $this->Tables)) $this->Tables[$tablealias] = $fm->TableName;
 		
+		// debugging sequence of loading tables
+		// print "<div>QueryBuilder->AddFieldMap:" . $tablealias . "-&gt;" . $fm->ColumnName . "</div>";
+		
 		$this->Columns[$tablealias ."-". $fm->ColumnName] = $fm->FieldType == FM_CALCULATION 
 			? $fm->ColumnName 
 			: "`" . $tablealias . "`.`" . $fm->ColumnName . "` as `" . $fm->ColumnName . "___" . $fm->TableName . "___" . $this->_counter++ . "`";
@@ -142,12 +145,18 @@
 			// we're selecting from multiple tables so we have to do an outer join
 			$sql .= " from `" . $tablenames[0] . "`";
 			
-			// TODO: if a table is being added in the wrong sequence, check that the field maps
-			// do not include colunns from foreign tables in the wrong order
+			// WARNING: if tables are being joined in the incorrect order, it is likely
+			// caused by a query that goes across more than one foreign relationship.
+			// you can force tables to be joined in a specific order by adding a field
+			// reference in the outermost Phreezable FieldMap.  QueryBuilder will
+			// include tables in whatever order they are references, so you can control
+			// this by simply adding in referenced to foreign field in the order you want
+			// the tables to be joined
 			//for ($i = count($tablenames) -1; $i > 0 ; $i--) // this iterates backwards
 			for ($i = 1; $i < count($tablenames); $i++)      // this iterates forwards
 			{
 				// (LL) added backticks here
+				// if 'undefined index' occurs here, there is likely a foreign field in the fieldmap that does not have it's related keymap set to KM_LOAD_EAGER
 				$sql .= $this->Joins[$tablenames[$i]];
 			}
 		}

@@ -139,6 +139,10 @@ class DataSet implements Iterator
     * Count returns the number of objects in the collection.  If the 
     * count is not available, a count statement will be executed to determine the total
     * number of rows available
+    * 
+    * Note: if you get an "Unknown Column" error during a query, it may be due to tables being
+    * joined in the wrong order.  To fix this, simply include references in your FieldMap to
+    * the foreign tables in the same order that you wish them to be included in the query
     *
     * @access     public
     * @return     int
