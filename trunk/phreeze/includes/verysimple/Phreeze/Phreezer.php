@@ -403,12 +403,17 @@ class Phreezer extends Observable
 			$delim = "";
 			foreach ($fms as $fm)
 			{
-				if ($force_insert || ((!$fm->IsPrimaryKey) && $fm->FieldType != FM_CALCULATION))
+				// we don't want to include the primary key if this is an auto-increment table
+				if ( (!$fm->IsPrimaryKey) || $force_insert)
 				{
-					$prop = $fm->PropertyName;
-					$val = $obj->$prop;
-					$sql .= $delim . "`" . $fm->ColumnName . "`";
-					$delim = ", ";
+					// calculated fields are not directly bound to a column and do not get persisted
+					if ($fm->FieldType != FM_CALCULATION)
+					{
+						$prop = $fm->PropertyName;
+						$val = $obj->$prop;
+						$sql .= $delim . "`" . $fm->ColumnName . "`";
+						$delim = ", ";
+					}
 				}
 			}
 
@@ -417,12 +422,16 @@ class Phreezer extends Observable
 			$delim = "";
 			foreach ($fms as $fm)
 			{
-				if ($force_insert || ((!$fm->IsPrimaryKey) && $fm->FieldType != FM_CALCULATION))
+				// use the save logic inserting values as with the column names above
+				if ((!$fm->IsPrimaryKey) || $force_insert)
 				{
-					$prop = $fm->PropertyName;
-					$val = $obj->$prop;
-					$sql .= $delim . "'" . DataAdapter::Escape($val) . "'";
-					$delim = ", ";
+					if ($fm->FieldType != FM_CALCULATION)
+					{
+						$prop = $fm->PropertyName;
+						$val = $obj->$prop;
+						$sql .= $delim . "'" . DataAdapter::Escape($val) . "'";
+						$delim = ", ";
+					}
 				}
 			}
 			$sql .= ")";
