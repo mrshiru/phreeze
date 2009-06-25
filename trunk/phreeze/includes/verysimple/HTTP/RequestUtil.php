@@ -126,7 +126,7 @@ class RequestUtil
 		}
 		
 		// make sure this is a legit file request
-		if (is_uploaded_file($upload['tmp_name']) == false && Request::$TestMode == false )
+		if (is_uploaded_file($upload['tmp_name']) == false && RequestUtil::$TestMode == false )
 		{
 			throw new Exception("Unable to access this upload: " . $fieldname);
 		}
@@ -174,7 +174,7 @@ class RequestUtil
 	 */
 	public static function GetFile($fieldname, $b64encode = true, $ignore_empty = false, $max_kb = 0, $ok_types = null)
 	{
-		$fupload = Request::GetFileUpload($fieldname, $ignore_empty, $max_kb, $ok_types);
+		$fupload = RequestUtil::GetFileUpload($fieldname, $ignore_empty, $max_kb, $ok_types);
 		return ($fupload) ? $fupload->ToXML($b64encode) : null;
 	}
 	
@@ -250,7 +250,7 @@ class RequestUtil
 	*/
 	public static function GetAsDate($fieldname, $default = "date('Y-m-d')", $includetime = false)
 	{
-		$returnVal = Request::Get($fieldname,$default);
+		$returnVal = RequestUtil::Get($fieldname,$default);
 		
 		if ($returnVal == "date('Y-m-d')")
 		{
@@ -268,11 +268,11 @@ class RequestUtil
 		{
 			if ($includetime)
 			{
-				if (Request::Get($fieldname."Hour"))
+				if (RequestUtil::Get($fieldname."Hour"))
 				{
-					$hour = Request::Get($fieldname."Hour",date("H"));
-					$minute = Request::Get($fieldname."Minute",date("i"));
-					$ampm = Request::Get($fieldname."AMPM","AM");
+					$hour = RequestUtil::Get($fieldname."Hour",date("H"));
+					$minute = RequestUtil::Get($fieldname."Minute",date("i"));
+					$ampm = RequestUtil::Get($fieldname."AMPM","AM");
 					
 					if ($ampm == "PM")
 					{
@@ -302,7 +302,7 @@ class RequestUtil
 	*/
 	public static function GetAsDateTime($fieldname, $default = "date('Y-m-d H:i:s')")
 	{
-		return Request::GetAsDate($fieldname,$default,true);
+		return RequestUtil::GetAsDate($fieldname,$default,true);
 	}
 	
 	/**
@@ -313,7 +313,7 @@ class RequestUtil
 	 */
 	public static function GetCurrency($fieldname)
 	{
-		return str_replace(array(',','$'),'',Request::Get($fieldname));	
+		return str_replace(array(',','$'),'',RequestUtil::Get($fieldname));	
 	}
 	
 	
