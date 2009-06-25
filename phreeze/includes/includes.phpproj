@@ -124,11 +124,11 @@
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\modifier.sr_get_page.php"
+    "verysimple\\XML\\ParseException.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\XML\\ParseException.php"
+    "plugins\\modifier.sr_get_page.php"
     {
     "ProjRelPath" = "T"
     }
@@ -336,11 +336,11 @@
     {
     "ProjRelPath" = "T"
     }
-    "internals\\core.assemble_plugin_filepath.php"
+    "internals\\core.write_compiled_resource.php"
     {
     "ProjRelPath" = "T"
     }
-    "internals\\core.write_compiled_resource.php"
+    "internals\\core.assemble_plugin_filepath.php"
     {
     "ProjRelPath" = "T"
     }
@@ -400,11 +400,11 @@
     {
     "ProjRelPath" = "T"
     }
-    "language\\phpmailer.lang-cz.php"
+    "verysimple\\DB\\Reflection\\DBSchema.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\DB\\Reflection\\DBSchema.php"
+    "language\\phpmailer.lang-cz.php"
     {
     "ProjRelPath" = "T"
     }
@@ -456,11 +456,11 @@
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\function.math.php"
+    "plugins\\modifier.lower.php"
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\modifier.lower.php"
+    "plugins\\function.math.php"
     {
     "ProjRelPath" = "T"
     }
@@ -604,11 +604,11 @@
     {
     "ProjRelPath" = "T"
     }
-    "php_libs.suo"
+    "plugins\\function.curl.php"
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\function.curl.php"
+    "php_libs.suo"
     {
     "ProjRelPath" = "T"
     }
@@ -716,6 +716,10 @@
     {
     "ProjRelPath" = "T"
     }
+    "parsecsv.lib.php"
+    {
+    "ProjRelPath" = "T"
+    }
     "plugins\\function.fetch.php"
     {
     "ProjRelPath" = "T"
@@ -736,11 +740,11 @@
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\function.html_select_date.php"
+    "verysimple\\IO\\IncludeException.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\IO\\IncludeException.php"
+    "plugins\\function.html_select_date.php"
     {
     "ProjRelPath" = "T"
     }
@@ -888,11 +892,11 @@
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\function.eval.php"
+    "verysimple\\Phreeze\\CacheMemCache.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Phreeze\\CacheMemCache.php"
+    "plugins\\function.eval.php"
     {
     "ProjRelPath" = "T"
     }

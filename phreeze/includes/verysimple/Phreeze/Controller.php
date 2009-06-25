@@ -3,7 +3,7 @@
 
 /** import supporting libraries */
 require_once("verysimple/HTTP/UrlWriter.php");
-require_once("verysimple/HTTP/Request.php");
+require_once("verysimple/HTTP/RequestUtil.php");
 require_once("verysimple/HTTP/Context.php");
 require_once("verysimple/Authentication/Authenticator.php");
 require_once("DataPage.php");
@@ -289,7 +289,7 @@ abstract class Controller
 		require_once("ValidationResponse.php");
 		$vr = new ValidationResponse();
 		
-		$save = Request::Get("SaveInline");
+		$save = RequestUtil::Get("SaveInline");
 		
 		$obj = $this->LoadFromForm();
 
@@ -327,7 +327,7 @@ abstract class Controller
 	 */
 	function Save()
 	{
-		if ( !Request::Get("SaveInline") )
+		if ( !RequestUtil::Get("SaveInline") )
 		{
 			throw new Exception("SaveInline was specified, but Save is not implemented");
 		}
