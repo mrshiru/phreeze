@@ -2,7 +2,7 @@
 /** @package    verysimple::Phreeze */
 
 /** import supporting libraries */
-require_once("verysimple/HTTP/Request.php");
+require_once("verysimple/HTTP/RequestUtil.php");
 
 /**
  * Dispatcher direct a web request to the correct controller & method
