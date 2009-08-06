@@ -6,6 +6,8 @@ require_once("verysimple/HTTP/UrlWriter.php");
 require_once("verysimple/HTTP/RequestUtil.php");
 require_once("verysimple/HTTP/Context.php");
 require_once("verysimple/Authentication/Authenticator.php");
+require_once("verysimple/Authentication/Auth401.php");
+require_once("verysimple/Authentication/IAuthenticatable.php");
 require_once("DataPage.php");
 require_once("Phreezer.php");
 require_once("Criteria.php");
@@ -86,6 +88,47 @@ abstract class Controller
 	 * may set ModelName to any dummy value.
 	 */
 	abstract protected function Init();
+
+	/**
+	 * Requires 401 Authentication.  If authentication fails, this function
+	 * terminates with a 401 header.  If success, sets CurrentUser.
+	 * @param IAuthenticatable any IAuthenticatable object
+	 * @param string http realm (basically the login message shown to the user)
+	 * @param string username querystring field (optional) if provided, the username can be passed via querystring instead of through the auth headers
+	 * @param string password querystring field (optional) if provided, the password can be passed via querystring instead of through the auth headers
+	 */
+	protected function Require401Authentication(IAuthenticatable $authenticatable, $realm = "Login Required", $qs_username_field = "", $qs_password_field = "")
+	{
+		// if the user is already authenticated, we don't need to reload from the DB
+		if ($this->GetCurrentUser())
+		{
+			return;
+		}
+		
+		// the user is not already logged in.  if a username was provided via
+		// either the headers or querystring, attempt to authenticate
+		if( ($qs_username_field && RequestUtil::Get($qs_username_field)) 
+			|| Auth401::GetUsername() ) 
+		{
+			// accept username passed in either headers or querystring
+			$username = RequestUtil::Get($qs_username_field,Auth401::GetUsername());
+			$password = RequestUtil::Get($qs_password_field,Auth401::GetPassword());
+			
+			if ( $authenticatable->Login($username,$password) )
+			{
+				$this->SetCurrentUser($authenticatable);
+			}
+			else
+			{
+				Auth401::OutputHeaders("Invalid Login");
+			}
+		}
+		else 
+		{
+			// require authentication
+			Auth401::OutputHeaders($realm);
+		}
+	}
 	
 	/**
 	 * LoadFromForm should load the object specified by primary key = $pk, or
