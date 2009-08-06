@@ -43,11 +43,8 @@ class Dispatcher
 		$controller_class = $controller_param."Controller";
 		$controller_file = "Controller/" . $controller_param . "Controller.php";
 		$method_param = isset($params[1]) && $params[1] ? $params[1] : "";
-
-		if ( !$method_param )
-		{
-			throw new Exception("Invalid or missing Method parameter");
-		}
+		
+		if ( !$method_param ) $method_param = "DefaultAction";
 		
 		// look for the file in the expected places, hault if not found
 		if ( !(file_exists($controller_file) || file_exists("libs/".$controller_file)) )
