@@ -15,8 +15,10 @@ class DBSet
 	public $Table;
 	public $Name;
 	public $KeyColumn;
+	public $KeyComment;
 	public $SetTableName;
 	public $SetKeyColumn;
+	public $SetKeyComment;
 
 	public $NameNoPrefix;
 	
@@ -40,8 +42,10 @@ class DBSet
 		
 		$this->Name = $row[0];
 		$this->KeyColumn = $row[3];
+		$this->KeyComment = $this->Table->Columns[$this->KeyColumn]->Comment;
 		$this->SetTableName = $table->Name;
 		$this->SetKeyColumn = $row[1];
+		$this->SetKeyComment = $table->Columns[$this->SetKeyColumn]->Comment;
 		
 		$reftable = $this->Table->Schema->Tables[$this->SetTableName];
 		// print "<p><b>" . $this->Table->Name . " set references " . $reftable->Name . "</b></p>";
