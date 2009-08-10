@@ -1,7 +1,9 @@
 "General"
 {
+"ProjectType" = "local"
+"AutoLoadTemplate" = "%s.php;class.%s.php;"
 "ProjectIdGuid" = "{CB36EE14-8FA4-4B11-95E8-06A3D17B3673}"
-"ProjectVersion" = "2.4.5.4617"
+"ProjectVersion" = "2.6.4.5645"
 }
 "Configurations"
 {
@@ -24,47 +26,7 @@
 }
 "Files"
 {
-    "code\\phreeze.net\\a_collection.singulars.cs.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\phreeze.net\\a_criteria.singularcriteria.cs.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\phreeze.net\\a_formhelper.singular-form.cs.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\phreeze.net\\a_loadabledao.singulardao.cs.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\phreeze.net\\a_loadablepartial.singular.cs.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\controller.libs~controller~singularcontroller.php.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\model.libs~model~singular.php.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\modeldao.libs~model~dao~singulardao.php.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\modeldaocriteria.libs~model~dao~singularcriteria.php.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\modeldaomap.libs~model~dao~singularmap.php.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\modeldaoreporter.libs~model~dao~singularreporter.php.tpl"
+    "code\\_datepicker_tpl.templates~_datepicker.tpl.tpl"
     {
     "ProjRelPath" = "T"
     }
@@ -72,7 +34,139 @@
     {
     "ProjRelPath" = "T"
     }
+    "code\\_temp.temp~index.html.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "generate_sql.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "styles"
+    {
+    "ProjRelPath" = "T"
+    }
+    "templates\\redirect.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\phreeze.net\\a_formhelper.singular-form.cs.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\controller.libs~controller~singularcontroller.php.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\modeldaocriteria.libs~model~dao~singularcriteria.php.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "images\\ico_link.gif"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\phreeze.net\\a_collection.singulars.cs.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\phreeze.net"
+    {
+    "ProjRelPath" = "T"
+    }
+    "templates"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\_scripts_feedback.scripts~feedback.js.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "generate_class.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\phreeze.net\\a_loadablepartial.singular.cs.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\_sqlite_create._setup~update_10xx.sql.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "images\\banner_bottom.jpg"
+    {
+    "ProjRelPath" = "T"
+    }
+    "templates\\new_connection.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "images\\vcss.png"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\_velocity_xml._setup~model.xml.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
     "code\\viewlist.templates~viewsingularlistall.tpl.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\modeldaomap.libs~model~dao~singularmap.php.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\phreeze.net\\a_loadabledao.singulardao.cs.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\_header_tpl.templates~_header.tpl.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\_templates_c.templates_c~index.html.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "templates\\show_tables.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\_error_tpl.templates~_error.tpl.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "images"
+    {
+    "ProjRelPath" = "T"
+    }
+    "styles\\classbuilder.css"
+    {
+    "ProjRelPath" = "T"
+    }
+    "templates\\_header.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "new_connection.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\phreeze.net\\a_criteria.singularcriteria.cs.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\modeldao.libs~model~dao~singulardao.php.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "index.php"
     {
     "ProjRelPath" = "T"
     }
@@ -84,23 +178,11 @@
     {
     "ProjRelPath" = "T"
     }
-    "code\\_config_php._config.php.tpl"
+    "_global.php"
     {
     "ProjRelPath" = "T"
     }
-    "code\\_datepicker_tpl.templates~_datepicker.tpl.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\_error_tpl.templates~_error.tpl.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\_footer_tpl.templates~_footer.tpl.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\_header_tpl.templates~_header.tpl.tpl"
+    "templates\\index.tpl"
     {
     "ProjRelPath" = "T"
     }
@@ -112,119 +194,7 @@
     {
     "ProjRelPath" = "T"
     }
-    "code\\_rewrite_php.rewrite.php.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\_scripts_feedback.scripts~feedback.js.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\_scripts_standard_form.scripts~standard_form.js.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\_scripts_standard_grid.scripts~standard_grid.js.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\_scripts_validate_model.scripts~validate_model.js.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\_styles_stylesheet.styles~dbname.css.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\_temp.temp~index.html.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "code\\_templates_c.templates_c~index.html.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "images\\banner_bottom.jpg"
-    {
-    "ProjRelPath" = "T"
-    }
-    "images\\banner_middle.jpg"
-    {
-    "ProjRelPath" = "T"
-    }
-    "images\\banner_top.jpg"
-    {
-    "ProjRelPath" = "T"
-    }
-    "images\\ico_link.gif"
-    {
-    "ProjRelPath" = "T"
-    }
-    "images\\valid-xhtml10.png"
-    {
-    "ProjRelPath" = "T"
-    }
-    "images\\vcss.png"
-    {
-    "ProjRelPath" = "T"
-    }
-    "styles\\classbuilder.css"
-    {
-    "ProjRelPath" = "T"
-    }
-    "templates\\_footer.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "templates\\_header.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "templates\\error.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "templates\\index.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "templates\\new_connection.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "templates\\redirect.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "templates\\show_tables.tpl"
-    {
-    "ProjRelPath" = "T"
-    }
-    "templates_c\\index.html"
-    {
-    "ProjRelPath" = "T"
-    }
-    "_global.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "generate_class.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "generate_sql.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "index.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "new_connection.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "set_connection.php"
+    "code\\_config_php._config.php.tpl"
     {
     "ProjRelPath" = "T"
     }
@@ -232,7 +202,75 @@
     {
     "ProjRelPath" = "T"
     }
+    "templates\\_footer.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\ModelVO.libs~Model~SINGULARVO.php.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "templates\\error.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "images\\banner_top.jpg"
+    {
+    "ProjRelPath" = "T"
+    }
+    "set_connection.php"
+    {
+    "ProjRelPath" = "T"
+    }
     "version.txt"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\modeldaoreporter.libs~model~dao~singularreporter.php.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "images\\banner_middle.jpg"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\_scripts_standard_grid.scripts~standard_grid.js.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\model.libs~model~singular.php.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\_styles_stylesheet.styles~dbname.css.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\_rewrite_php.rewrite.php.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "templates_c\\index.html"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\_footer_tpl.templates~_footer.tpl.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\_scripts_validate_model.scripts~validate_model.js.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "code\\_scripts_standard_form.scripts~standard_form.js.tpl"
+    {
+    "ProjRelPath" = "T"
+    }
+    "templates_c"
+    {
+    "ProjRelPath" = "T"
+    }
+    "images\\valid-xhtml10.png"
     {
     "ProjRelPath" = "T"
     }

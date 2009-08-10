@@ -24,6 +24,18 @@ catch (exception $ex)
 	exit();
 }
 
+/*
+print "<pre>";
+foreach ($schema->Tables as $table)
+{
+	foreach ($table->Sets as $set)
+	{
+		print "TABLE=" . $table->Name . " SET = ". $set->Name ." COMMENT = ". $set->SetKeyComment ."\n";
+	}
+}
+die();
+*/
+
 $debug = isset($_REQUEST["debug"]) && $_REQUEST["debug"] == "1";
 $parameters = explode("\n", trim(str_replace("\r","", $_REQUEST["parameters"])));
 $tableNames = $_REQUEST["table_name"];

@@ -10,7 +10,7 @@
 <script type="text/javascript" src="scripts/validate_model.js"></script>
 
 
-<form id="{$singular|studlycaps}Form" action="{ldelim}$URL->Get('{$singular}','Save'){rdelim}" onsubmit="return validateModel(this,'{$singular}');" method="post">
+<form name="{$singular|studlycaps}Form" action="{ldelim}$URL->Get('{$singular}','Save'){rdelim}" onsubmit="return validateModel(this,'{$singular}');" method="post">
 
 <fieldset id="{$singular|studlycaps}FieldSet">
 	<legend>Edit {$table->Name|studlycaps}</legend>
