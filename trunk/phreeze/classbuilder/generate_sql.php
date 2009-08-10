@@ -13,7 +13,7 @@
 
 header('Content-type: text/plain');
 
-require_once("_config.php");
+require_once("_global.php");
 
 $field_types = array("FM_TYPE_UNKNOWN",
 		"FM_TYPE_DECIMAL",
