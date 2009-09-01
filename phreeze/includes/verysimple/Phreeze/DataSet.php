@@ -62,7 +62,7 @@ class DataSet implements Iterator
     */
     private function _getObject(&$row)
     {
-        $obj =& new $this->_objectclass($this->_phreezer, $row);
+        $obj = new $this->_objectclass($this->_phreezer, $row);
         return $obj;
     }
     
@@ -282,7 +282,7 @@ class DataSet implements Iterator
 		{
 			$page = new DataPage();
 			$page->ObjectName = $this->_objectclass;
-			$page->ObjectInstance =& new $this->_objectclass($this->_phreezer);
+			$page->ObjectInstance = new $this->_objectclass($this->_phreezer);
 			$page->PageSize = $pagesize;
 			$page->CurrentPage = $pagenum;
 			$page->TotalResults = $this->Count();
