@@ -23,11 +23,18 @@ class MemCacheProxy
 	 */
 	public function MemCacheProxy($server_array = array('localhost'=>'11211'))
 	{
-		$this->_memcache = new Memcache();
-		foreach (array_keys($server_array) as $host)
+		if (class_exists('Memcache'))
 		{
-			// print "adding server $host " . $server_array[$host];
-			$this->_memcache->addServer($host, $server_array[$host]);
+			$this->_memcache = new Memcache();
+			foreach (array_keys($server_array) as $host)
+			{
+				// print "adding server $host " . $server_array[$host];
+				$this->_memcache->addServer($host, $server_array[$host]);
+			}
+		}
+		else
+		{
+			$this->ServerOffline = true;
 		}
 	}
 	
