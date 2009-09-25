@@ -19,7 +19,7 @@
 function smarty_modifier_money_format($number, $format='%n')
 {
 	//return money_format($format, $number);
-	return number_format($number, 2, '.', ',');
+	return is_numeric($number) ? number_format($number, 2, '.', ',') : "NaN";
 }
 
 /* vim: set expandtab: */
