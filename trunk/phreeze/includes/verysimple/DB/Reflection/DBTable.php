@@ -244,7 +244,7 @@ class DBTable
 			{
 				// TODO: this is pretty fragile... ?
 				// table comments and column comments are seemingly differentiated by "COMMENT="  vs "COMMENT "
-				$parts = split("`",$line);
+				$parts = explode("`",$line);
 				$column = $parts[1];
 				$comment = strstr( $line, "COMMENT ");
 				$comment = substr($comment,9,strlen($comment)-11);
