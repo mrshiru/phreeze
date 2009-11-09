@@ -43,7 +43,7 @@ $G_SMARTY->cache_dir = TEMP_PATH;
 	
 // see if the connection information has been specifed, otherwise we can't continue
 // we need to redirect the user to the set_connection page
-if ( !session_is_registered("connstr") )
+if ( !array_key_exists("connstr",$_SESSION) )
 {
 	// force the user to specify a connection string
 	$G_SMARTY->display("new_connection.tpl");
