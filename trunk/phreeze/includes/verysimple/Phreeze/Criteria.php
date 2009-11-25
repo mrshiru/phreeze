@@ -142,6 +142,18 @@ class Criteria
 						$this->_where .= $this->_where_delim . " " . $dbfield ." != '". DataAdapter::Escape($val) . "'";
 						$this->_where_delim = " and";
 					}
+					elseif (substr($prop,-10) == "_IsEmpty" && strlen($this->$prop))
+					{
+						$dbfield = $this->GetFieldFromProp(str_replace("_IsEmpty","",$prop));
+						$this->_where .= $this->_where_delim . " " . $dbfield ." = ''";
+						$this->_where_delim = " and";
+					}
+					elseif (substr($prop,-10) == "_IsNotEmpty" && strlen($this->$prop))
+					{
+						$dbfield = $this->GetFieldFromProp(str_replace("_IsNotEmpty","",$prop));
+						$this->_where .= $this->_where_delim . " " . $dbfield ." != ''";
+						$this->_where_delim = " and";
+					}
 					elseif (substr($prop,-7) == "_IsLike" && strlen($this->$prop))
 					{
 						$dbfield = $this->GetFieldFromProp(str_replace("_IsLike","",$prop));
