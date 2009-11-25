@@ -2,7 +2,7 @@
 {
 "ProjectType" = "cli"
 "AutoLoadTemplate" = "%s.php;class.%s.php;"
-"IncludeDirs" = "./"
+"IncludeDirs" = "./;/usr/local/PEAR"
 }
 "Configurations"
 {
@@ -12,59 +12,27 @@
 }
 "Files"
 {
-    "plugins\\modifier.safe_array.php"
-    {
-    "ProjRelPath" = "T"
-    }
     "verysimple\\Util\\ExceptionFormatter.php"
     {
     "ProjRelPath" = "T"
     }
-    "language\\phpmailer.lang-cz.php"
+    "Mime_Types.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Phreeze\\NotFoundException.php"
+    "verysimple\\Phreeze\\Criteria.php"
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\modifier.studlycaps.php"
+    "verysimple\\Authentication\\AuthenticationException.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Search\\SearchRank.php"
+    "verysimple\\DB\\Reflection\\DBConstraint.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Phreeze\\ObserveToBrowser.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\compiler.assign.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Phreeze\\QueryBuilder.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Encryption\\GPG\\Public_Key.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Phreeze\\AuthAccount.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Phreeze\\ObserveToSmarty.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "language\\phpmailer.lang-et.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "class.smtp.php"
+    "verysimple\\Phreeze\\ConnectionSetting.php"
     {
     "ProjRelPath" = "T"
     }
@@ -76,51 +44,11 @@
     {
     "ProjRelPath" = "T"
     }
-    "class.phpmailer.php"
+    "Services\\JSON.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Phreeze\\CacheRam.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Authentication\\SimpleAccount.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\DB\\Reflection\\DBSet.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\HTTP\\Context.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Phreeze\\CacheNoCache.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.datagridpager.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Phreeze\\Criteria.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "internals\\core.read_cache_file.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Search\\Google.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "language\\phpmailer.lang-fi.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "class.pop3.php"
+    "verysimple\\IO\\FolderHelper.php"
     {
     "ProjRelPath" = "T"
     }
@@ -128,15 +56,11 @@
     {
     "ProjRelPath" = "T"
     }
-    "internals\\core.assemble_plugin_filepath.php"
+    "verysimple\\Phreeze\\ObserveToBrowser.php"
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\modifier.camelcase.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\DB\\Reflection\\DBTable.php"
+    "Smarty_Compiler.class.php"
     {
     "ProjRelPath" = "T"
     }
@@ -144,75 +68,15 @@
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\function.html_select_time.php"
+    "plugins\\function.sr_property.php"
     {
     "ProjRelPath" = "T"
     }
-    "language\\phpmailer.lang-ro.php"
+    "verysimple\\Payment\\AuthorizeNet.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\DB\\Reflection\\DBKey.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\DB\\Reflection\\DBConnection.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\HTTP\\UrlWriter.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Util\\MemCacheProxy.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\RSS"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Encryption\\GPG\\AES.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\generate_docs.bat"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\modifier.count_sentences.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\DB\\Reflection\\DBEventHandler.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "language\\phpmailer.lang-fo.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "language\\phpmailer.lang-de.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Util"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.thumb.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "internals\\core.process_cached_inserts.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Phreeze\\IObservable.php"
+    "verysimple\\Search\\Google.php"
     {
     "ProjRelPath" = "T"
     }
@@ -220,7 +84,467 @@
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Phreeze\\Phreezable.php"
+    "verysimple\\Authentication\\PassPhrase.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.strip_tags.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "internals\\core.rmdir.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.debug.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.cycle.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "language\\phpmailer.lang-ro.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\NotFoundException.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.html_checkboxes.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.html_select_time.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "JSON.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.sr_get_page.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\XML\\ParseException.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\generate_docs.bat"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\XML"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\compiler.assign.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\Reporter.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Payment\\PaymentRequest.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Util"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\DB\\Reflection\\DBConnection.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Encryption\\arbitrary.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\Observable.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\AuthAccount.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "internals"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\HTTP\\Context.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "language\\phpmailer.lang-ru.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\DB\\Reflection\\DBSet.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Email\\Mailer.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Search"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.datagridpager.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\DB\\Reflection\\DBTable.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "internals\\core.read_cache_file.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\IO\\FileHelper.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "language\\phpmailer.lang-nl.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Payment\\CurrencyConverter.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\FieldMap.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Email\\Message.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.html_options.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.cat.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "zip.lib.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Authentication"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.rss.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.upper.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "language\\phpmailer.lang-es.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\String"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\IDaoMap.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\DB\\Reflection\\DBConnectionString.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.money_format.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.default.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Encryption\\GPG\\Utility.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Authentication\\Auth401.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.count_sentences.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.counter.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Authentication\\SimpleAccount.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "language\\phpmailer.lang-it.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.html_dynamic_options.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "mime.types"
+    {
+    "ProjRelPath" = "T"
+    }
+    "internals\\core.load_plugins.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "language\\phpmailer.lang-se.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\HTTP\\UrlWriter.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.count_paragraphs.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "language\\phpmailer.lang-en.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "Smarty.class.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\ValidationResponse.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.safe_array.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "internals\\core.write_compiled_resource.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "internals\\core.assemble_plugin_filepath.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\Dispatcher.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\IObservable.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "internals\\core.smarty_include_php.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\Phreezer.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.sr_get_property.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.studlycaps.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Search\\SearchRank.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Authentication\\IAuthenticatable.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "class.phpmailer.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.pear_calendar.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "language\\phpmailer.lang-pl.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Payment\\PaymentProcessor.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.mailto.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\DataPage.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\DB\\Reflection\\DBSchema.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "language\\phpmailer.lang-cz.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Encryption\\GPG"
+    {
+    "ProjRelPath" = "T"
+    }
+    "language\\phpmailer.lang-hu.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\shared.escape_special_chars.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\CacheRam.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.string_format.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.strip.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\DB\\Reflection\\DBEventHandler.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.config_load.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "language\\phpmailer.lang-et.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\QueryBuilder.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "phpApplication.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.regex_replace.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.lower.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.math.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Email"
+    {
+    "ProjRelPath" = "T"
+    }
+    "Config_File.class.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "internals\\core.write_file.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\DB"
+    {
+    "ProjRelPath" = "T"
+    }
+    "language\\phpmailer.lang-fi.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\CacheNoCache.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\Controller.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.camelcase.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\IO"
+    {
+    "ProjRelPath" = "T"
+    }
+    "internals\\core.run_insert_handler.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "internals\\core.is_trusted.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "internals\\core.get_include_path.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "internals\\core.create_dir_structure.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\ObserveToSmarty.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Payment\\PaymentResponse.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\DataAdapter.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Encryption\\GPG\\Public_Key.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\HTTP\\FileUpload.php"
     {
     "ProjRelPath" = "T"
     }
@@ -232,23 +556,23 @@
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Authentication"
+    "plugins\\modifier.spacify.php"
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\function.pear_calendar.php"
+    "verysimple\\Util\\MemCacheProxy.php"
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\shared.make_timestamp.php"
+    "language\\phpmailer.lang-fo.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Encryption\\GPG\\Expanded_Key.php"
+    "language\\phpmailer.lang-de.php"
     {
     "ProjRelPath" = "T"
     }
-    "language\\phpmailer.lang-ru.php"
+    "verysimple\\Encryption\\GPG\\AES.php"
     {
     "ProjRelPath" = "T"
     }
@@ -256,271 +580,7 @@
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\IO\\FileHelper.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Phreeze\\Observable.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "Services\\JSON.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.mailto.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\modifier.sr_get_property.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\HTTP\\RequestUtil.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "language\\phpmailer.lang-nl.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "Mime_Types.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Email\\Message.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\HTTP\\FormValidator.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.fetch.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "JSON.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\modifier.string_format.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "language\\phpmailer.lang-dk.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Encryption\\GPG\\Utility.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.html_dynamic_options.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Authentication\\Auth401.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "internals\\core.write_file.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Phreeze\\IDaoMap.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\modifier.default.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\modifier.regex_replace.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\modifier.date_format.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.html_options.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.counter.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.html_select_date.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "internals\\core.get_microtime.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.html_radios.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "language\\phpmailer.lang-it.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.popup.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\DB\\Reflection"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\modifier.count_paragraphs.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "internals\\core.is_trusted.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Payment\\PaymentProcessor.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "language\\phpmailer.lang-se.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Encryption\\GPG"
-    {
-    "ProjRelPath" = "T"
-    }
-    "internals\\core.smarty_include_php.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "language\\phpmailer.lang-ca.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Authentication\\Authenticator.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "phpApplication.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "internals\\core.write_compiled_include.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\shared.escape_special_chars.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\DB\\Reflection\\DBSchema.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "internals\\core.get_php_resource.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\XML"
-    {
-    "ProjRelPath" = "T"
-    }
-    "Smarty.class.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Authentication\\IAuthenticatable.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "language\\phpmailer.lang-pl.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "language\\phpmailer.lang-br.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Phreeze\\DataAdapter.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Phreeze\\ConnectionSetting.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.math.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Email\\Pop3Client.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\modifier.wordwrap.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\modifier.lower.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Phreeze\\Phreezer.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Search"
-    {
-    "ProjRelPath" = "T"
-    }
-    "language\\phpmailer.lang-hu.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\modifier.count_words.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Encryption"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\DB\\Reflection\\DBConnectionString.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "internals"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Phreeze\\DataPage.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Authentication\\PassPhrase.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Authentication\\AuthenticationException.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\modifier.truncate.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\String"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\DB\\Reflection\\DBConstraint.php"
+    "debug.tpl"
     {
     "ProjRelPath" = "T"
     }
@@ -532,107 +592,11 @@
     {
     "ProjRelPath" = "T"
     }
-    "internals\\core.create_dir_structure.php"
+    "plugins\\modifier.wordwrap.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Phreeze\\ICache.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "Smarty_Compiler.class.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "internals\\core.run_insert_handler.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.html_checkboxes.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Email"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.popup_init.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "language"
-    {
-    "ProjRelPath" = "T"
-    }
-    "internals\\core.process_compiled_include.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.html_yesno.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "internals\\core.get_include_path.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\HTTP\\Request.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\HTTP\\HttpRequest.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\modifier.strpos.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Payment\\PaymentResponse.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "zip.lib.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Encryption\\GPG.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "internals\\core.rmdir.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\IO\\FolderHelper.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Phreeze\\Controller.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.debug.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\modifier.escape.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Payment\\AuthorizeNet.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.config_load.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.cycle.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Email\\Mailer.php"
+    "verysimple\\Authentication\\Authenticator.php"
     {
     "ProjRelPath" = "T"
     }
@@ -640,23 +604,7 @@
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\IO\\IncludeException.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\modifier.spacify.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\HTTP\\FileUpload.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.curl.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Phreeze\\KeyMap.php"
+    "verysimple\\HTTP\\RequestUtil.php"
     {
     "ProjRelPath" = "T"
     }
@@ -664,59 +612,15 @@
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Encryption\\GPG\\Cipher.php"
+    "verysimple\\Phreeze\\Phreezable.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Payment\\CurrencyConverter.php"
+    "plugins\\function.curl.php"
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\function.datagrid.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Phreeze"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.sr_property.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Search\\SearchEngine.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\XML\\ParseException.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\modifier.strip_tags.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Phreeze\\ObserveToFile.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "Config_File.class.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\DB"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Payment\\PaymentRequest.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\modifier.indent.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "internals\\core.assign_smarty_interface.php"
+    "internals\\core.process_cached_inserts.php"
     {
     "ProjRelPath" = "T"
     }
@@ -724,19 +628,19 @@
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\RSS\\Writer.php"
+    "plugins\\function.thumb.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Encryption\\arbitrary.php"
+    "plugins\\shared.make_timestamp.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\DB\\Reflection\\DBServer.php"
+    "plugins\\modifier.truncate.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\IO"
+    "plugins\\modifier.date_format.php"
     {
     "ProjRelPath" = "T"
     }
@@ -748,51 +652,43 @@
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\modifier.debug_print_var.php"
+    "verysimple\\HTTP\\Request.php"
     {
     "ProjRelPath" = "T"
     }
-    "internals\\core.rm_auto.php"
+    "verysimple\\Encryption"
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\modifier.sr_get_page.php"
+    "verysimple\\Encryption\\GPG\\Expanded_Key.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Phreeze\\Reporter.php"
+    "plugins\\modifier.strpos.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Email\\Recipient.php"
+    "internals\\core.assign_smarty_interface.php"
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\modifier.cat.php"
+    "verysimple\\DB\\Reflection\\DBServer.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Phreeze\\DataSet.php"
+    "language\\phpmailer.lang-dk.php"
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\modifier.upper.php"
+    "internals\\core.get_microtime.php"
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\function.rss.php"
+    "verysimple\\Phreeze\\ICache.php"
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\modifier.sr_get_children.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "internals\\core.load_resource_plugin.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\modifier.nl2br.php"
+    "plugins\\function.html_radios.php"
     {
     "ProjRelPath" = "T"
     }
@@ -800,15 +696,35 @@
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\function.weather.php"
+    "verysimple\\HTTP\\FormValidator.php"
     {
     "ProjRelPath" = "T"
     }
-    "language\\phpmailer.lang-no.php"
+    "verysimple\\Email\\Recipient.php"
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\modifier.money_format.php"
+    "plugins\\modifier.escape.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\DataSet.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\DB\\Reflection\\DBKey.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\RSS\\Writer.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "class.smtp.php"
     {
     "ProjRelPath" = "T"
     }
@@ -816,15 +732,35 @@
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Payment"
+    "plugins\\function.fetch.php"
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\function.assign_debug_info.php"
+    "internals\\core.rm_auto.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Phreeze\\CacheMemCache.php"
+    "verysimple\\Encryption\\GPG\\Cipher.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Encryption\\GPG.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "language\\phpmailer.lang-no.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\IO\\IncludeException.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.html_select_date.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.weather.php"
     {
     "ProjRelPath" = "T"
     }
@@ -832,7 +768,19 @@
     {
     "ProjRelPath" = "T"
     }
+    "verysimple\\Phreeze\\ObserveToFile.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "language\\phpmailer.lang-ca.php"
+    {
+    "ProjRelPath" = "T"
+    }
     "language\\phpmailer.lang-tr.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "class.pop3.php"
     {
     "ProjRelPath" = "T"
     }
@@ -840,15 +788,79 @@
     {
     "ProjRelPath" = "T"
     }
-    "language\\phpmailer.lang-es.php"
+    "verysimple\\Email\\Pop3Client.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Phreeze\\FieldMap.php"
+    "internals\\core.process_compiled_include.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Phreeze\\ValidationResponse.php"
+    "verysimple\\DB\\Reflection"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Search\\SearchEngine.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.nl2br.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.popup.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\KeyMap.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "internals\\core.load_resource_plugin.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.assign_debug_info.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Form.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.count_words.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.indent.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "language\\phpmailer.lang-br.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\function.datagrid.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "plugins\\modifier.debug_print_var.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "internals\\core.write_compiled_include.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "internals\\core.get_php_resource.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "language"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\RSS"
     {
     "ProjRelPath" = "T"
     }
@@ -856,31 +868,11 @@
     {
     "ProjRelPath" = "T"
     }
-    "internals\\core.write_compiled_resource.php"
+    "language\\phpmailer.lang-ja.php"
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\outputfilter.trimwhitespace.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "mime.types"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\Phreeze\\Dispatcher.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "verysimple\\XML\\XMLUtil.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "plugins\\function.eval.php"
-    {
-    "ProjRelPath" = "T"
-    }
-    "debug.tpl"
+    "plugins\\modifier.sr_get_children.php"
     {
     "ProjRelPath" = "T"
     }
@@ -888,11 +880,11 @@
     {
     "ProjRelPath" = "T"
     }
-    "language\\phpmailer.lang-ja.php"
+    "verysimple\\Payment"
     {
     "ProjRelPath" = "T"
     }
-    "language\\phpmailer.lang-en.php"
+    "plugins\\outputfilter.trimwhitespace.php"
     {
     "ProjRelPath" = "T"
     }
@@ -900,19 +892,27 @@
     {
     "ProjRelPath" = "T"
     }
-    "plugins"
+    "verysimple\\XML\\XMLUtil.php"
     {
     "ProjRelPath" = "T"
     }
-    "internals\\core.load_plugins.php"
+    "plugins\\function.popup_init.php"
     {
     "ProjRelPath" = "T"
     }
-    "plugins\\modifier.strip.php"
+    "plugins\\function.html_yesno.php"
     {
     "ProjRelPath" = "T"
     }
-    "verysimple\\Form.php"
+    "plugins\\function.eval.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\Phreeze\\CacheMemCache.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "verysimple\\HTTP\\HttpRequest.php"
     {
     "ProjRelPath" = "T"
     }
