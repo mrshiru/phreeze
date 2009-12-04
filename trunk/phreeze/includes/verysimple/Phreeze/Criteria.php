@@ -142,13 +142,13 @@ class Criteria
 						$this->_where .= $this->_where_delim . " " . $dbfield ." != '". DataAdapter::Escape($val) . "'";
 						$this->_where_delim = " and";
 					}
-					elseif (substr($prop,-10) == "_IsEmpty" && strlen($this->$prop))
+					elseif (substr($prop,-8) == "_IsEmpty" && $this->$prop)
 					{
 						$dbfield = $this->GetFieldFromProp(str_replace("_IsEmpty","",$prop));
 						$this->_where .= $this->_where_delim . " " . $dbfield ." = ''";
 						$this->_where_delim = " and";
 					}
-					elseif (substr($prop,-10) == "_IsNotEmpty" && strlen($this->$prop))
+					elseif (substr($prop,-11) == "_IsNotEmpty" && $this->$prop)
 					{
 						$dbfield = $this->GetFieldFromProp(str_replace("_IsNotEmpty","",$prop));
 						$this->_where .= $this->_where_delim . " " . $dbfield ." != ''";
