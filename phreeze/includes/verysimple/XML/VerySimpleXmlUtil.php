@@ -17,10 +17,12 @@ require_once("ParseException.php");
 class VerySimpleXmlUtil
 {
 	// replacement variable for inner text and for attribute values
-	static $reservedAttrib = Array("\"","'","&","<",">");
-	static $replacementsAttrib = Array("&quot;","&apos;","&amp;","&lt;","&gt;");
+	static $reservedAttrib = Array("&","\"","'","<",">");
+	static $replacementsAttrib = Array("&amp;","&quot;","&apos;","&lt;","&gt;");
+	static $replacementsTempAttrib = Array("~amp;","~quot;","~apos;","~lt;","~gt;");
 	static $reservedText = Array("&","<",">");
 	static $replacementsText = Array("&amp;","&lt;","&gt;");
+	static $replacementsTempText = Array("~amp;","~lt;","~gt;");
 	
 	/**
 	 * Parses the given XML using SimpleXMLElement, however traps PHP errors and
@@ -53,12 +55,17 @@ class VerySimpleXmlUtil
 	{
 		if ($escapeQuotes)
 		{
-			return str_replace(VerySimpleXmlUtil::$reservedAttrib,VerySimpleXmlUtil::$replacementsAttrib,$str);
+			$str = str_replace(VerySimpleXmlUtil::$replacementsAttrib,VerySimpleXmlUtil::$replacementsTempAttrib,$str);
+			$str = str_replace(VerySimpleXmlUtil::$reservedAttrib,VerySimpleXmlUtil::$replacementsAttrib,$str);
+			$str = str_replace(VerySimpleXmlUtil::$replacementsTempAttrib,VerySimpleXmlUtil::$replacementsAttrib,$str);
 		}
 		else
 		{
-			return str_replace(VerySimpleXmlUtil::$reservedText,VerySimpleXmlUtil::$replacementsText,$str);
+			$str = str_replace(VerySimpleXmlUtil::$replacementsText,VerySimpleXmlUtil::$replacementsTempText,$str);
+			$str = str_replace(VerySimpleXmlUtil::$reservedText,VerySimpleXmlUtil::$replacementsText,$str);
+			$str = str_replace(VerySimpleXmlUtil::$replacementsTempText,VerySimpleXmlUtil::$replacementsText,$str);
 		}
+		return $str;
 	}
 	
 	/**
