@@ -185,6 +185,53 @@ class DataAdapter implements IObservable
 		return mysql_affected_rows($this->_dbconn);
 	}
 	
+	
+	/**
+	 * Returns an array of all table names in the current database
+	 * @param bool true to ommit tables that are empty (default = false)
+	 * @return array
+	 */
+	public function GetTableNames($ommitEmptyTables = false)
+	{
+		$sql = "SHOW TABLE STATUS FROM `" . $this->GetDBName() . "`";
+		$rs = $this->Select($sql);
+		
+		$tables = array();
+		
+		while ( $row = $this->Fetch($rs) )
+		{
+			if ( $ommitEmptyTables == false || $rs['Data_free'] > 0 )
+			{
+				$tables[] = $row['Name'];
+			}
+		}
+		
+		return $tables;
+	}
+	
+	/**
+	 * Runs OPTIMIZE TABLE on all tables in the current database
+	 * @return array results for each table
+	 */
+	public function OptimizeTables()
+	{
+		$results = array();
+		
+		foreach ($this->GetTableNames() as $table_name)
+		{
+			$rs = $this->Select("optimize table `".$table_name."`");
+
+			while ( $row = $this->Fetch($rs) )
+			{
+				$tbl = $row['Table'];
+				if (!isset($results[$tbl])) $results[$tbl] = "";
+				$results[$tbl] = trim($results[$tbl] . " " . $row['Msg_type'] . "=\"" . $row['Msg_text'] . "\"");	
+			}
+		}
+		
+		return $results;
+		
+	}
 	/**
 	 * Returns last auto-inserted Id
 	 *
