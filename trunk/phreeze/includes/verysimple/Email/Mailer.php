@@ -4,6 +4,7 @@
 /** import supporting libraries */
 require_once("class.phpmailer.php");
 require_once("Message.php");
+require_once("Recipient.php");
 
 define("MAILER_RESULT_FAIL",0);
 define("MAILER_RESULT_OK",1);
@@ -18,7 +19,7 @@ define("MAILER_METHOD_MAIL","MAIL");
  * @author     VerySimple Inc.
  * @copyright  1997-2007 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    2.0
+ * @version    2.1
  */
 class Mailer
 {
@@ -133,9 +134,7 @@ class Mailer
 	 */
 	function IsValid($email)
 	{
-		return (
-			eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$", $email)
-			);
+		return Recipient::IsEmailInValidFormat($email);
 	}
     
     /**

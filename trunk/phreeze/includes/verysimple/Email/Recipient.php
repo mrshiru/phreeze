@@ -19,6 +19,20 @@ class Recipient
         $this->Email = $email;
         $this->RealName = $name!="" ? $name : $email;
     }
+	
+	
+	/**
+	 * Returns true if the provided email address appears to be valid.
+	 * This does not determine if the address is actually legit, only
+	 * if it is formatted properly
+	 *
+	 * @param string email address to validate
+	 * @return bool 1 (true) if $email is valid, 0 (false) if not
+	 */
+	static function IsEmailInValidFormat($email)
+	{
+		return preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/i", $email);
+	}
     
     /**
      * Parses an address in the either format:
@@ -51,7 +65,7 @@ class Recipient
 	 */
 	function IsValidEmail()
 	{
-		return preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/i", $this->Email);
+		return Recipient::IsEmailInValidFormat($this->Email);
 	}
 }
 
