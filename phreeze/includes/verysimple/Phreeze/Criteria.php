@@ -178,10 +178,22 @@ class Criteria
 						$this->_where .= $this->_where_delim . " " . $dbfield ." > '". DataAdapter::Escape($val) . "'";
 						$this->_where_delim = " and";
 					}
+					elseif (substr($prop,-19) == "_GreaterThanOrEqual" && strlen($this->$prop))
+					{
+						$dbfield = $this->GetFieldFromProp(str_replace("_GreaterThanOrEqual","",$prop));
+						$this->_where .= $this->_where_delim . " " . $dbfield ." >= '". DataAdapter::Escape($val) . "'";
+						$this->_where_delim = " and";
+					}
 					elseif (substr($prop,-9) == "_LessThan" && strlen($this->$prop))
 					{
 						$dbfield = $this->GetFieldFromProp(str_replace("_LessThan","",$prop));
 						$this->_where .= $this->_where_delim . " " . $dbfield ." < '". DataAdapter::Escape($val) . "'";
+						$this->_where_delim = " and";
+					}
+					elseif (substr($prop,-16) == "_LessThanOrEqual" && strlen($this->$prop))
+					{
+						$dbfield = $this->GetFieldFromProp(str_replace("_LessThanOrEqual","",$prop));
+						$this->_where .= $this->_where_delim . " " . $dbfield ." <= '". DataAdapter::Escape($val) . "'";
 						$this->_where_delim = " and";
 					}
 					elseif (substr($prop,-3) == "_In" && isset($val) && is_array($val))
