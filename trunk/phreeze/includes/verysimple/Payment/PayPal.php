@@ -78,49 +78,60 @@ class PayPal extends PaymentProcessor
 					"&STREET=$address1&CITY=$city&STATE=$state&ZIP=$zip&COUNTRYCODE=$country&CURRENCYCODE=$currencyID".
 					"&DESC=$orderDesc&INVNUM=$invoiceNum&EMAIL=$email";
 		
-		// Execute the API operation; see the PPHttpPost function above.
-		$httpParsedResponseAr = $this->PPHttpPost('DoDirectPayment', $nvpStr);
-		
-		if ("SUCCESS" == strtoupper($httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($httpParsedResponseAr["ACK"])) 
+		// make the post - use a try/catch in case of network errors
+		try
 		{
-			$resp->IsSuccess = true;
-			$resp->TransactionId = urldecode( $this->GetArrayVal($httpParsedResponseAr,"TRANSACTIONID") );
-			$resp->ResponseCode = urldecode( "AVSCODE=" . $this->GetArrayVal($httpParsedResponseAr,"AVSCODE") . ",CVV2MATCH=" . $this->GetArrayVal($httpParsedResponseAr,"CVV2MATCH"));
-			$resp->ResponseMessage = urldecode( "Charge of " . $this->GetArrayVal($httpParsedResponseAr,"AMT") . " Posted" );
-		} 
-		else  
-		{
-			// for error descriptions, refrer to https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_api_nvp_errorcodes
-			$resp->IsSuccess = false;
-			$resp->ResponseCode = urldecode( $this->GetArrayVal($httpParsedResponseAr,"L_ERRORCODE0") );
-			
-			// this variable contains an error code from the credit processor if one was given
-			$processor_code = $this->GetArrayVal($httpParsedResponseAr,"L_ERRORPARAMVALUE0");
-			
-			if ($processor_code) 
+			$httpParsedResponseAr = $this->PPHttpPost('DoDirectPayment', $nvpStr);
+			if ("SUCCESS" == strtoupper($httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($httpParsedResponseAr["ACK"])) 
 			{
-				// we have an error from the credit processor, so we should show that one
-				// because it will indicate the root cause of the problem
-				$errmsg = $this->GetArrayVal($httpParsedResponseAr,"L_ERRORPARAMID0") . ": " . $this->getProcessorResponseDescription($processor_code);
-			}
-			else
+				$resp->IsSuccess = true;
+				$resp->TransactionId = urldecode( $this->GetArrayVal($httpParsedResponseAr,"TRANSACTIONID") );
+				$resp->ResponseCode = urldecode( "AVSCODE=" . $this->GetArrayVal($httpParsedResponseAr,"AVSCODE") . ",CVV2MATCH=" . $this->GetArrayVal($httpParsedResponseAr,"CVV2MATCH"));
+				$resp->ResponseMessage = urldecode( "Charge of " . $this->GetArrayVal($httpParsedResponseAr,"AMT") . " Posted" );
+			} 
+			else  
 			{
-				// there was no processor messages which means the error was caught first at the gateway
-				// so we should show whatever that message is
-				$longmessage = $this->GetArrayVal($httpParsedResponseAr,"L_LONGMESSAGE0");
-				// paypal prepends this to every message, so strip it out if necessary
-				if ($longmessage != "This%20transaction%20cannot%20be%20processed%2e") $longmessage = str_replace("This%20transaction%20cannot%20be%20processed%2e","", $longmessage );
+				// for error descriptions, refrer to https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_api_nvp_errorcodes
+				$resp->IsSuccess = false;
+				$resp->ResponseCode = urldecode( $this->GetArrayVal($httpParsedResponseAr,"L_ERRORCODE0") );
 				
-				$errmsg = $this->GetArrayVal($httpParsedResponseAr,"L_SHORTMESSAGE0") . ": " . $longmessage;
+				// this variable contains an error code from the credit processor if one was given
+				$processor_code = $this->GetArrayVal($httpParsedResponseAr,"L_ERRORPARAMVALUE0");
+				
+				if ($processor_code) 
+				{
+					// we have an error from the credit processor, so we should show that one
+					// because it will indicate the root cause of the problem
+					$errmsg = $this->GetArrayVal($httpParsedResponseAr,"L_ERRORPARAMID0") . ": " . $this->getProcessorResponseDescription($processor_code);
+				}
+				else
+				{
+					// there was no processor messages which means the error was caught first at the gateway
+					// so we should show whatever that message is
+					$longmessage = $this->GetArrayVal($httpParsedResponseAr,"L_LONGMESSAGE0");
+					// paypal prepends this to every message, so strip it out if necessary
+					if ($longmessage != "This%20transaction%20cannot%20be%20processed%2e") $longmessage = str_replace("This%20transaction%20cannot%20be%20processed%2e","", $longmessage );
+					
+					$errmsg = $this->GetArrayVal($httpParsedResponseAr,"L_SHORTMESSAGE0") . ": " . $longmessage;
+					
+				}
+	
+				$resp->ResponseMessage = urldecode( $errmsg );
 				
 			}
-
-			$resp->ResponseMessage = urldecode( $errmsg );
-			
+					
+			$resp->RawResponse = "";
+			$resp->ParsedResponse = $httpParsedResponseAr;
 		}
-				
-		$resp->RawResponse = "";
-		$resp->ParsedResponse = $httpParsedResponseAr;
+		catch (Exception $ex)
+		{
+			// this means we had a connection error talking to the gateway
+			$resp->IsSuccess = false;
+			$resp->ResponseCode = $ex->getCode();
+			$resp->ResponseMessage = $ex->getMessage();
+		}
+		
+
 		
 		return $resp;
 	}
@@ -206,7 +217,14 @@ class PayPal extends PaymentProcessor
 		return $httpParsedResponseAr;
 	}
 	
-
+	/**
+	 * Returns a possible description based on the code given.  These
+	 * codes are returned by the PayPal processor.  If the code is not
+	 * found, this function just returns "Error $code"
+	 *
+	 * @param string $code
+	 * @return string possible description of error
+	 */
 	private function getProcessorResponseDescription($code)
 	{
 		$responses = Array();
