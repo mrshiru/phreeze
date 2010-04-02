@@ -53,6 +53,12 @@ class PayPal extends PaymentProcessor
 		$padDateMonth = urlencode(str_pad($req->CCExpMonth, 2, '0', STR_PAD_LEFT));
 		
 		$expDateYear = urlencode($req->CCExpYear);
+		
+		if ( strlen($expDateYear) < 4 )
+		{
+			$expDateYear = "20" . $expDateYear;
+		}
+		
 		$cvv2Number = urlencode($req->CCSecurityCode);
 		$address1 = urlencode($req->CustomerStreetAddress);
 		$address2 = urlencode($req->CustomerStreetAddress2);
@@ -83,6 +89,9 @@ class PayPal extends PaymentProcessor
 			$resp->IsSuccess = false;
 			$resp->ResponseCode = urldecode( $this->GetArrayVal($httpParsedResponseAr,"L_SEVERITYCODE0")  . " " . $this->GetArrayVal($httpParsedResponseAr,"L_ERRORPARAMVALUE0") );
 			$resp->ResponseMessage = urldecode($this->GetArrayVal($httpParsedResponseAr,"L_SHORTMESSAGE0")  . ": " .  $this->GetArrayVal($httpParsedResponseAr,"L_LONGMESSAGE0") );
+
+			// paypal's response is a bit wordy.  remove this part of the message
+			$resp->ResponseMessage = str_replace("Invalid Data: This transaction cannot be processed.","",$resp->ResponseMessage);
 		}
 				
 		$resp->RawResponse = "";
