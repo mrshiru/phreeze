@@ -59,6 +59,9 @@ class PayPal extends PaymentProcessor
 			$expDateYear = "20" . $expDateYear;
 		}
 		
+		$email = (urlencode($req->CustomerEmail));
+		$invoiceNum = (urlencode($req->InvoiceNumber));
+		$orderDesc = (urlencode($req->OrderDescription));
 		$cvv2Number = urlencode($req->CCSecurityCode);
 		$address1 = urlencode($req->CustomerStreetAddress);
 		$address2 = urlencode($req->CustomerStreetAddress2);
@@ -72,7 +75,8 @@ class PayPal extends PaymentProcessor
 		// Add request-specific fields to the request string.
 		$nvpStr = "&PAYMENTACTION=$paymentType&AMT=$amount&CREDITCARDTYPE=$creditCardType&ACCT=$creditCardNumber".
 					"&EXPDATE=$padDateMonth$expDateYear&CVV2=$cvv2Number&FIRSTNAME=$firstName&LASTNAME=$lastName".
-					"&STREET=$address1&CITY=$city&STATE=$state&ZIP=$zip&COUNTRYCODE=$country&CURRENCYCODE=$currencyID";
+					"&STREET=$address1&CITY=$city&STATE=$state&ZIP=$zip&COUNTRYCODE=$country&CURRENCYCODE=$currencyID".
+					"&DESC=$orderDesc&INVNUM=$invoiceNum&EMAIL=$email";
 		
 		// Execute the API operation; see the PPHttpPost function above.
 		$httpParsedResponseAr = $this->PPHttpPost('DoDirectPayment', $nvpStr);
@@ -86,12 +90,33 @@ class PayPal extends PaymentProcessor
 		} 
 		else  
 		{
+			// for error descriptions, refrer to https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_api_nvp_errorcodes
 			$resp->IsSuccess = false;
-			$resp->ResponseCode = urldecode( $this->GetArrayVal($httpParsedResponseAr,"L_SEVERITYCODE0")  . " " . $this->GetArrayVal($httpParsedResponseAr,"L_ERRORPARAMVALUE0") );
-			$resp->ResponseMessage = urldecode($this->GetArrayVal($httpParsedResponseAr,"L_SHORTMESSAGE0")  . ": " .  $this->GetArrayVal($httpParsedResponseAr,"L_LONGMESSAGE0") );
+			$resp->ResponseCode = urldecode( $this->GetArrayVal($httpParsedResponseAr,"L_ERRORCODE0") );
+			
+			// this variable contains an error code from the credit processor if one was given
+			$processor_code = $this->GetArrayVal($httpParsedResponseAr,"L_ERRORPARAMVALUE0");
+			
+			if ($processor_code) 
+			{
+				// we have an error from the credit processor, so we should show that one
+				// because it will indicate the root cause of the problem
+				$errmsg = $this->GetArrayVal($httpParsedResponseAr,"L_ERRORPARAMID0") . ": " . $this->getProcessorResponseDescription($processor_code);
+			}
+			else
+			{
+				// there was no processor messages which means the error was caught first at the gateway
+				// so we should show whatever that message is
+				$longmessage = $this->GetArrayVal($httpParsedResponseAr,"L_LONGMESSAGE0");
+				// paypal prepends this to every message, so strip it out if necessary
+				if ($longmessage != "This%20transaction%20cannot%20be%20processed%2e") $longmessage = str_replace("This%20transaction%20cannot%20be%20processed%2e","", $longmessage );
+				
+				$errmsg = $this->GetArrayVal($httpParsedResponseAr,"L_SHORTMESSAGE0") . ": " . $longmessage;
+				
+			}
 
-			// paypal's response is a bit wordy.  remove this part of the message
-			$resp->ResponseMessage = str_replace("Invalid Data: This transaction cannot be processed.","",$resp->ResponseMessage);
+			$resp->ResponseMessage = urldecode( $errmsg );
+			
 		}
 				
 		$resp->RawResponse = "";
@@ -182,6 +207,23 @@ class PayPal extends PaymentProcessor
 	}
 	
 
+	private function getProcessorResponseDescription($code)
+	{
+		$responses = Array();
+      	$responses['0005'] = "The transaction was declined without explanation by the card issuer.";
+		$responses['0013'] = "The transaction amount is greater than the maximum the issuer allows.";
+		$responses['0014'] = "The issuer indicates that this card is not valid.";
+		$responses['0051'] = "The credit limit for this account has been exceeded.";
+		$responses['0054'] = "The card is expired.";
+		$responses['1015'] = "The credit card number was invalid.";
+		$responses['1511'] = "Duplicate transaction attempt.";
+		$responses['1899'] = "Timeout waiting for host response.";
+		$responses['2075'] = "Approval from the card issuer's voice center is required to process this transaction.";
+		
+		return array_key_exists($code,$responses) ? $responses[$code] : "Error " . $code;
+		
+	}
+	
 }
 
 ?>
