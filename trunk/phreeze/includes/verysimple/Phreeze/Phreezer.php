@@ -387,7 +387,16 @@ class Phreezer extends Observable
 				{
 					$prop = $fm->PropertyName;
 					$val = $obj->$prop;
-					$sql .= $delim . "`" . $fm->ColumnName . "` = '" . DataAdapter::Escape($val) . "'";
+
+					try
+					{
+						$sql .= $delim . "`" . $fm->ColumnName . "` = '" . DataAdapter::Escape($val) . "'";
+					}
+					catch (Exception $ex)
+					{
+						throw new Exception("Error escaping property '$prop'. value could not be converted to string");
+					}
+
 					$delim = ", ";
 				}
 			}
@@ -429,7 +438,16 @@ class Phreezer extends Observable
 					{
 						$prop = $fm->PropertyName;
 						$val = $obj->$prop;
-						$sql .= $delim . "'" . DataAdapter::Escape($val) . "'";
+						
+						try
+						{
+							$sql .= $delim . "'" . DataAdapter::Escape($val) . "'";
+						}
+						catch (Exception $ex)
+						{
+							throw new Exception("Error escaping property '$prop'. value could not be converted to string");
+						}
+						
 						$delim = ", ";
 					}
 				}

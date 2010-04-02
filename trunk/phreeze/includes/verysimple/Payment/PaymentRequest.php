@@ -16,11 +16,15 @@
  */
 class PaymentRequest
 {
+	static $TRANSACTION_TYPE_AUTH_ONLY = "AUTH";
+	static $TRANSACTION_TYPE_AUTH_CAPTURE = "AUTH_CAPTURE";
+	
 	public $SerialNumber = "";
 	public $DeveloperSerialNumber = "";
 	public $CustomerFirstName = "";
 	public $CustomerLastName = "";
 	public $CustomerStreetAddress = "";
+	public $CustomerStreetAddress2 = "";
 	public $CustomerCity = "";
 	public $CustomerState = ""; 
 	public $CustomerZipCode = ""; 
@@ -31,10 +35,13 @@ class PaymentRequest
 	public $CustomerIP = "";
 	public $Comment;
 	public $TransactionAmount = "";
+	public $CCType = "";
 	public $CCNumber = "";
 	public $CCExpMonth = "";
 	public $CCExpYear = "";
 	public $CCSecurityCode = "";
+	
+	public $TransactionCurrency = "USD";
 	
 	// authorize.net specific
 	public $TransactionType = "AUTH_CAPTURE";

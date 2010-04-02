@@ -9,6 +9,7 @@ define("FM_TYPE_SMALLINT",3);
 define("FM_TYPE_TINYINT",4);
 define("FM_TYPE_MEDIUMINT",15);
 define("FM_TYPE_BIGINT",16);
+define("FM_TYPE_FLOAT",20);
 define("FM_TYPE_VARCHAR",5);
 define("FM_TYPE_BLOB",6);
 define("FM_TYPE_DATE",7);
