@@ -21,16 +21,18 @@ abstract class PaymentProcessor
 	
 	public $Username;
 	public $Password;
+	public $Signature;
 	protected $_testMode;
 	
 	/**
 	* Constructor
 	* @param bool $testmode default = false 
 	*/
-	final function PaymentProcessor($testmode = false, $username = "", $password = "")
+	final function PaymentProcessor($testmode = false, $username = "", $password = "", $signature = "")
 	{
 		$this->Username = $username;
 		$this->Password = $password;
+		$this->Signature = $signature;
 		$this->_testMode = $testmode;
 		$this->Init($testmode);
 	}
