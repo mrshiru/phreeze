@@ -18,9 +18,10 @@ class PaymentRequest
 {
 	static $TRANSACTION_TYPE_AUTH_ONLY = "AUTH";
 	static $TRANSACTION_TYPE_AUTH_CAPTURE = "AUTH_CAPTURE";
+
+	public $OrderNumber = "";
+	public $InvoiceNumber = "";
 	
-	public $SerialNumber = "";
-	public $DeveloperSerialNumber = "";
 	public $CustomerFirstName = "";
 	public $CustomerLastName = "";
 	public $CustomerStreetAddress = "";
@@ -31,7 +32,6 @@ class PaymentRequest
 	public $CustomerCountry = "USA"; 
 	public $CustomerPhone = "";
 	public $CustomerEmail = "";
-	public $OrderNumber = "";
 	public $CustomerIP = "";
 	public $Comment;
 	public $TransactionAmount = "";
@@ -51,6 +51,12 @@ class PaymentRequest
 	public $CustomerName = "";
 	public $OrderDescription; // 22 chars (xxx*xxxxxxxxxxxxxxxxxx || xxxxxxx*xxxxxxxxxxxxxx || xxxxxxxxxxxx*xxxxxxxxx)
 
+	/** @deprecated */
+	public $SerialNumber = "";
+	
+	/** @deprecated */
+	public $DeveloperSerialNumber = "";
+	
 	/**
 	 * Constructor
 	 */
