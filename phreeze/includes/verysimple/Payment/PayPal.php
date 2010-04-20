@@ -47,15 +47,17 @@ class PayPal extends PaymentProcessor
 			: urlencode('Authorization') ;
 		$firstName = urlencode($req->CustomerFirstName);
 		$lastName = urlencode($req->CustomerLastName);
-		$creditCardType = urlencode($req->CCType);
-		$creditCardNumber = urlencode($req->CCNumber);
-		// Month must be padded with leading zero
-		$padDateMonth = urlencode(str_pad($req->CCExpMonth, 2, '0', STR_PAD_LEFT));
+		$creditCardType = urlencode( trim($req->CCType) );
+		$creditCardNumber = urlencode( trim($req->CCNumber) );
 		
-		$expDateYear = urlencode($req->CCExpYear);
+		// month needs to be two digits - padded with leading zero if necessary
+		$padDateMonth = urlencode( trim(str_pad($req->CCExpMonth, 2, '0', STR_PAD_LEFT)) );
 		
+		// year needs to be full 4-digit
+		$expDateYear = urlencode( trim($req->CCExpYear) );
 		if ( strlen($expDateYear) < 4 )
 		{
+			/** HACK - THIS WILL BREAK IN THE YEAR 2100 **/
 			$expDateYear = "20" . $expDateYear;
 		}
 		
@@ -68,9 +70,13 @@ class PayPal extends PaymentProcessor
 		$city = urlencode($req->CustomerCity);
 		$state = urlencode($req->CustomerState);
 		$zip = urlencode($req->CustomerZipCode);
-		$country = urlencode($req->CustomerCountry);	// US or other valid country code
 		$amount = urlencode($req->TransactionAmount);
 		$currencyID = urlencode($req->TransactionCurrency);		// or other currency ('GBP', 'EUR', 'JPY', 'CAD', 'AUD')
+		
+		// legit country code list: https://cms.paypal.com/us/cgi-bin/?&cmd=_render-content&content_ID=developer/e_howto_api_nvp_country_codes
+		$country = urlencode( strtoupper($req->CustomerCountry) );	// US or other valid country code
+		if ($country == "USA") $country = "US";
+		
 		
 		// Add request-specific fields to the request string.
 		$nvpStr = "&PAYMENTACTION=$paymentType&AMT=$amount&CREDITCARDTYPE=$creditCardType&ACCT=$creditCardNumber".
