@@ -125,9 +125,15 @@ class PayPal extends PaymentProcessor
 				$resp->ResponseMessage = urldecode( $errmsg );
 				
 			}
-					
+			
 			$resp->RawResponse = "";
-			$resp->ParsedResponse = $httpParsedResponseAr;
+			$delim = "";
+			foreach (array_keys($httpParsedResponseAr) as $key)
+			{
+				$resp->RawResponse .= $delim . $key . "='" . urldecode( $httpParsedResponseAr[$key]) . "'";
+				$delim = ", ";
+			}
+
 		}
 		catch (Exception $ex)
 		{
