@@ -19,6 +19,7 @@ class PaymentRequest
 	static $TRANSACTION_TYPE_AUTH_ONLY = "AUTH";
 	static $TRANSACTION_TYPE_AUTH_CAPTURE = "AUTH_CAPTURE";
 
+	public $SoftDescriptor = "";
 	public $OrderNumber = "";
 	public $InvoiceNumber = "";
 	
