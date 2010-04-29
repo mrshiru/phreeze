@@ -73,6 +73,9 @@ class PayPal extends PaymentProcessor
 		$amount = urlencode($req->TransactionAmount);
 		$currencyID = urlencode($req->TransactionCurrency);		// or other currency ('GBP', 'EUR', 'JPY', 'CAD', 'AUD')
 		
+		// soft descriptor can only be a max of 22 chars with no non-alphanumeric characters
+		$softdescriptor = urlencode(substr(preg_replace("/[^a-zA-Z0-9\s]/", "", $req->SoftDescriptor),0,22 ));
+		
 		// legit country code list: https://cms.paypal.com/us/cgi-bin/?&cmd=_render-content&content_ID=developer/e_howto_api_nvp_country_codes
 		$country = urlencode( strtoupper($req->CustomerCountry) );	// US or other valid country code
 		if ($country == "USA") $country = "US";
@@ -82,7 +85,7 @@ class PayPal extends PaymentProcessor
 		$nvpStr = "&PAYMENTACTION=$paymentType&AMT=$amount&CREDITCARDTYPE=$creditCardType&ACCT=$creditCardNumber".
 					"&EXPDATE=$padDateMonth$expDateYear&CVV2=$cvv2Number&FIRSTNAME=$firstName&LASTNAME=$lastName".
 					"&STREET=$address1&CITY=$city&STATE=$state&ZIP=$zip&COUNTRYCODE=$country&CURRENCYCODE=$currencyID".
-					"&DESC=$orderDesc&INVNUM=$invoiceNum&EMAIL=$email";
+					"&DESC=$orderDesc&INVNUM=$invoiceNum&EMAIL=$email&SOFTDESCRIPTOR=$softdescriptor";
 		
 		// make the post - use a try/catch in case of network errors
 		try
