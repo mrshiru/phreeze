@@ -187,8 +187,9 @@ class PayPal extends PaymentProcessor
 			$API_Endpoint = "https://api-3t." . $this->environment . ".paypal.com/nvp";
 		}
 		
-		$version = urlencode('51.0');
-	
+		//$version = urlencode('51.0');
+		$version = urlencode('62.0');
+		
 		// Set the curl parameters.
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $API_Endpoint);
