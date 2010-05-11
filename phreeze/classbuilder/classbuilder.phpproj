@@ -2,7 +2,7 @@
 {
 "ProjectType" = "local"
 "AutoLoadTemplate" = "%s.php;class.%s.php;"
-"IncludeDirs" = "./;../includes/"
+"IncludeDirs" = "./;../includes/;/usr/local/PEAR"
 "ProjectIdGuid" = "{CB36EE14-8FA4-4B11-95E8-06A3D17B3673}"
 "ProjectVersion" = "2.7.4.5941"
 }

@@ -23,13 +23,13 @@ class {$singular}Controller extends Controller
 	// base functions suggested to override
 	// function ListAll() {ldelim}{rdelim}
 
-	function ListPage()
+	public function ListPage()
 	{ldelim}
 		// these parameters are supplied by extjs grid pagingtoolbar
-		$s = Request::Get('start',0);  // start (zero based)
-		$ps = Request::Get('limit',20); // page size
-		$sc = Request::Get('sort'); // name of column for sorting
-		$sd = Request::Get('dir','ASC'); // sort direction
+		$s = RequestUtil::Get('start',0);  // start (zero based)
+		$ps = RequestUtil::Get('limit',20); // page size
+		$sc = RequestUtil::Get('sort'); // name of column for sorting
+		$sd = RequestUtil::Get('dir','ASC'); // sort direction
 		$cp = $s/$ps + 1; // current page
 		
 		require_once("Model/DAO/{$singular}Criteria.php");
@@ -46,15 +46,15 @@ class {$singular}Controller extends Controller
 		$this->RenderXML($datapage);
 	{rdelim}
 	
-	function Display()
+	public function Display()
 	{ldelim}
-		$this->_AssignModel(Request::Get("{$table->GetPrimaryKeyName()|studlycaps}"));
+		$this->_AssignModel(RequestUtil::Get("{$table->GetPrimaryKeyName()|studlycaps}"));
 		$this->Render("{$singular}Display");
 	{rdelim}
 
 	function Edit()
 	{ldelim}
-		$this->_AssignModel(Request::Get("{$table->GetPrimaryKeyName()|studlycaps}"));
+		$this->_AssignModel(RequestUtil::Get("{$table->GetPrimaryKeyName()|studlycaps}"));
 		$this->Render("{$singular}Edit");
 	{rdelim}
 	
@@ -66,7 +66,7 @@ class {$singular}Controller extends Controller
 	
 	function Save()
 	{ldelim}
-		$pk = Request::Get("{$table->GetPrimaryKeyName()|studlycaps}");
+		$pk = RequestUtil::Get("{$table->GetPrimaryKeyName()|studlycaps}");
 		
 		${$singular|lower} = $this->LoadFromForm($pk);
 		
@@ -83,7 +83,7 @@ class {$singular}Controller extends Controller
 			{ldelim}
 {if !$table->PrimaryKeyIsAutoIncrement()}
 				// this table does not have an auto-insert, so we have to specify an insert
-				$force_insert = Request::Get("force_insert");
+				$force_insert = RequestUtil::Get("force_insert");
 				${$singular|lower}->Save($force_insert);
 {else}
 				${$singular|lower}->Save();
@@ -103,7 +103,7 @@ class {$singular}Controller extends Controller
 
 	function Delete()
 	{ldelim}
-		$pk = Request::Get("{$table->GetPrimaryKeyName()|studlycaps}");
+		$pk = RequestUtil::Get("{$table->GetPrimaryKeyName()|studlycaps}");
 		${$singular|lower} = $this->Phreezer->Get("{$singular}",$pk);
 		${$singular|lower}->Delete();
 		$this->Redirect("{$singular}.ListAll","{$singular} was deleted");
@@ -131,16 +131,16 @@ class {$singular}Controller extends Controller
 {/if}
 {foreach from=$table->Columns item=column}
 {if $column->Extra == 'auto_increment'}{*if $column->Key == "PRI"*}
-		// ${$singular|lower}->{$column->NameWithoutPrefix|studlycaps} = Request::Get("{$column->NameWithoutPrefix|studlycaps}"); // this is an auto-increment
+		// ${$singular|lower}->{$column->NameWithoutPrefix|studlycaps} = RequestUtil::Get("{$column->NameWithoutPrefix|studlycaps}"); // this is an auto-increment
 {else}
 {if $column->Type == "date" or $column->Type == "datetime"}
 {if $column->NameWithoutPrefix|studlycaps == "Created" or $column->NameWithoutPrefix|studlycaps == "CreatedDate" or $column->NameWithoutPrefix|studlycaps == "CreateDate"}
-		${$singular|lower}->{$column->NameWithoutPrefix|studlycaps} = (${$singular|lower}->{$column->NameWithoutPrefix|studlycaps}) ? ${$singular|lower}->{$column->NameWithoutPrefix|studlycaps} : Request::GetAsDateTime("");
+		${$singular|lower}->{$column->NameWithoutPrefix|studlycaps} = (${$singular|lower}->{$column->NameWithoutPrefix|studlycaps}) ? ${$singular|lower}->{$column->NameWithoutPrefix|studlycaps} : RequestUtil::GetAsDateTime("");
 {else}
-		${$singular|lower}->{$column->NameWithoutPrefix|studlycaps} = Request::GetAsDateTime("{$column->NameWithoutPrefix|studlycaps}");
+		${$singular|lower}->{$column->NameWithoutPrefix|studlycaps} = RequestUtil::GetAsDateTime("{$column->NameWithoutPrefix|studlycaps}");
 {/if}
 {else}
-		${$singular|lower}->{$column->NameWithoutPrefix|studlycaps} = Request::Get("{$column->NameWithoutPrefix|studlycaps}");
+		${$singular|lower}->{$column->NameWithoutPrefix|studlycaps} = RequestUtil::Get("{$column->NameWithoutPrefix|studlycaps}");
 {/if}
 {/if}
 {/foreach}
