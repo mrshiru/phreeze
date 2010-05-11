@@ -1,4 +1,4 @@
-{ldelim}include file="_header.tpl" title="Edit {$singular|studlycaps}"{rdelim}
+{ldelim}include file="_header.tpl" include_ext="true" title="Edit {$singular|studlycaps}"{rdelim}
 
 <!-- verysimple form libs -->
 <script type="text/javascript" src="{$PathToVerySimpleScripts}validate.js"></script>
@@ -10,7 +10,7 @@
 <script type="text/javascript" src="scripts/validate_model.js"></script>
 
 
-<form name="{$singular|studlycaps}Form" action="{ldelim}$URL->Get('{$singular}','Save'){rdelim}" onsubmit="return validateModel(this,'{$singular}');" method="post">
+<form id="{$singular|studlycaps}Form" name="{$singular|studlycaps}Form" action="{ldelim}$URL->Get('{$singular}','Save'){rdelim}" onsubmit="return validateModel(this,'{$singular}');" method="post">
 
 <fieldset id="{$singular|studlycaps}FieldSet">
 	<legend>Edit {$table->Name|studlycaps}</legend>
@@ -43,7 +43,7 @@
 {if !$table->PrimaryKeyIsAutoIncrement()}
 		<input type="hidden" id="force_insert" name="force_insert" value="{ldelim}$force_insert{rdelim}" /> 
 {/if}
-		<input type="submit" class="button" value=" OK " /> 
+		<input type="submit" class="button" value=" OK " onclick="this.form.submit();" /> 
 		<input type="button" class="button" value="Cancel" onclick="self.location='{ldelim}$URL->Get('{$singular}','ListAll'){rdelim}';" />
 	</p>
 

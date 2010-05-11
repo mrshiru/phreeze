@@ -1,4 +1,4 @@
-{ldelim}include file="_header.tpl" title="Manage {$plural}"{rdelim}
+{ldelim}include file="_header.tpl" include_ext="true" title="Manage {$plural}"{rdelim}
 
 <h1>Manage {$plural}</h1>
 
