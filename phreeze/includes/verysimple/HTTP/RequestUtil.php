@@ -63,18 +63,12 @@ class RequestUtil
 		$domainport = explode(":",$_SERVER['HTTP_HOST']);
 		$domain = $domainport[0];
 		
-		if (isset($domainport[1]))
-		{
-			// we have an explicit port in the domain
-			$port = ":" . $domainport[1];
-		}
-		else
-		{
-			// we need to deduce the port, however 80 and 443 are generaly not included in the url
-			$port = ($_SERVER["SERVER_PORT"] == "80" || $_SERVER["SERVER_PORT"] == "443") ? "" : (":" . $_SERVER["SERVER_PORT"]); 
-		}
+		$port = (isset($domainport[1])) ? $domainport[1] : $_SERVER["SERVER_PORT"];
 
-		
+		// ports 80 and 443 are generally not included in the url
+		$port = ($port == "" || $port == "80" || $port == "443") ? "" : (":" . $port); 
+
+
 		if (isset($_SERVER['REQUEST_URI']))
 		{
 			// REQUEST_URI is more accurate but isn't always defined on windows
