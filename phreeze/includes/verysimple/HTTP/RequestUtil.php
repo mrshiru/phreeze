@@ -13,7 +13,7 @@ require_once("FileUpload.php");
  * @author     VerySimple Inc.
  * @copyright  1997-2007 VerySimple, Inc. http://www.verysimple.com
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    1.1
+ * @version    1.2
  */
 class RequestUtil
 {
@@ -55,10 +55,25 @@ class RequestUtil
 	 */
 	public static function GetCurrentURL($include_querystring = true)
 	{
+		
 		$protocol = substr($_SERVER["SERVER_PROTOCOL"], 0, strpos($_SERVER["SERVER_PROTOCOL"], "/")) 
 			. (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" ? "S" : "");
-		$domain = $_SERVER['HTTP_HOST'];
-		$port = ($_SERVER["SERVER_PORT"] == "80" || $_SERVER["SERVER_PORT"] == "443") ? "" : (":" . $_SERVER["SERVER_PORT"]); 
+		$port = "";
+		
+		$domainport = explode(":",$_SERVER['HTTP_HOST']);
+		$domain = $domainport[0];
+		
+		if (isset($domainport[1]))
+		{
+			// we have an explicit port in the domain
+			$port = ":" . $domainport[1];
+		}
+		else
+		{
+			// we need to deduce the port, however 80 and 443 are generaly not included in the url
+			$port = ($_SERVER["SERVER_PORT"] == "80" || $_SERVER["SERVER_PORT"] == "443") ? "" : (":" . $_SERVER["SERVER_PORT"]); 
+		}
+
 		
 		if (isset($_SERVER['REQUEST_URI']))
 		{
@@ -75,7 +90,9 @@ class RequestUtil
 			$qs = isset($_SERVER['QUERY_STRING']) ? "?" . $_SERVER['QUERY_STRING'] : "";
 		}
 		
-		return strtolower($protocol) . "://" . $domain . $path . $port . ($include_querystring ? $qs : "");
+		$url = strtolower($protocol) . "://" . $domain . $port . $path . ($include_querystring ? $qs : "");
+		
+		return $url;
 	}
 	
 	
