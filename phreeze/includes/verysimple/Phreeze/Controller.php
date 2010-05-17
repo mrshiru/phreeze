@@ -372,14 +372,14 @@ abstract class Controller
 	{
 		if ( !RequestUtil::Get("SaveInline") )
 		{
-			throw new Exception("SaveInline was specified, but Save is not implemented");
+			throw new Exception("Save is not implemented by this controller");
 		}
 		
 		require_once("ValidationResponse.php");
 		$vr = new ValidationResponse();
 		$vr->Success = false;
 		$vr->Errors = array();
-		$vr->Message = "SaveInline was specified, but Save is not implemented";
+		$vr->Message = "SaveInline is not implemented by this controller";
 		$this->RenderJSON($vr);
 	}
 	
