@@ -18,18 +18,18 @@
 	{foreach from=$columns item=column}
 		{if $column->NameWithoutPrefix == "assign_label" || $column->NameWithoutPrefix == "assign_priority" || $column->NameWithoutPrefix == "id" || $column->NameWithoutPrefix == "created_date" || $column->NameWithoutPrefix == "created_by" || $column->NameWithoutPrefix == "modified_date" || $column->NameWithoutPrefix == "modified_by" || $column->NameWithoutPrefix == "sync_id" || $column->NameWithoutPrefix == "sync_date" || $column->NameWithoutPrefix == "sync_checksum" || $column->NameWithoutPrefix == "is_deleted"}
 		{else}
-			<Data name="{$column->NameWithoutPrefix|camelCase}" type="{$column->GetFlexType()}" required="{if $column->Null == 'NO'}true{else}false{/if}" 
+			<Data name="{$column->NameWithoutPrefix|camelcase}" type="{$column->GetFlexType()}" required="{if $column->Null == 'NO'}true{else}false{/if}" 
 			{if $column->Default != ''}defaultValue="{if $column->GetFlexType() == 'Boolean'}{if $column->Default}true{else}false{/if}{else}{if $column->GetFlexType() == 'String'}'{$column->Default|escape|replace:"\"":"\\\""|replace:"'":"\\\\'"}'{else}{$column->Default|escape|replace:"\"":"\\\""|replace:"'":"\\\\'"}{/if}{/if}"{/if}
 			maxSize="{if $column->Size}{$column->Size}{else}0{/if}" column="{$column->NameWithoutPrefix}"/>
 		{/if}
 	{/foreach}
 	
 	{foreach from=$tableInfo.table->Sets item=set}
-        <Relation name="{$set->GetterName|camelCase}" object="{$set->SetTableName|studlyCaps}" type="many" fetching="lazy" column="{$set->KeyColumnNoPrefix}" foreignTable="{$set->SetTableName}" foreignColumn="{$set->SetKeyColumn}" {if $set->SetKeyComment|strpos:'cascadeDelete' > -1}cascadeDelete="true"{/if}/>
+        <Relation name="{$set->GetterName|camelcase}" object="{$set->SetTableName|studlycaps}" type="many" fetching="lazy" column="{$set->KeyColumnNoPrefix}" foreignTable="{$set->SetTableName}" foreignColumn="{$set->SetKeyColumn}" {if $set->SetKeyComment|strpos:'cascadeDelete' > -1}cascadeDelete="true"{/if}/>
 	{/foreach}
 	
 	{foreach from=$tableInfo.table->Constraints item=constraint}
-        <Relation name="{$constraint->GetterName|camelCase}" object="{$constraint->ReferenceTableName|studlyCaps}" type="one" fetching="lazy" column="{$constraint->KeyColumnNoPrefix}" foreignTable="{$constraint->ReferenceTableName}" foreignColum="{$constraint->ReferenceKeyColumn}"/>
+        <Relation name="{$constraint->GetterName|camelcase}" object="{$constraint->ReferenceTableName|studlycaps}" type="one" fetching="lazy" column="{$constraint->KeyColumnNoPrefix}" foreignTable="{$constraint->ReferenceTableName}" foreignColum="{$constraint->ReferenceKeyColumn}"/>
 	{/foreach}
 
     </VO>
