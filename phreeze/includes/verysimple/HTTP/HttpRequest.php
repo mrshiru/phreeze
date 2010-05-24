@@ -13,6 +13,66 @@
 class HttpRequest
 {
 	
+	static $METHOD_GET = "GET";
+	static $METHOD_POST = "POST";
+	static $METHOD_PUT = "PUT";
+	static $METHOD_DELETE = "DELETE";
+	
+	static $USER_AGENT = "verysimple::HttpRequest";
+	static $VERIFY_CERT = false;
+	
+	/**
+	 * 
+	 * @param $method
+	 * @param $params
+	 */
+	function RestRequest($endpoint, $method, $params = Array())
+	{
+		$qs = HttpRequest::ArrayToQueryString($params);
+		$ch = null;
+		
+		switch ($method)
+		{
+			case HttpRequest::$METHOD_GET:
+				$ch = curl_init($endpoint . ($qs ? "?" . $qs : ""));
+				break;
+			case HttpRequest::$METHOD_POST:
+				$ch = curl_init($endpoint);
+				curl_setopt($ch, CURLOPT_POST, 1);
+				curl_setopt($ch, CURLOPT_POSTFIELDS, $qs);
+				break;
+			case HttpRequest::$METHOD_PUT:
+				$ch = curl_init($endpoint);
+				// curl_setopt($ch, CURLOPT_PUT, 1); // <- this method requires CURLOPT_INFILE
+				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT'); 
+				curl_setopt($ch, CURLOPT_POSTFIELDS, $qs);
+				break;
+			case HttpRequest::$METHOD_DELETE:
+				$ch = curl_init($endpoint);
+				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+				curl_setopt($ch, CURLOPT_POSTFIELDS, $qs);
+				break;			
+		}
+		
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_VERBOSE, 0); // <- ENABLE DEBUGGING
+		curl_setopt($ch, CURLOPT_USERAGENT, HttpRequest::$USER_AGENT);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, HttpRequest::$VERIFY_CERT);
+		curl_setopt($ch, CURLOPT_NOPROGRESS, 1);
+
+		// make the request
+		$response = curl_exec ($ch);
+		
+		// if error is not empty, then a network error occured
+		$error = curl_error($ch);
+		if ($error) {$response .= $error;}
+		
+		curl_close ($ch);
+		
+		return $response;
+	}
+	
 	/** 
 	* Make an HTTP POST request using the best method available on the server
 	* 
