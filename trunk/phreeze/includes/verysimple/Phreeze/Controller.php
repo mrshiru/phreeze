@@ -447,9 +447,24 @@ abstract class Controller
 		{
 			$this->Phreezer->Observe("Loading CurrentUser from Session");
 			$this->_cu = Authenticator::GetCurrentUser($this->GUID);
-			if ($this->_cu)
+			// print_r($this->_cu); die();
+			if ($this->_cu )
 			{
-				$this->_cu->Refresh($this->Phreezer);
+				if (get_class($this->_cu) == "__PHP_Incomplete_Class")
+				{
+					// this happens if the class used for authentication was not included before the session was started
+					$tmp = print_r($this->_cu,1);
+					$parts1 = explode("__PHP_Incomplete_Class_Name] => ",$tmp);
+					$parts2 = explode("[",$parts1[1]);
+					$name = trim($parts2[0]);
+					
+					Authenticator::ClearAuthentication($this->GUID);
+					throw new Exception("The class definition used for authentication '$name' must be defined (included) before the session is started, for example in _config.php.");
+				}
+				else
+				{
+					$this->_cu->Refresh($this->Phreezer);
+				}
 			}
 		}
 		else
