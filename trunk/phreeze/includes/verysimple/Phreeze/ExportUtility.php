@@ -106,7 +106,7 @@ class ExportUtility
 			$current_column = 0;
 			foreach ($columns as $column) 
 			{
-				if ($is_numeric[$column] == true)
+				if ($fieldmap_exists == false || $is_numeric[$column] == true)
 				{
 					$worksheet->write($current_row, $current_column, $object->$column, $NORMAL);
 				}
