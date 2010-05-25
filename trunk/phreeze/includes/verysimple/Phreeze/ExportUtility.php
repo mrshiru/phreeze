@@ -17,7 +17,8 @@ class ExportUtility
 {
 	/**
 	 * Streams to the browser the provided array of objects as a basic Excel document
-	 * with headers
+	 * with headers.  if the objects have an associated Map class, then footers will be
+	 * added to sum any numeric fields.  otherwise no footers are added
 	 * 
 	 * Note that PEAR Spreadsheet_Excel_Writer must be installed
 	 * @link http://pear.php.net/package/Spreadsheet_Excel_Writer
@@ -56,20 +57,40 @@ class ExportUtility
 		$fields = Array();
 		$columns = Array();
 		$is_numeric = Array();
+		$fieldmap_exists = false;
 		
 		// print the headers
 		// while we're looping, also parse the fields so we don't have to do 
 		// it repeatedly when looping through data
 		if (isset($objects[0]))
 		{
-			$fields = $phreezer->GetFieldMaps( get_class($objects[0]) );
-			$columns = array_keys($fields);
+			try
+			{
+				// see if there is a fieldmap for this object
+				$fields = $phreezer->GetFieldMaps( get_class($objects[0]) );
+				$fieldmap_exists = true;
+
+				// these are the columns we'll use for enumeration from here on
+				$columns = array_keys($fields);
+			}
+			catch (Exception $ex)
+			{
+				// no fieldmaps exist, so use the reflection class instead
+				$reflect = new ReflectionClass($objects[0]);
+				$props = $reflect->getProperties(ReflectionProperty::IS_PUBLIC);
+	
+				foreach ($props as $prop) 
+				{
+					$column = $prop->getName();
+				    $columns[] = $column;
+				}
+			}
 			
 			$current_column = 0;
 			foreach ($columns as $column) 
 			{
 				// save this so we don't check it every time when looping through data
-				$is_numeric[$column] = $fields[$column]->IsNumeric();
+				$is_numeric[$column] = $fieldmap_exists ? $fields[$column]->IsNumeric() : false;
 
     			$worksheet->writeString(2, $current_column, $column, $BOLD_REG);
     			$current_column++;
@@ -85,7 +106,7 @@ class ExportUtility
 			$current_column = 0;
 			foreach ($columns as $column) 
 			{
-				if ($is_numeric[$column])
+				if ($is_numeric[$column] == true)
 				{
 					$worksheet->write($current_row, $current_column, $object->$column, $NORMAL);
 				}
@@ -114,10 +135,6 @@ class ExportUtility
 			
     		$current_column++;
 		}
-		
-		// =SUM(D4:D23)
-		
-		//$worksheet->writeString($current_row + 1, 0, 'EOF', $BOLD_MED);
 		
 		$workbook->send($fileName);
 		$workbook->close();
