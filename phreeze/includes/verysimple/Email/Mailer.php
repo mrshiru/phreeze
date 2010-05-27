@@ -3,7 +3,7 @@
 
 /** import supporting libraries */
 require_once("class.phpmailer.php");
-require_once("Message.php");
+require_once("EmailMessage.php");
 require_once("Recipient.php");
 
 define("MAILER_RESULT_FAIL",0);

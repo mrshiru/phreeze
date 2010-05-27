@@ -32,9 +32,9 @@
  */
 
 /**
- * ###############################################################
- * UPDATED BY J.HINKLE 01/20/2010 TO REPLACE DEPRECATED EREGI CALL
- * ###############################################################
+ * ##########################################################################
+ * UPDATED BY J.HINKLE 01/20/2010 TO REPLACE DEPRECATED EREGI AND SPLIT CALLS
+ * ##########################################################################
  */
 
 class PHPMailer {
@@ -461,7 +461,7 @@ class PHPMailer {
       $to .= $this->AddrFormat($this->to[$i]);
     }
 
-    $toArr = split(',', $to);
+    $toArr = explode(',', $to);
 
     if ($this->Sender != '' && strlen(ini_get('safe_mode'))< 1) {
       $old_from = ini_get('sendmail_from');
@@ -1129,7 +1129,7 @@ class PHPMailer {
     switch(strtolower($encoding)) {
       case 'base64':
         /* chunk_split is found in PHP >= 3.0.6 */
-        $encoded = chunk_split(base64_encode($str), 76, $this->LE);
+        $encoded = chunk_explode(base64_encode($str), 76, $this->LE);
         break;
       case '7bit':
       case '8bit':
@@ -1190,7 +1190,7 @@ class PHPMailer {
       $encoding = 'B';
       $encoded = base64_encode($str);
       $maxlen -= $maxlen % 4;
-      $encoded = trim(chunk_split($encoded, $maxlen, "\n"));
+      $encoded = trim(chunk_explode($encoded, $maxlen, "\n"));
     } else {
       $encoding = 'Q';
       $encoded = $this->EncodeQ($str, $position);
@@ -1500,7 +1500,7 @@ class PHPMailer {
         $filename  = basename($url);
         $directory = dirname($url);
         $cid       = 'cid:' . md5($filename);
-        $fileParts = split("\.", $filename);
+        $fileParts = explode("\.", $filename);
         $ext       = $fileParts[1];
         $mimeType  = $this->_mime_types($ext);
         $message = preg_replace("/".$images[1][$i]."=\"".preg_quote($url, '/')."\"/Ui", $images[1][$i]."=\"".$cid."\"", $message);
