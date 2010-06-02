@@ -1,6 +1,8 @@
 <?php
 /** @package    verysimple::HTTP */
 
+require_once("verysimple/HTTP/RequestUtil.php");
+
 /**
  * class for dealing with URLs
  *
@@ -28,9 +30,10 @@ class UrlWriter
 	 * @param string $controller
 	 * @param string $method
 	 * @param string $params in the format param1=val1&param2=val2
+	 * @param bool $strip_api set to true to strip virtual part of the url in a rest call
 	 * @return string URL
 	 */
-	public function Get($controller,$method,$params = "")
+	public function Get($controller,$method,$params = "",$strip_api = true)
 	{
 		$qs = "";
 		if (is_array($params))
@@ -46,7 +49,17 @@ class UrlWriter
 		}
 		
 		$url = sprintf($this->_format,$controller,$method,$qs);
-		return (substr($url,-1,1) == "&" || substr($url,-1,1) == "?") ? substr($url,0,strlen($url)-1) : $url;
+		
+		$url = (substr($url,-1,1) == "&" || substr($url,-1,1) == "?") ? substr($url,0,strlen($url)-1) : $url;
+
+		//
+		$api_check = explode("/api/",RequestUtil::GetCurrentUrl());
+		if ($strip_api && count($api_check) > 1)
+		{
+			$url = $api_check[0] . "/" . $url;
+		}
+		
+		return $url;
 	}
 	
 }
