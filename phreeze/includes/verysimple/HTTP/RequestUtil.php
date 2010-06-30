@@ -55,15 +55,18 @@ class RequestUtil
 	 */
 	public static function GetCurrentURL($include_querystring = true)
 	{
+		$server_protocol = isset($_SERVER["SERVER_PROTOCOL"]) ? $_SERVER["SERVER_PROTOCOL"] : "";
+		$http_host = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : "";
+		$server_port = isset($_SERVER["SERVER_PORT"]) ? $_SERVER["SERVER_PORT"] : "";
 		
-		$protocol = substr($_SERVER["SERVER_PROTOCOL"], 0, strpos($_SERVER["SERVER_PROTOCOL"], "/")) 
+		$protocol = substr($server_protocol, 0, strpos($server_protocol, "/")) 
 			. (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" ? "S" : "");
 		$port = "";
 		
-		$domainport = explode(":",$_SERVER['HTTP_HOST']);
+		$domainport = explode(":",$http_host);
 		$domain = $domainport[0];
 		
-		$port = (isset($domainport[1])) ? $domainport[1] : $_SERVER["SERVER_PORT"];
+		$port = (isset($domainport[1])) ? $domainport[1] : $server_port;
 
 		// ports 80 and 443 are generally not included in the url
 		$port = ($port == "" || $port == "80" || $port == "443") ? "" : (":" . $port); 
@@ -80,7 +83,7 @@ class RequestUtil
 		else
 		{
 			// otherwise use SCRIPT_NAME & QUERY_STRING
-			$path = $_SERVER['SCRIPT_NAME'];
+			$path = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : "";
 			$qs = isset($_SERVER['QUERY_STRING']) ? "?" . $_SERVER['QUERY_STRING'] : "";
 		}
 		
