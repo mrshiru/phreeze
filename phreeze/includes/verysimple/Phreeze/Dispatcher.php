@@ -49,7 +49,19 @@ class Dispatcher
 		// look for the file in the expected places, hault if not found
 		if ( !(file_exists($controller_file) || file_exists("libs/".$controller_file)) )
 		{
-			throw new Exception("File ~/libs/".$controller_file." was not found");
+			// go to plan be, search the include path for the controller
+			$paths = explode(PATH_SEPARATOR,get_include_path());
+			$found = false;
+			foreach ($paths as $path)
+			{
+				if (file_exists($path ."/".$controller_file))
+				{
+					$found = true;
+					break;
+				}
+			}
+			
+			if (!$found) throw new Exception("File ~/libs/".$controller_file." was not found in include path");
 		}
 		
 		// we should be fairly certain the file exists at this point
@@ -71,7 +83,8 @@ class Dispatcher
 		}
 		
 		// convert any php errors into an exception
-		set_error_handler(array("Dispatcher", "HandleException"),E_ALL );
+		// except deprecated errors (due to some libraries that use outdated functions)
+		set_error_handler(array("Dispatcher", "HandleException"),E_ALL  & ~E_DEPRECATED );
 		//set_exception_handler(array("Dispatcher", "HandleException"));
 		
 		// file, class and method all are ok, go ahead and call it
