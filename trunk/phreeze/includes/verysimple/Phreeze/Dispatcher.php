@@ -5,6 +5,12 @@
 require_once("verysimple/HTTP/RequestUtil.php");
 
 /**
+ * Set to true and Phreeze will not try to handle deprecated function warnings
+ * @var boolean default = true
+ */
+define("PHREEZE_IGNORE_DEPRECATED",true);
+
+/**
  * Dispatcher direct a web request to the correct controller & method
  *
  * @package    verysimple::Phreeze 
@@ -83,9 +89,15 @@ class Dispatcher
 		}
 		
 		// convert any php errors into an exception
-		// except deprecated errors (due to some libraries that use outdated functions)
-		set_error_handler(array("Dispatcher", "HandleException"),E_ALL  & ~E_DEPRECATED );
-		//set_exception_handler(array("Dispatcher", "HandleException"));
+		if (PHREEZE_IGNORE_DEPRECATED && defined('E_DEPRECATED'))
+		{
+			// for php 5.3 and above convert we can ignore deprecated error warnings
+			set_error_handler(array("Dispatcher", "HandleException"),E_ALL  & ~E_DEPRECATED );
+		}
+		else
+		{
+			set_error_handler(array("Dispatcher", "HandleException"),E_ALL);
+		}
 		
 		// file, class and method all are ok, go ahead and call it
 		call_user_func(array(&$controller, $method_param));
@@ -109,6 +121,9 @@ class Dispatcher
 		
 		// if error reporting is off then do not handle this (@ prefix)
 		if (error_reporting() == 0) return true;
+		
+		// don't report deprecated errors
+		if (PHREEZE_IGNORE_DEPRECATED && strpos($string,"deprecated") === true) return true;
 		
 		throw new Exception($string,$code);
 	}
