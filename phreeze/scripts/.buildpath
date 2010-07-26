@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<buildpath>
+	<buildpathentry kind="src" path="ext-2.2.0/examples/feed-viewer"/>
+	<buildpathentry kind="src" path="ext-2.2.0/examples/form"/>
+	<buildpathentry kind="src" path="ext-2.2.0/examples/grid-filtering"/>
+	<buildpathentry kind="src" path="ext-2.2.0/examples/remoteload"/>
+	<buildpathentry kind="src" path="ext-2.2.0/examples/state"/>
+	<buildpathentry kind="src" path="ext-2.2.0/examples/statusbar"/>
+	<buildpathentry kind="src" path="ext-2.2.0/examples/tree"/>
+	<buildpathentry kind="src" path="ext-2.2.0/examples/view"/>
+	<buildpathentry kind="src" path="ext-2/examples/feed-viewer"/>
+	<buildpathentry kind="src" path="ext-2/examples/form"/>
+	<buildpathentry kind="src" path="ext-2/examples/grid-filtering"/>
+	<buildpathentry kind="src" path="ext-2/examples/remoteload"/>
+	<buildpathentry kind="src" path="ext-2/examples/state"/>
+	<buildpathentry kind="src" path="ext-2/examples/statusbar"/>
+	<buildpathentry kind="src" path="ext-2/examples/tree"/>
+	<buildpathentry kind="src" path="ext-2/examples/view"/>
+	<buildpathentry kind="con" path="org.eclipse.php.core.LANGUAGE"/>
+</buildpath>
