@@ -43,6 +43,54 @@ class CreditCardUtil
 		
 		return $dashSeparatedNumber;
 	}
+	
+	/**
+	 * Returns a number with all non-numeric characters removed
+	 * @param unknown_type $num
+	 */
+	static function StripNonNumeric($num)
+	{
+		return preg_replace('{\D}', '', $num);
+	}
+	
+	/**
+	 * Returns true if the card meets a valid mod10 (Luhn Algorithm) check
+	 * @param bool
+	 */
+	static function IsValidMod10($str)
+	{
+	   if (strspn($str, "0123456789") != strlen($str)) 
+	   {
+	      return false;
+	   }
+	   
+	   $map = array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, // for even indices
+	                0, 2, 4, 6, 8, 1, 3, 5, 7, 9); // for odd indices
+	   $sum = 0;
+	   $last = strlen($str) - 1;
+	   
+	   for ($i = 0; $i <= $last; $i++) 
+	   {
+	      $sum += $map[$str[$last - $i] + ($i & 1) * 10];
+	   }
+	   
+	   return $sum % 10 == 0;
+	}
+	
+	/**
+	 * Returns the Credit Card type based on the card number using the info
+	 * at http://en.wikipedia.org/wiki/Credit_card_numbers as a reference
+	 * @return string
+	 */
+	static function GetType($num)
+	{
+		if (strlen($num) < 4) return "";
+		if (substr($num,0,1) == 4) return "VISA";
+		if (substr($num,0,2) == 34 || substr($num,0,2) == 37) return "AMEX";
+		if (substr($num,0,2) >= 51 && substr($num,0,2) <= 55) return "MASTERCARD";
+		return "UNKNOWN";
+	}
+	
 }
 
 ?>
