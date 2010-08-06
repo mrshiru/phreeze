@@ -5,6 +5,7 @@
 require_once("verysimple/HTTP/UrlWriter.php");
 require_once("verysimple/HTTP/RequestUtil.php");
 require_once("verysimple/HTTP/Context.php");
+require_once("verysimple/HTTP/BrowserDevice.php");
 require_once("verysimple/Authentication/Authenticator.php");
 require_once("verysimple/Authentication/Auth401.php");
 require_once("verysimple/Authentication/IAuthenticatable.php");
@@ -157,6 +158,16 @@ abstract class Controller
 		{
 			print $text;
 		}
+	}
+	
+	/**
+	 * Returns a BrowserDevice object with information about the browser
+	 * that is being used to view/execute this code.
+	 * @return BrowserDevice
+	 */
+	public function GetDevice()
+	{
+		return BrowserDevice::GetInstance();
 	}
 	
 	/**
@@ -425,14 +436,12 @@ abstract class Controller
 	
 	/**
 	 * Sets the given user as the authenticatable user for this session.
-	 * Additional, the view variable CURRENT_USER is assigned.
 	 *
 	 * @param IAuthenticatable The user object that has authenticated
 	 */
 	protected function SetCurrentUser(IAuthenticatable $user)
 	{
 		$this->_cu = $user;
-		$this->Assign("CURRENT_USER",$user);
 		Authenticator::SetCurrentUser($user,$this->GUID);
 	}
 
@@ -528,6 +537,10 @@ abstract class Controller
 			$backtrace = debug_backtrace();
 			$view = str_replace("Controller","", $backtrace[1]['class']) . $backtrace[1]['function'];
 		}
+		
+		// assign some global variables to the view
+		$this->Assign("CURRENT_USER",$this->GetCurrentUser());
+		$this->Assign("BROWSER_DEVICE",$this->GetDevice());
 		
 		// capture output instead of rendering if specified
 		if ($this->CaptureOutputMode)
