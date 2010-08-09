@@ -69,6 +69,7 @@ abstract class Controller
 		// assign some variables globally for the views
 		$this->Assign("CURRENT_USER",$this->GetCurrentUser());
 		$this->Assign("URL",$this->UrlWriter);
+		$this->Assign("BROWSER_DEVICE",$this->GetDevice());
 		
 		// if feedback was persisted, set it
 		$this->Assign("feedback",$this->Context->Get("feedback"));
@@ -443,6 +444,9 @@ abstract class Controller
 	{
 		$this->_cu = $user;
 		Authenticator::SetCurrentUser($user,$this->GUID);
+		
+		// assign some global variables to the view
+		$this->Assign("CURRENT_USER",$this->GetCurrentUser());
 	}
 
 	/**
@@ -537,10 +541,6 @@ abstract class Controller
 			$backtrace = debug_backtrace();
 			$view = str_replace("Controller","", $backtrace[1]['class']) . $backtrace[1]['function'];
 		}
-		
-		// assign some global variables to the view
-		$this->Assign("CURRENT_USER",$this->GetCurrentUser());
-		$this->Assign("BROWSER_DEVICE",$this->GetDevice());
 		
 		// capture output instead of rendering if specified
 		if ($this->CaptureOutputMode)
