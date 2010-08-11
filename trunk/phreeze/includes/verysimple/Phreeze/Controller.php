@@ -504,13 +504,17 @@ abstract class Controller
 		
 		if (!$cu || !$cu->IsAuthorized($permission))
 		{
+			$message = !$cu || $cu->IsAnonymous()
+				? "Please login to access this page"
+				: "You are not authorized to view this page and/or your session has expired";
+			
 			if ($on_fail_action)
 			{
-				$this->Redirect($on_fail_action,"You are not authorized to view this page and/or your session has expired");
+				$this->Redirect($on_fail_action,$message);
 			}
 			else
 			{
-				$ex = new AuthenticationException("You are not authorized to view this page and/or your session has expired",500);
+				$ex = new AuthenticationException($message,500);
 				$this->Crash("Permission Denied",500,$ex);
 			}
 		}
