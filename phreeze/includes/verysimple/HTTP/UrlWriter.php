@@ -2,6 +2,7 @@
 /** @package    verysimple::HTTP */
 
 require_once("verysimple/HTTP/RequestUtil.php");
+require_once("verysimple/Util/UrlWriterMode.php");
 
 /**
  * class for dealing with URLs
@@ -15,13 +16,17 @@ require_once("verysimple/HTTP/RequestUtil.php");
 class UrlWriter
 {
 	private $_format;
+	private $_mode;
+	
 	/** 
 	 * Constructor allows a rewriting pattern to be specified
 	 *
 	 * @param string $format sprintf compatible format
+	 * @param string UrlWriterMode string
 	 */
-	public function UrlWriter($format = "%s.%s.page?%s")
+	public function UrlWriter($format = "%s.%s.page?%s", $mode = UrlWriterMode::WEB )
 	{
+		$this->_mode = $mode;
 		$this->_format = $format;
 	}
 	
@@ -62,6 +67,43 @@ class UrlWriter
 		return $url;
 	}
 	
+	/**
+	 * Returns true or false based on the $value passed in as to whether or not the
+	 * URL Writer is currently in that mode.
+	 * 
+	 * @param $value	String mode to check against the current mode
+	 * @return	boolean TRUE if arg passed in is the current mode
+	 */
+	public function ModeIs( $value )
+	{
+		if( strcmp($this->_mode,$value) == 0 )
+			return true;
+		else
+			return false;
+	}
+	
+	/**
+	 * Returns how the Dispatcher plucks it's controller and method from the URL.
+	 * 
+	 * @param $default_action	The Default action in case the argument hasn't been supplied
+	 */
+	public function GetAction( $url_param = "action", $default_action = "Account.DefaultAction" )
+	{
+		switch( $this->_mode )
+		{
+			// TODO: Determine mobile/joomla URL action (if different from default)
+			/*
+			 *	case UrlWriterMode::JOOMLA:
+			 *		break;
+			 *	case UrlWriterMode::MOBILE:
+			 *		break;
+			 */
+			default:
+				// default is to return the standard browser-based action=%s.%s&%s:
+				return RequestUtil::Get($url_param, $default_action);
+				break;
+		}
+	}
 }
 
 ?>
