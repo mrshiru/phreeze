@@ -41,7 +41,7 @@ class MemCacheProxy
 	
 	/**
 	 * This is method get
-	 * @param string $key This is a description
+	 * @param string $key The key of the item to retrieve
 	 * @return mixed cache value or null
 	 */
 	public function get($key)
@@ -66,10 +66,10 @@ class MemCacheProxy
 	/**
 	 * This is method set
 	 *
-	 * @param mixed $key This is a description
-	 * @param mixed $var This is a description
-	 * @param mixed $flags This is a description
-	 * @param mixed $expire This is a description
+	 * @param mixed $key The key that will be associated with the item
+	 * @param mixed $var The variable to store. Strings and integers are stored as is, other types are stored serialized. 
+	 * @param mixed $flags Use MEMCACHE_COMPRESSED to store the item compressed (uses zlib).
+	 * @param mixed $expire Expiration time (in seconds)
 	 * @return mixed This is the return value description
 	 *
 	 */
