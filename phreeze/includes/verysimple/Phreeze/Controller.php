@@ -15,7 +15,7 @@ require_once("Criteria.php");
 
 /**
  * Controller is a base controller object used for an MVC pattern
- * This controller uses Phreeze ORM and Smarty Template Engine
+ * This controller uses Phreeze ORM and RenderEngine Template Engine
  * This controller could be extended to use a differente ORM and
  * Rendering engine as long as they implement compatible functions.
  *
@@ -28,7 +28,7 @@ require_once("Criteria.php");
 abstract class Controller
 {
 	protected $Phreezer;
-	protected $Smarty;
+	protected $RenderEngine;
 	protected $ModelName;
 	protected $Context;
 	protected $UrlWriter;
@@ -43,14 +43,14 @@ abstract class Controller
 	 * to do something during construction, add it to Init
 	 * 
 	 * @param Phreezer $phreezer Object persistance engine
-	 * @param Smarty $smarty rendering engine
+	 * @param IRenderEngine $renderEngine rendering engine
 	 * @param Context (optional) a context object for persisting the state of the current page
 	 * @param UrlWriter (optional) a custom writer for URL formatting
 	 */
-	final function Controller(Phreezer &$phreezer, &$smarty, &$context = null, &$urlwriter = null)
+	final function Controller(Phreezer &$phreezer, &$renderEngine, &$context = null, &$urlwriter = null)
 	{
 		$this->Phreezer =& $phreezer;
-		$this->Smarty =& $smarty;
+		$this->RenderEngine =& $renderEngine;
 		$ra = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "0.0.0.0";
 		$this->GUID = $this->Phreezer->DataAdapter->GetDBName() . "_" . str_replace(".","_", $ra);
 		
@@ -180,11 +180,11 @@ abstract class Controller
 		// capture output instead of rendering if specified
 		if ($this->CaptureOutputMode)
 		{
-			$this->DebugOutput = $this->Smarty->fetch("View" . $this->ModelName .  "ListAll.tpl");
+			$this->DebugOutput = $this->RenderEngine->fetch("View" . $this->ModelName .  "ListAll.tpl");
 		}
 		else
 		{
-			$this->Smarty->display("View" . $this->ModelName .  "ListAll.tpl");
+			$this->RenderEngine->display("View" . $this->ModelName .  "ListAll.tpl");
 		}
 		//$this->_ListAll(null, Request::Get("page",1), Request::Get("limit",20));
 	}
@@ -200,8 +200,8 @@ abstract class Controller
 	protected function _ListAll(Criteria $criteria, $current_page, $limit)
 	{
 		$page = $this->Phreezer->Query($this->ModelName,$criteria)->GetDataPage($current_page,$limit);
-		$this->Smarty->assign($this->ModelName . "DataPage", $page);
-		$this->Smarty->display("View" . $this->ModelName .  "ListAll.tpl");
+		$this->RenderEngine->assign($this->ModelName . "DataPage", $page);
+		$this->RenderEngine->display("View" . $this->ModelName .  "ListAll.tpl");
 	}
 	
 	/**
@@ -528,7 +528,7 @@ abstract class Controller
 	 */
 	protected function Assign($varname,$varval)
 	{
-		$this->Smarty->assign($varname,$varval);
+		$this->RenderEngine->assign($varname,$varval);
 	}
 	
 	/**
@@ -549,11 +549,11 @@ abstract class Controller
 		// capture output instead of rendering if specified
 		if ($this->CaptureOutputMode)
 		{
-			$this->DebugOutput = $this->Smarty->fetch("View".$view.".tpl");
+			$this->DebugOutput = $this->RenderEngine->fetch("View".$view.".tpl");
 		}
 		else
 		{
-			$this->Smarty->display("View".$view.".tpl");
+			$this->RenderEngine->display("View".$view.".tpl");
 		}
 	}
 	
@@ -613,16 +613,16 @@ abstract class Controller
 		list($controller,$method) = explode(".", str_replace("/",".",$action));
 		
 		$url = $this->UrlWriter->Get($controller,$method,$params);
-		$this->Smarty->assign("url",$url);
+		$this->RenderEngine->assign("url",$url);
 		
 		// capture output instead of rendering if specified
 		if ($this->CaptureOutputMode)
 		{
-			$this->DebugOutput = $this->Smarty->fetch("_redirect.tpl");
+			$this->DebugOutput = $this->RenderEngine->fetch("_redirect.tpl");
 		}
 		else
 		{
-			$this->Smarty->display("_redirect.tpl");
+			$this->RenderEngine->display("_redirect.tpl");
 		}
 		
 		// don't exit if we are unit testing because it will stop all further tests
