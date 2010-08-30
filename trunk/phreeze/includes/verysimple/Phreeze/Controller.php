@@ -546,14 +546,19 @@ abstract class Controller
 			$view = str_replace("Controller","", $backtrace[1]['class']) . $backtrace[1]['function'];
 		}
 		
+		// if the render engine is Smarty then structure the filename, otherwise don't touch it
+		$viewPath = (get_class($this->RenderEngine) == "Smarty") 
+			? "View".$view.".tpl" 
+			: $view;
+		
 		// capture output instead of rendering if specified
 		if ($this->CaptureOutputMode)
 		{
-			$this->DebugOutput = $this->RenderEngine->fetch("View".$view.".tpl");
+			$this->DebugOutput = $this->RenderEngine->fetch($viewPath);
 		}
 		else
 		{
-			$this->RenderEngine->display("View".$view.".tpl");
+			$this->RenderEngine->display($viewPath);
 		}
 	}
 	
