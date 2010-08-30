@@ -15,8 +15,13 @@ require_once("IRenderEngine.php");
  */
 class PHPRenderEngine
 {
+	/** the file path to the template director */
 	public $tempatePath;
 	
+	/** if this is true, all views will have .php appended the last 4 chars are not .php */
+	public $verifyExtension = true;
+	
+	/** stores the assigned vars */
 	public $model = Array();
 	
 	/**
@@ -43,7 +48,7 @@ class PHPRenderEngine
 	 */
 	public function display($template)
 	{
-		// these two are special 
+		// these two are special templates used by the Phreeze controller and dispatcher
 		if ($template == "_redirect.tpl")
 		{
 			header("Location: " . $this->model['url']);
@@ -51,10 +56,12 @@ class PHPRenderEngine
 		}
 		elseif ($template == "_error.tpl")
 		{
-			die($this->model['error']);
+			die("<h4>" . $this->model['message'] . "</h4>" . $this->model['stacktrace']);
 		}
 		else
 		{
+			if ($this->verifyExtension && substr($template,-4) != '.php') $template .= ".php";
+			
 			$path = $this->templatePath . $template;
 			
 			if (!is_readable($path))
@@ -82,8 +89,16 @@ class PHPRenderEngine
 	 */
 	public function fetch($template)
 	{
-		throw new Exception("fetch is not yet implemented for PHP templates");
+		ob_start();
+		
+		$this->display($template);
+		$buffer = ob_get_contents();
+		
+		ob_end_clean();
+		
+		return $buffer;
 	}
+	
 }
 
 ?>
