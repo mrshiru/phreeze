@@ -7,6 +7,7 @@ require_once("ConnectionSetting.php");
 require_once("DataPage.php");
 require_once("DataSet.php");
 require_once("QueryBuilder.php");
+require_once("verysimple/DB/DataDriver/IDataDriver.php");
 
 /**
  * DataAdapter abstracts and provides access to the data store
@@ -24,17 +25,44 @@ class DataAdapter implements IObservable
     private $_csetting;
 	private $_dbconn;
 	private $_dbopen;
-    
-    
+	private $_driver;
+	
+	static $DRIVER_CLASS = null;
+	
     /**
     * Contructor initializes the object
     *
-    * @access     public
+    * @access public
     * @param ConnectionSetting $csetting
     * @param Observable $listener
+    * @param IDataDriver (optional) if not provided, then DataAdapter will attempt to instantiate one based on ConnectionSetting->Type
     */
-    function DataAdapter($csetting, $listener = null)
+    function DataAdapter($csetting, $listener = null, IDataDriver $driver = null)
     {
+    	$this->_driver = $driver;
+    	
+    	if ($this->_driver == null) 
+    	{
+    		// the driver was not explicitly provided so we will try to create one from 
+    		// the connection setting based on the database types that we do know about
+    		switch($csetting->Type)
+    		{
+    			case "mysql":
+					require_once("verysimple/DB/DataDriver/MySQL.php");
+    				$this->_driver  = new DataDriverMySQL();
+    				break;
+    			case "sqlite":
+					require_once("verysimple/DB/DataDriver/SQLite.php");
+    				$this->_driver  = new DataDriverSQLite();
+    				break;
+    			default:
+    				throw new Exception("No driver was provided and the ConnectionSetting->Type is not recognized.");
+    				break;
+    		}
+    	}
+    	
+    	DataAdapter::$DRIVER_CLASS = $this->_driver;
+    	
 		$this->AttachObserver($listener);
 		$this->_csetting =& $csetting;
 		$this->Observe("DataAdapter Instantiated", OBSERVE_DEBUG);
@@ -64,7 +92,7 @@ class DataAdapter implements IObservable
 	}
 	
     /**
-	 * Opens a connection to the MySQL Server and selects the specified database
+	 * Opens a connection to the data server and selects the specified database
 	 *
 	 * @access public
 	 */	
@@ -74,30 +102,31 @@ class DataAdapter implements IObservable
 		
 		if ($this->_dbopen)
 		{
-			$this->Observe("Connection Already Open" . mysql_error(),OBSERVE_WARN);
+			$this->Observe("Connection Already Open",OBSERVE_WARN);
 		}
 		else
 		{
-			if ( !$this->_dbconn = @mysql_connect($this->_csetting->ConnectionString, $this->_csetting->Username, $this->_csetting->Password) )
+			try
 			{
-				$this->Observe("Error connecting to database: " . mysql_error(),OBSERVE_FATAL);
-				throw new Exception("Error connecting to database: " . mysql_error());
+				$this->_dbconn = $this->_driver->Open(
+					$this->_csetting->ConnectionString, 
+					$this->_csetting->DBName, 
+					$this->_csetting->Username, 
+					$this->_csetting->Password);
 			}
-
+			catch (Exception $ex)
+			{
+				$this->Observe("Error connecting to database: " . $ex->getMessage(),OBSERVE_FATAL);
+				throw new Exception("Error connecting to database: " . $ex->getMessage());
+			}
+			
 			$this->_dbopen = true;
-			
-			if (!@mysql_select_db($this->_csetting->DBName, $this->_dbconn))
-			{
-				$this->Observe("Unable to select database " . $this->_csetting->DBName,OBSERVE_FATAL);
-				throw new Exception("Unable to select database " . $this->_csetting->DBName);
-			}
-			
 			$this->Observe("Connection Open",OBSERVE_DEBUG);
 		}
 	}
 	
 	/**
-	 * Closing the connection to the MySQL Server
+	 * Closing the connection to the data Server
 	 *
 	 * @access public
 	 */	
@@ -107,7 +136,7 @@ class DataAdapter implements IObservable
 		
 		if ($this->_dbopen)
 		{
-			@mysql_close($this->_dbconn); // ignore warnings
+			$this->_driver->Close($this->_dbconn); // ignore warnings
 			$this->_dbopen = false;
 			$this->Observe("Connection Closed",OBSERVE_DEBUG);
 		}
@@ -127,7 +156,7 @@ class DataAdapter implements IObservable
 	{
 		if ($this->_dbopen)
 		{
-			// mysql_ping($this->_dbconn);
+			// $this->_driver->Ping($this->_dbconn);
 		}
 		else
 		{
@@ -144,21 +173,26 @@ class DataAdapter implements IObservable
 	}
 	
 	/**
-	 * Executes a SQL select statement and returns a MySQL resultset
+	 * Executes a SQL select statement and returns a resultset that can be read
+	 * using Fetch
 	 *
 	 * @access public
 	 * @param string $sql
-	 * @return mysql_query
+	 * @return resultset (dependent on the type of driver used)
 	 */	
 	function Select($sql)
 	{
 		$this->RequireConnection(true);
 		$this->Observe($sql, OBSERVE_QUERY);
 		
-		if ( !$rs = @mysql_query($sql, $this->_dbconn) )
+		try
 		{
-			$this->Observe("Error executing SQL: " . mysql_error(),OBSERVE_FATAL);
-			throw new Exception('Error executing SQL: ' . mysql_error());
+			$rs = $this->_driver->Query($this->_dbconn,$sql);
+		}
+		catch (Exception $ex)
+		{
+			$this->Observe("Error executing SQL: " . $ex->getMessage(),OBSERVE_FATAL);
+			throw new Exception('Error executing SQL: ' . $ex->getMessage());
 		}
 		
 		return $rs;
@@ -175,14 +209,19 @@ class DataAdapter implements IObservable
 	{
 		$this->RequireConnection(true);
 		$this->Observe($sql, OBSERVE_QUERY);
-
-		if ( !$result = @mysql_query($sql, $this->_dbconn) )
+		$result = -1;
+		
+		try
 		{
-			$this->Observe("Error executing SQL: " . mysql_error(),OBSERVE_FATAL);
-			throw new Exception('Error executing SQL: ' . mysql_error());
+			$result = $this->_driver->Execute($this->_dbconn, $sql);
+		}
+		catch (Exception $ex)
+		{
+			$this->Observe("Error executing SQL: " . $ex->getMessage(),OBSERVE_FATAL);
+			throw new Exception('Error executing SQL: ' . $ex->getMessage());
 		}
 		
-		return mysql_affected_rows($this->_dbconn);
+		return $result;
 	}
 	
 	
@@ -193,20 +232,7 @@ class DataAdapter implements IObservable
 	 */
 	public function GetTableNames($ommitEmptyTables = false)
 	{
-		$sql = "SHOW TABLE STATUS FROM `" . $this->GetDBName() . "`";
-		$rs = $this->Select($sql);
-		
-		$tables = array();
-		
-		while ( $row = $this->Fetch($rs) )
-		{
-			if ( $ommitEmptyTables == false || $rs['Data_free'] > 0 )
-			{
-				$tables[] = $row['Name'];
-			}
-		}
-		
-		return $tables;
+		return $this->_driver->GetTableName($this->_dbconn,$this->GetDBName(),$ommitEmptyTables);
 	}
 	
 	/**
@@ -216,17 +242,11 @@ class DataAdapter implements IObservable
 	public function OptimizeTables()
 	{
 		$results = array();
+		$table_names = $this->_driver->GetTableNames($this->_dbconn,$this->GetDBName());
 		
-		foreach ($this->GetTableNames() as $table_name)
+		foreach ($table_names as $table_name)
 		{
-			$rs = $this->Select("optimize table `".$table_name."`");
-
-			while ( $row = $this->Fetch($rs) )
-			{
-				$tbl = $row['Table'];
-				if (!isset($results[$tbl])) $results[$tbl] = "";
-				$results[$tbl] = trim($results[$tbl] . " " . $row['Msg_type'] . "=\"" . $row['Msg_text'] . "\"");	
-			}
+			$results[$table_name] = $this->_driver->Optimize($this->_dbconn,$table_name);
 		}
 		
 		return $results;
@@ -241,15 +261,17 @@ class DataAdapter implements IObservable
 	function GetLastInsertId()
 	{
 		$this->RequireConnection();
-		$this->Observe("mysql_insert_id", OBSERVE_QUERY);
-		return (mysql_insert_id($this->_dbconn));
+		$this->Observe("GetLastInsertId", OBSERVE_QUERY);
+		return $this->_driver->GetLastInsertId($this->_dbconn);
 	}
 	
 	/**
 	 * Moves the database curser forward and returns the current row as an associative array
+	 * the resultset passed in must have been created by the same database driver that
+	 * was connected when Select was called
 	 *
 	 * @access public
-	 * @param mysql_query $rs
+	 * @param resultset $rs
 	 * @return Array
 	 */	
 	function Fetch($rs)
@@ -257,21 +279,22 @@ class DataAdapter implements IObservable
 		$this->RequireConnection();
 
 		$this->Observe("Fetching next result as array",OBSERVE_DEBUG);
-		return mysql_fetch_assoc($rs);
+		return $this->_driver->Fetch($this->_dbconn,$rs);
 	}
 	
 	/**
-	 * Releases the resources for the given resultset
+	 * Releases the resources for the given resultset.  the resultset must have 
+	 * been created by the same database driver
 	 *
 	 * @access public
-	 * @param mysql_query $rs
+	 * @param resultset $rs
 	 */	
 	function Release($rs)
 	{
 		$this->RequireConnection();
 
 		$this->Observe("Releasing result resources",OBSERVE_DEBUG);
-		mysql_free_result($rs);
+		$this->_driver->Release($this->_dbconn,$rs);
 	}
 	
 	/**
@@ -286,7 +309,10 @@ class DataAdapter implements IObservable
 		// if magic quotes are enabled, then we need to stip the slashes that php added
 		if (get_magic_quotes_runtime() || get_magic_quotes_gpc()) $val = stripslashes($val);
 
-		return mysql_real_escape_string($val);
+		// this is an unfortunate leftover from poor design of making this function static
+		// we cannon use the driver's escape method without a static reference
+		$driver = DataAdapter::$DRIVER_CLASS;
+		return $driver->Escape($val);
 	}
 	
 	
