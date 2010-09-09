@@ -30,6 +30,7 @@ class {$singular}Criteria extends Criteria
 	public ${$column->NameWithoutPrefix|studlycaps}_EndWith;
 	public ${$column->NameWithoutPrefix|studlycaps}_GreaterThan;
 	public ${$column->NameWithoutPrefix|studlycaps}_LessThan;
+	public ${$column->NameWithoutPrefix|studlycaps}_In;
 {/foreach}
 
 	/**
