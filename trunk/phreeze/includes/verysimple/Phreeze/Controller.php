@@ -32,6 +32,10 @@ abstract class Controller
 	protected $ModelName;
 	protected $Context;
 	protected $UrlWriter;
+	
+	/** @deprecated use RenderEngine */
+	protected $Smarty;
+	
 	private $_cu;
 	public $GUID;
 	public $DebugOutput = "";
@@ -51,6 +55,10 @@ abstract class Controller
 	{
 		$this->Phreezer =& $phreezer;
 		$this->RenderEngine =& $renderEngine;
+		
+		// for backwards compatibility
+		$this->Smarty =& $renderEngine;
+		
 		$ra = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "0.0.0.0";
 		$this->GUID = $this->Phreezer->DataAdapter->GetDBName() . "_" . str_replace(".","_", $ra);
 		

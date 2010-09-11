@@ -34,7 +34,12 @@ class DataDriverSQLite implements IDataDriver
 	 */
 	function Open($connectionstring,$database,$username,$password) 
 	{
-		throw new Exception("Not Implemented");
+		if ( !$connection =  new SQLite3($connectionstring, SQLITE3_OPEN_READWRITE,$password) )
+		{
+			throw new Exception("Error connecting to database: Unable to open the database file.");
+		}
+
+		return $connection;
 	}
 	
 	/**
@@ -42,7 +47,7 @@ class DataDriverSQLite implements IDataDriver
 	 */
 	function Close($connection) 
 	{
-		throw new Exception("Not Implemented");
+		@$connection->close(); // ignore warnings
 	}
 	
 	/**
@@ -50,7 +55,13 @@ class DataDriverSQLite implements IDataDriver
 	 */
 	function Query($connection,$sql) 
 	{
-		throw new Exception("Not Implemented");
+
+		if ( !$rs = $connection->query($sql) )
+		{
+			throw new Exception($connection->lastErrorMsg());
+		}
+		
+		return $rs;
 	}
 
 	/**
@@ -58,7 +69,7 @@ class DataDriverSQLite implements IDataDriver
 	 */
 	function Execute($connection,$sql) 
 	{
-		throw new Exception("Not Implemented");
+		return $connection->exec($sql);
 	}
 	
 	/**
@@ -66,7 +77,7 @@ class DataDriverSQLite implements IDataDriver
 	 */
 	function Fetch($connection,$rs) 
 	{
-		throw new Exception("Not Implemented");
+		return $rs->fetchArray();
 	}
 
 	/**
@@ -74,7 +85,7 @@ class DataDriverSQLite implements IDataDriver
 	 */
 	function GetLastInsertId($connection) 
 	{
-		throw new Exception("Not Implemented");
+		return $connection->lastInsertRowID();
 	}
 
 	/**
@@ -82,7 +93,7 @@ class DataDriverSQLite implements IDataDriver
 	 */
 	function GetLastError($connection)
 	{
-		throw new Exception("Not Implemented");
+		return $connection->lastErrorMsg();
 	}
 	
 	/**
@@ -90,15 +101,17 @@ class DataDriverSQLite implements IDataDriver
 	 */
 	function Release($connection,$rs) 
 	{
-		throw new Exception("Not Implemented");
+		// sqlite doens't require this
+		return true;
 	}
 	
 	/**
 	 * @inheritdocs
+	 * @TODO: use SQLite
 	 */
 	function Escape($val) 
 	{
-		throw new Exception("Not Implemented");
+		return str_replace("'","''",$val);
  	}
 	
 	/**
@@ -106,7 +119,19 @@ class DataDriverSQLite implements IDataDriver
 	 */
  	function GetTableNames($connection, $dbname, $ommitEmptyTables = false) 
 	{
-		throw new Exception("Not Implemented");
+		if ($ommitEmptyTables) throw new Exception("SQLite DataDriver doesn't support returning only non-empty tables.  Set ommitEmptyTables arg to false to use this method.");
+		
+		$rs = $this->Query($connection,"SELECT name FROM sqlite_master WHERE type='table' and name != 'sqlite_sequence' ORDER BY name");
+
+		$tables = array();
+		
+		while ( $row = $this->Fetch($connection,$rs) )
+		{
+			$tables[] = $row['name'];
+		}
+		
+		return $tables;
+		
  	}
 	
 	/**
@@ -114,7 +139,8 @@ class DataDriverSQLite implements IDataDriver
 	 */
  	function Optimize($connection,$table) 
 	{
-		throw new Exception("Not Implemented");
+		if ($table) throw new Exception("SQLite optimization is database-wide.  Call Optimize() with a blank/null table arg to use this method.");
+		$this->Execute($connection,"VACUUM");
 	}
 	
 }
