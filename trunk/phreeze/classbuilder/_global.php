@@ -4,10 +4,14 @@
 //# CONFIGURATION SETTINGS
 
 // system paths
-define("APP_ROOT", realpath("./"));
+$ar = realpath("./");
+if (substr($ar,-1) != "/") $ar .= "/";
+define("APP_ROOT",$ar);
+
 define("TEMPLATE_PATH", APP_ROOT . "/templates/");
 define("TEMP_PATH", APP_ROOT . "/templates_c/");
 define("CODE_PATH", APP_ROOT . "/code/");
+
 
 // add local libs to include path (optionally use .htaccess or php.ini)
 set_include_path(APP_ROOT . "/libs/" . PATH_SEPARATOR . get_include_path());
