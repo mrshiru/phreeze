@@ -15,7 +15,7 @@ class DefaultController extends Controller
 {ldelim}
 	function ListAll()
 	{ldelim}
-		$this->Smarty->display("ViewListAll.tpl");
+		$this->RenderEngine->display("ViewListAll.tpl");
 	{rdelim}
 
 	protected function Init()

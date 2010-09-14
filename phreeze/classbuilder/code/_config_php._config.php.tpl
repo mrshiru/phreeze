@@ -11,7 +11,7 @@ define("TEMP_PATH", APP_ROOT . "/temp/");
 // make sure template folder is writable
 if (!@fopen(COMPILE_PATH . "permission.test","w"))
 {ldelim}
-	die("<span style='color: red;'>ERROR: " . TEMPLATE_PATH . " must be writable</span>");
+	die("<span style='color: red;'>ERROR: " . COMPILE_PATH . " must be writable</span>");
 {rdelim}
 
 // add local libs to include path (optionally use .htaccess or php.ini)
@@ -75,8 +75,20 @@ if ($debug_mode)
 {rdelim}
 
 // instantiate the phreezer persistance api
-$G_PHREEZER = new Phreezer($csetting, $observer);
+$G_PHREEZER = null;
 
+// instantiate the phreezer persistance api
+try
+{ldelim}
+	$G_PHREEZER = new Phreezer($csetting, $observer);
+{rdelim}
+catch (Exception $ex)
+{ldelim}
+	// we have a database connectivity error
+	$G_SMARTY->assign('message',$ex->getMessage());
+	$G_SMARTY->display('_error.tpl');
+	die();
+{rdelim}
 
 /* Fetching Strategy Configuration
  * You may uncomment any of the lines below to specify always eager fetching.
