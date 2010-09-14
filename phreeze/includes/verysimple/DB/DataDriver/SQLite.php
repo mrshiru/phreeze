@@ -77,7 +77,7 @@ class DataDriverSQLite implements IDataDriver
 	 */
 	function Fetch($connection,$rs) 
 	{
-		return $rs->fetchArray();
+		return $rs->fetchArray(SQLITE3_ASSOC);
 	}
 
 	/**
@@ -101,8 +101,7 @@ class DataDriverSQLite implements IDataDriver
 	 */
 	function Release($connection,$rs) 
 	{
-		// sqlite doens't require this
-		return true;
+		$rs->finalize();
 	}
 	
 	/**
