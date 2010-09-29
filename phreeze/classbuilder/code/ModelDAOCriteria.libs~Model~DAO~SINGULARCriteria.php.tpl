@@ -31,6 +31,8 @@ class {$singular}Criteria extends Criteria
 	public ${$column->NameWithoutPrefix|studlycaps}_GreaterThan;
 	public ${$column->NameWithoutPrefix|studlycaps}_LessThan;
 	public ${$column->NameWithoutPrefix|studlycaps}_In;
+	public ${$column->NameWithoutPrefix|studlycaps}_IsNotEmpty;
+	public ${$column->NameWithoutPrefix|studlycaps}_IsEmpty;
 {/foreach}
 
 	/**
