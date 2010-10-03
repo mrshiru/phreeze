@@ -192,8 +192,7 @@
 	// Hash erstellen
 	$_SRC['hash'] 		= md5($_SRC['file'].$_SRC['modified'].implode('',$params));
 	
-	
-
+	if (empty($_SRC['type'])) return "<div class='warning'>thumb: unsupported image type</div>";
 
 	### Infos über Destination (DST) errechnen
 	if (is_numeric($params['width'])) $_DST['width'] = $params['width'];
@@ -268,6 +267,11 @@
 	if (!empty($params['type'])) $_DST['type']	= $params['type'];
 	else $_DST['type']	= $_SRC['type'];
 
+//	if ( empty($_CONFIG['cache']) || empty($_SRC['hash']) || empty($_CONFIG['types']) || empty($_DST['type']))
+//	{
+//		
+//	}
+	
 	$_DST['file']		= $_CONFIG['cache'].$_SRC['hash'].$_CONFIG['types'][$_DST['type']];
 	$_DST['string']		= 'width="'.$_DST['width'].'" height="'.$_DST['height'].'"';
 
