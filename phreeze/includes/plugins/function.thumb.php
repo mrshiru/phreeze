@@ -191,14 +191,24 @@
 
 	// Hash erstellen
 	$_SRC['hash'] 		= md5($_SRC['file'].$_SRC['modified'].implode('',$params));
+	
+	
 
 
 	### Infos über Destination (DST) errechnen
 	if (is_numeric($params['width'])) $_DST['width'] = $params['width'];
-	else $_DST['width'] = round($params['height']/($_SRC['height']/$_SRC['width']));
+	else 
+	{
+		if ($_SRC['height'] == 0 || $_SRC['width'] == 0 ) return "<div class='warning'>thumb: illegal width/height value</div>";
+		$_DST['width'] = round($params['height']/($_SRC['height']/$_SRC['width']));
+	}
 
 	if (is_numeric($params['height'])) $_DST['height']	= $params['height'];
-	else $_DST['height'] = round($params['width']/($_SRC['width']/$_SRC['height']));
+	else 
+	{
+		if ($_SRC['height'] == 0 || $_SRC['width'] == 0 ) return "<div class='warning'>thumb: illegal width/height value</div>";
+		$_DST['height'] = round($params['width']/($_SRC['width']/$_SRC['height']));
+	}
 	
 	// Das Größenverhältnis soll erhalten bleiben egal ob das Bild hoch oder querformatig ist.
 	if (is_numeric($params['longside']))
