@@ -21,6 +21,7 @@
  * @param dev set to true to overlay the rendering time on the image
  * 
  * @version:
+ * 2010-10-03 Friendly output when file size is empty due to unknown error (JH)
  * 2008-03-13 set default param values to avoid various warnings in strict mode
               error handling when cache is not writable
               changed empty to !isset to make params work properly
