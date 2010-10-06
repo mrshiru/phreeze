@@ -11,14 +11,29 @@ require_once("FileUpload.php");
  *
  * @package    verysimple::HTTP 
  * @author     VerySimple Inc.
- * @copyright  1997-2007 VerySimple, Inc. http://www.verysimple.com
+ * @copyright  1997-2011 VerySimple, Inc. http://www.verysimple.com
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    1.2
+ * @version    1.3
  */
 class RequestUtil
 {
 	
 	static $TestMode = false;
+
+	/**
+	 * Returns the remote host IP address, attempting to locate originating
+	 * IP of the requester in the case of proxy/load balanced requests.
+	 * 
+	 * @see http://en.wikipedia.org/wiki/X-Forwarded-For
+	 * @return string
+	 */
+	static function GetRemoteHost()
+	{
+		if (array_key_exists('HTTP_X_FORWARDED_FOR',$_SERVER)) return $_SERVER['HTTP_X_FORWARDED_FOR'];
+		if (array_key_exists('X_FORWARDED_FOR',$_SERVER)) return $_SERVER['X_FORWARDED_FOR'];
+		if (array_key_exists('REMOTE_ADDR',$_SERVER)) return $_SERVER['REMOTE_ADDR'];
+		return "0.0.0.0";
+	}
 	
 	/** In the case of URL re-writing, sometimes querystrings appended to a URL can get
 	 * lost.  This function examines the original request URI and updates $_REQUEST
