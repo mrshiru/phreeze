@@ -21,9 +21,9 @@ require_once("Criteria.php");
  *
  * @package    verysimple::Phreeze 
  * @author     VerySimple Inc.
- * @copyright  1997-2007 VerySimple, Inc.
+ * @copyright  1997-2011 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    2.4
+ * @version    2.5
  */
 abstract class Controller
 {
@@ -59,7 +59,7 @@ abstract class Controller
 		// for backwards compatibility
 		$this->Smarty =& $renderEngine;
 		
-		$ra = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "0.0.0.0";
+		$ra = RequestUtil::GetRemoteHost();
 		$this->GUID = $this->Phreezer->DataAdapter->GetDBName() . "_" . str_replace(".","_", $ra);
 		
 		$this->UrlWriter = $urlwriter ? $urlwriter : new UrlWriter();
