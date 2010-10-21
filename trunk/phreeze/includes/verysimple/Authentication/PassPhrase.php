@@ -27,7 +27,7 @@ class PassPhrase
 		$vowels = array("a", "e", "i", "o", "u");
 		$cons = array("b", "c", "d", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "u", "v", "w", "tr",
 			"cr", "br", "fr", "th", "dr", "ch", "ph", "wr", "st", "sp", "sw", "pr", "sl", "cl");
-		$badwords = array("fuc","shit","ass","pus","slut","dic","fag","coc","cun","dam","nig","bitc","cum","gay","poo","twa","vag","peni","whor");
+		$badwords = array("fuc","shit","ass","pus","slut","dic","fag","coc","cun","cum","dam","nig","kik","spic","neg","bitc","gay","poo","twa","vag","peni","whor");
 		
 		$num_vowels = count($vowels);
 		$num_cons = count($cons);

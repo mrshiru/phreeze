@@ -359,7 +359,7 @@ abstract class Controller
 		if (!is_object($obj))
 		{
 			$vr->Success = false;
-			$vr->Errors = array("Unknown","LoadFromForm does not appear to be implemented.  Unable to validate");
+			$vr->Errors = array("Unknown"=>"LoadFromForm does not appear to be implemented.  Unable to validate");
 			$vr->Message = "LoadFromForm does not appear to be implemented.  Unable to validate";
 		}
 		elseif ($obj->Validate())
