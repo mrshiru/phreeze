@@ -63,6 +63,19 @@ class RequestUtil
 		}
 	}
 	
+	/**
+	 * Returns the base url of the currently executing script.  For example 
+	 * the script http://localhost/myapp/index.php would return http://localhost/myapp/
+	 * The trailing slash is included
+	 * @return string URL path
+	 */
+	public static function GetBaseURL()
+	{
+		$url = self::GetCurrentURL(false);
+		$slash = strripos($url,"/");
+		return substr($url,0,$slash+1);
+	}
+	
 	/** Returns the full URL of the PHP page that is currently executing
 	 *
 	 * @param bool $include_querystring (optional) Specify true/false to include querystring. Default is true.
