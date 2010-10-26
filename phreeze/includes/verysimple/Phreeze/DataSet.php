@@ -34,6 +34,8 @@ class DataSet implements Iterator
 	private $_no_exception;  // used during iteration to suppress exception on the final Next call
 	private $_no_cache;  // if specified then no cached values will be used
 	
+	private $_unable_to_cache = true;
+	
     /**
     * Contructor initializes the object
     *
@@ -77,6 +79,17 @@ class DataSet implements Iterator
     */
     function Next()
     {
+    	if ($this->_unable_to_cache) 
+    	{
+    		require_once("verysimple/Util/ExceptionFormatter.php");
+    		$info = ExceptionFormatter::FormatTrace(debug_backtrace());
+    		$this->_unable_to_cache = false; // stop this warning from repeating on every next call for this dataset
+    		$this->_phreezer->Observe("(DataSet.Next: unable to cache query with cursor) " . $info . "  " . $this->_sql,OBSERVE_QUERY);
+    		
+    		// use this line to discover where an uncachable query is coming from
+    		// throw new Exception("WTF");
+    	}
+    	
         $this->_verifyRs();
         
 		$this->_current = null;
@@ -108,7 +121,7 @@ class DataSet implements Iterator
     private function _verifyRs()
     {
         if ($this->_rs == null)
-        {
+        {        	
 			$this->_phreezer->IncludeModel($this->_objectclass);
 			$this->_rs = $this->_phreezer->DataAdapter->Select($this->_sql);
         }
@@ -161,11 +174,14 @@ class DataSet implements Iterator
 			// if no cache, go to the db
 			if ($this->_totalcount != null)
 			{
-				$this->_phreezer->Observe("(CACHED QUERY) " . $this->_sql,OBSERVE_QUERY);
+				$this->_phreezer->Observe("(DataSet.Count: skipping query because cache exists) " . $this->_sql,OBSERVE_QUERY);
 			}
 			else
 			{
+				$this->_phreezer->Observe("(DataSet.Count: query does not exist in cache) " . $this->_sql,OBSERVE_QUERY);
+				
 				$sql = "select count(1) as counter from (" . $this->_sql . ") tmptable";
+				
 				$rs = $this->_phreezer->DataAdapter->Select($sql);
 				$row = $this->_phreezer->DataAdapter->Fetch($rs);
 				$this->_phreezer->DataAdapter->Release($rs);
@@ -187,13 +203,13 @@ class DataSet implements Iterator
     function ToObjectArray()
     {
  		// check the cache
-		$cachekey = $this->_sql . " OBJECTARRAY";
+		$cachekey = md5($this->_sql . " OBJECTARRAY");
 		$arr = $this->_no_cache ? null :  $this->_phreezer->GetValueCache($cachekey);
 		
 		// if no cache, go to the db
 		if ($arr != null)
 		{
-			$this->_phreezer->Observe("(CACHED QUERY) " . $this->_sql,OBSERVE_QUERY);
+			$this->_phreezer->Observe("(DataSet.ToObjectArray: skipping query because cache exists) " . $this->_sql,OBSERVE_QUERY);
 			foreach ($arr as $obj)
 			{
 				$obj->Refresh($this->_phreezer);
@@ -201,7 +217,10 @@ class DataSet implements Iterator
 		}
 		else
 		{
+			$this->_phreezer->Observe("(DataSet.ToObjectArray: query does not exist in cache) " . $this->_sql,OBSERVE_QUERY);
+			$this->_unable_to_cache = false;
 			$arr = Array();
+			
 			while ($object =& $this->Next())
 			{
 				$arr[] = $object;
@@ -234,17 +253,20 @@ class DataSet implements Iterator
     function GetLabelArray($val_prop, $label_prop)
     {
 		// check the cache
-		$cachekey = $this->_sql . " VAL=".$val_prop." LABEL=" . $label_prop;
+		$cachekey = md5($this->_sql . " VAL=".$val_prop." LABEL=" . $label_prop);
 		$arr = $this->_no_cache ? null : $this->_phreezer->GetValueCache($cachekey);
 		
 		// if no cache, go to the db
 		if ($arr != null)
 		{
-			$this->_phreezer->Observe("(CACHED QUERY) " . $this->_sql,OBSERVE_QUERY);
+			$this->_phreezer->Observe("(DataSet.GetLabelArray: skipping query because cache exists) " . $this->_sql,OBSERVE_QUERY);
 		}
 		else
 		{
+			$this->_phreezer->Observe("(DataSet.GetLabelArray: query does not exist in cache) " . $this->_sql,OBSERVE_QUERY);
 			$arr = Array();
+			$this->_unable_to_cache = false;
+			
 			while ($object =& $this->Next())
 			{
 				$arr[$object->$val_prop] =& $object->$label_prop;
@@ -277,13 +299,13 @@ class DataSet implements Iterator
     function GetDataPage($pagenum, $pagesize)
     {
 		// check the cache
-		$cachekey = $this->_sql . " PAGE=".$pagenum." SIZE=" . $pagesize;
+		$cachekey = md5($this->_sql . " PAGE=".$pagenum." SIZE=" . $pagesize);
 		$page = $this->_no_cache ? null : $this->_phreezer->GetValueCache($cachekey);
 		
 		// if no cache, go to the db
 		if ($page != null)
 		{
-			$this->_phreezer->Observe("(CACHED QUERY) " . $this->_sql,OBSERVE_QUERY);
+			$this->_phreezer->Observe("(DataSet.GetDataPage: skipping query because cache exists) " . $this->_sql,OBSERVE_QUERY);
 			
 			foreach ($page->Rows as $obj)
 			{
@@ -292,6 +314,9 @@ class DataSet implements Iterator
 		}
 		else
 		{
+			$this->_phreezer->Observe("(DataSet.GetDataPage: query does not exist in cache) " . $this->_sql,OBSERVE_QUERY);
+			$this->_unable_to_cache = false;
+			
 			$page = new DataPage();
 			$page->ObjectName = $this->_objectclass;
 			$page->ObjectInstance = new $this->_objectclass($this->_phreezer);

@@ -183,7 +183,7 @@ class DataAdapter implements IObservable
 	function Select($sql)
 	{
 		$this->RequireConnection(true);
-		$this->Observe($sql, OBSERVE_QUERY);
+		$this->Observe("(DataAdapter.Select) " . $sql, OBSERVE_QUERY);
 		
 		try
 		{
@@ -208,7 +208,7 @@ class DataAdapter implements IObservable
 	function Execute($sql)
 	{
 		$this->RequireConnection(true);
-		$this->Observe($sql, OBSERVE_QUERY);
+		$this->Observe("(DataAdapter.Execute) " . $sql, OBSERVE_QUERY);
 		$result = -1;
 		
 		try
