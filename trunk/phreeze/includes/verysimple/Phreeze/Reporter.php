@@ -17,7 +17,24 @@ abstract class Reporter
     
     public $CacheLevel = 0;
     
-	/**
+    /**
+    * constructor
+    *
+    * @access     public
+    * @param      Phreezer $phreezer
+    * @param      Array $row
+    */
+    final function Reporter(&$phreezer, $row = null)
+    {
+		$this->_phreezer = $phreezer;
+		
+        if ($row)
+        {
+            $this->Load($row);
+        }
+    }
+    
+    /**
 	 * When serializing, make sure that we ommit certain properties that
 	 * should never be cached or serialized.
 	 */
@@ -93,24 +110,16 @@ abstract class Reporter
         {
             $this->Load($row);
         }
+        
+         $this->OnRefresh();
 	}
-	
-    /**
-    * constructor
+
+	/**
+    * Called after object is refreshed, may be overridden
     *
     * @access     public
-    * @param      Phreezer $phreezer
-    * @param      Array $row
     */
-    final function Reporter(&$phreezer, $row = null)
-    {
-		$this->_phreezer = $phreezer;
-		
-        if ($row)
-        {
-            $this->Load($row);
-        }
-    }
+    public function OnRefresh(){}
 
     /**
     * This static function can be overridden to populate this object with

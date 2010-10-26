@@ -323,6 +323,8 @@ abstract class Phreezable implements Serializable
         {
             $this->Load($row);
         }
+        
+        $this->OnRefresh();
 	}
     
     /**
@@ -583,7 +585,14 @@ abstract class Phreezable implements Serializable
 	* @return	  bool
 	*/
 	public function OnBeforeDelete(){return true;}
-	
+
+	/**
+    * Called after object is refreshed, may be overridden
+    *
+    * @access     public
+    */
+    public function OnRefresh(){}
+    
     /**
     * Returns true if the current object has been loaded
     *
