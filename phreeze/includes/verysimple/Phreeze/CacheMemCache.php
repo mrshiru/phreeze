@@ -17,16 +17,19 @@ class CacheMemCache implements ICache
 {
 	private $_memcache = null;
 	private $_prefix = "";
+	private $_suppressServerErrors = false;
 	
 	/**
 	 * Constructor requires a reference to a MemCache object
 	 * @param Memcache memcache object
 	 * @param string a unique prefix to use so this app doesn't conflict with any others that may use the same memcache pool
+	 * @param bool set to true to ignore errors if a connection can't be made to the cache server
 	 */
-	public function CacheMemCache($memcache,$uniquePrefix = "CACHE-")
+	public function CacheMemCache($memcache,$uniquePrefix = "CACHE-",$suppressServerErrors=false)
 	{
 		$this->_memcache = $memcache;
 		$this->_prefix = $uniquePrefix ? $uniquePrefix . "-" : "";
+		$this->_suppressServerErrors = $suppressServerErrors;
 	}
 	
 	/**
@@ -34,7 +37,17 @@ class CacheMemCache implements ICache
 	 */
 	public function Get($key,$flags=null)
 	{
-		return $this->_memcache->get($this->_prefix . $key);
+		$obj = null;
+		try
+		{
+			$obj = $this->_memcache->get($this->_prefix . $key);
+		}
+		catch (Exception $ex)
+		{
+			if (!$this->_suppressServerErrors) throw $ex;
+		}
+		
+		return $obj;
 	}
 	
 	/**
@@ -42,7 +55,17 @@ class CacheMemCache implements ICache
 	 */
 	public function Set($key,$val,$flags=null,$timeout=null)
 	{
-		return $this->_memcache->set($this->_prefix . $key,$val,$flags,$timeout);
+		$result = null;
+		try
+		{
+			$result = $this->_memcache->set($this->_prefix . $key,$val,$flags,$timeout);
+		}
+		catch (Exception $ex)
+		{
+			if (!$this->_suppressServerErrors) throw $ex;
+		}
+		
+		return $result;
 	}
 
 	/**
@@ -50,7 +73,17 @@ class CacheMemCache implements ICache
 	 */
 	public function Delete($key)
 	{
-		return $this->_memcache->delete($this->_prefix . $key);
+		$result = null;
+		try
+		{
+			$result = $this->_memcache->delete($this->_prefix . $key);
+		}
+		catch (Exception $ex)
+		{
+			if (!$this->_suppressServerErrors) throw $ex;
+		}
+		
+		return $result;
 	}
 	
 }

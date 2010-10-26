@@ -33,7 +33,7 @@ abstract class Reporter
 			
 			if (!in_array($propname,$no_cache_props))
 			{
-				$rp->setAccessible(true);
+				if (method_exists($rp,"setAccessible")) $rp->setAccessible(true);
 				$propvals[$propname] = $rp->getValue($this);
 			}
 		}
@@ -56,7 +56,7 @@ abstract class Reporter
 			$propname = $rp->name;
 			if ( array_key_exists($propname,$propvals) )
 			{
-				$rp->setAccessible(true);
+				if (method_exists($rp,"setAccessible")) $rp->setAccessible(true);
 				$rp->setValue($this,$propvals[$propname]);
 			}
 		}
