@@ -15,24 +15,51 @@ abstract class Reporter
 {
     protected $_phreezer;
     
-	/** prevent serialization of _phreezer */
-	function __sleep()
+    public $CacheLevel = 0;
+    
+	/**
+	 * When serializing, make sure that we ommit certain properties that
+	 * should never be cached or serialized.
+	 */
+	function serialize()
 	{
-		$props = array();
+		$no_cache_props = array("_cache","_phreezer","_val_errors","_base_validation_complete","CacheLevel");
+		$propvals = array();
 		$ro = new ReflectionObject($this);
 		
-		foreach ($ro->getProperties() as $rp)
+		foreach ($ro->getProperties() as $rp )
 		{
-			if ($rp->name != "_phreezer" && $rp->isPrivate() == false)
-				$props[] = $rp->name;
+			$propname = $rp->getName();
+			
+			if (!in_array($propname,$no_cache_props))
+			{
+				$rp->setAccessible(true);
+				$propvals[$propname] = $rp->getValue($this);
+			}
 		}
-		return $props;
+
+		return serialize($propvals);
 	}
 	
-	/** put object back into stable state after deserialization */
-	function __wakeup()
+	/**
+	 * Reload the object when it awakes from serialization
+	 * @param $data
+	 */
+	function unserialize($data)
 	{
-
+		$propvals = unserialize($data);
+		
+		$ro = new ReflectionObject($this);
+		
+		foreach ($ro->getProperties() as $rp )
+		{
+			$propname = $rp->name;
+			if ( array_key_exists($propname,$propvals) )
+			{
+				$rp->setAccessible(true);
+				$rp->setValue($this,$propvals[$propname]);
+			}
+		}
 	}
 	
 	function Refresh(Phreezer $phreezer, $row = null)

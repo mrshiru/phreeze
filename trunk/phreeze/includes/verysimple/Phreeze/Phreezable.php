@@ -12,34 +12,63 @@
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
  * @version    1.3
  */
-abstract class Phreezable
+abstract class Phreezable implements Serializable
 {
-    private $_cache;
+    private $_cache = Array();
     protected $_phreezer;
 	protected $_val_errors = Array();
 	protected $_base_validation_complete = false;
 	
     public $IsLoaded;
 	public $IsPartiallyLoaded;
+	public $CacheLevel = 0;
 	public $NoCache = false;
 	
-	/** prevent serialization of _phreezer & private properties */
-	function __sleep()
+	/**
+	 * When serializing, make sure that we ommit certain properties that
+	 * should never be cached or serialized.
+	 */
+	function serialize()
 	{
-		$props = array();
+		$no_cache_props = array("_cache","_phreezer","_val_errors","_base_validation_complete","CacheLevel","IsLoaded","NoCache");
+		$propvals = array();
 		$ro = new ReflectionObject($this);
 		
-		foreach ($ro->getProperties() as $rp)
+		foreach ($ro->getProperties() as $rp )
 		{
-			if ($rp->name != "_phreezer") $props[] = $rp->name;
+			$propname = $rp->getName();
+			
+			if (!in_array($propname,$no_cache_props))
+			{
+				$rp->setAccessible(true);
+				$propvals[$propname] = $rp->getValue($this);
+				// $propvals[$propname] = $prop->isStatic() ? $ro->getStaticPropertyValue($propname) : $this->$propname;
+			}
 		}
-		return $props;
+
+		return serialize($propvals);
 	}
 	
-	/** put object back into stable state after deserialization */
-	function __wakeup()
+	/**
+	 * Reload the object when it awakes from serialization
+	 * @param $data
+	 */
+	function unserialize($data)
 	{
-		if (!$this->_cache) $this->_cache = array();
+		$propvals = unserialize($data);
+		
+		$ro = new ReflectionObject($this);
+		
+		foreach ($ro->getProperties() as $rp )
+		{
+			$propname = $rp->name;
+			if ( array_key_exists($propname,$propvals) )
+			{
+				$rp->setAccessible(true);
+				$rp->setValue($this,$propvals[$propname]);
+				//$ro->setStaticPropertyValue($propname,$data[$propname]);
+			}
+		}
 	}
 	
 	

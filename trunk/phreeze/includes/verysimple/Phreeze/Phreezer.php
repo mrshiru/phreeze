@@ -33,8 +33,13 @@ class Phreezer extends Observable
 	 */
 	public $RenderEngine;
 	
-	public $Version = 3.1;
-	public $ValueCacheTimeout = 15;
+	public $Version = 3.2;
+	
+	/** @var int expiration time for query & value cache (in seconds) */
+	public $ValueCacheTimeout = 5;
+	
+	/** @var int expiration time for single objects cache (in seconds) */
+	public $ObjectCacheTimeout = 300; // 5 minutes
 	
 	/**
 	 * @var array
@@ -136,8 +141,8 @@ class Phreezer extends Observable
 	public function SetCache($objectclass,$id, Phreezable $val)
 	{
 		if ($val->NoCache) return false;
-		$this->_level1Cache->Set($objectclass . "_" . $id,$val);
-		$this->_level2Cache->Set($objectclass . "_" . $id,$val);
+		$this->_level1Cache->Set($objectclass . "_" . $id,$val, $this->ObjectCacheTimeout);
+		$this->_level2Cache->Set($objectclass . "_" . $id,$val, $this->ObjectCacheTimeout);
 	}
 	
 	/**
@@ -157,6 +162,7 @@ class Phreezer extends Observable
 		if ($obj)
 		{ 
 			$this->Observe("Retrieved TYPE='$objectclass' ID='$id' from 1st Level Cache",OBSERVE_DEBUG);
+			$obj->CacheLevel = 1;
 			// $obj->Refresh($this); level 1 doesn't need to be refreshed
 			return $obj;
 		}
@@ -168,6 +174,7 @@ class Phreezer extends Observable
 		{ 
 			$this->Observe("Retrieved TYPE='$objectclass' ID='$id' from 2nd Level Cache",OBSERVE_DEBUG);
 			$obj->Refresh($this);
+			$obj->CacheLevel = 2;
 			return $obj;
 		}
 		
@@ -220,9 +227,10 @@ class Phreezer extends Observable
 	* @param string $objectclass the type of object that will be queried
     * @param Criteria $criteria a Criteria object to limit results
 	* @param bool $crash_if_multiple_found default value = true
+	* @param bool $no_cache set to true and any existing cache values will be ignored
 	* @return Phreezable
 	*/
-	public function GetByCriteria($objectclass, $criteria, $crash_if_multiple_found = true)
+	public function GetByCriteria($objectclass, $criteria, $crash_if_multiple_found = true, $no_cache = false)
 	{
 		if (strlen($objectclass) < 1)
 		{
@@ -230,7 +238,7 @@ class Phreezer extends Observable
 		}
 		
 		$obj = null;
-		$ds = $this->Query($objectclass, $criteria);
+		$ds = $this->Query($objectclass, $criteria, $no_cache);
 		
 		if (!$obj = $ds->Next())
 		{
@@ -251,9 +259,10 @@ class Phreezer extends Observable
     * @access public
     * @param string $objectclass the type of object that your DataSet will contain
     * @param Criteria $criteria a Criteria object to limit results
+    * @param bool $no_cache set to true and any existing cache values will be ignored
     * @return DataSet
     */
- 	public function Query($objectclass, $criteria = null)
+ 	public function Query($objectclass, $criteria = null, $no_cache = false)
 	{
 		if (strlen($objectclass) < 1)
 		{
@@ -301,9 +310,10 @@ class Phreezer extends Observable
     * @access public
     * @param string $objectclass the type of object that your DataSet will contain
     * @param variant $id the value of the primary key
+    * @param bool $no_cache set to true and any existing cache values will be ignored
     * @return Phreezable
     */
-	public function Get($objectclass, $id)
+	public function Get($objectclass, $id, $no_cache = false)
 	{
 		if (strlen($objectclass) < 1)
 		{
@@ -315,7 +325,7 @@ class Phreezer extends Observable
 		}
 		
 		// see if this object was cached & if so return it
-		$obj = $this->GetCache($objectclass,$id);
+		$obj = $no_cache ? null : $this->GetCache($objectclass,$id);
 		if ($obj) return $obj;
 
 		$pkm = $this->GetPrimaryKeyMap($objectclass);

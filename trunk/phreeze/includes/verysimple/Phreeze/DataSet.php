@@ -32,6 +32,7 @@ class DataSet implements Iterator
 	private $_last; // the previous object in the set
 	private $_totalcount;
 	private $_no_exception;  // used during iteration to suppress exception on the final Next call
+	private $_no_cache;  // if specified then no cached values will be used
 	
     /**
     * Contructor initializes the object
@@ -40,8 +41,9 @@ class DataSet implements Iterator
     * @param Phreezer
     * @param string class of object this DataSet contains
     * @param string $sql code
+    * @param bool $nocache set to true and any existing cache values will be ignored
     */
-    function DataSet(&$preezer, $objectclass, $sql)
+    function DataSet(&$preezer, $objectclass, $sql, $nocache = false)
     {
         $this->_counter = -1;
 		$this->_totalcount = -1;
@@ -50,6 +52,7 @@ class DataSet implements Iterator
         $this->_phreezer =& $preezer;
         $this->_rs = null;
         $this->_sql = $sql;
+        $this->_no_cache = $nocache;
     }
 
     /**
@@ -153,7 +156,7 @@ class DataSet implements Iterator
 		{
 			// check the cache
 			$cachekey = $this->_sql . " COUNT";
-			$this->_totalcount = $this->_phreezer->GetValueCache($cachekey);
+			$this->_totalcount = $this->_no_cache ? null : $this->_phreezer->GetValueCache($cachekey);
 			
 			// if no cache, go to the db
 			if ($this->_totalcount != null)
@@ -185,12 +188,16 @@ class DataSet implements Iterator
     {
  		// check the cache
 		$cachekey = $this->_sql . " OBJECTARRAY";
-		$arr = $this->_phreezer->GetValueCache($cachekey);
+		$arr = $this->_no_cache ? null :  $this->_phreezer->GetValueCache($cachekey);
 		
 		// if no cache, go to the db
 		if ($arr != null)
 		{
 			$this->_phreezer->Observe("(CACHED QUERY) " . $this->_sql,OBSERVE_QUERY);
+			foreach ($arr as $obj)
+			{
+				$obj->Refresh($this->_phreezer);
+			}
 		}
 		else
 		{
@@ -228,7 +235,7 @@ class DataSet implements Iterator
     {
 		// check the cache
 		$cachekey = $this->_sql . " VAL=".$val_prop." LABEL=" . $label_prop;
-		$arr = $this->_phreezer->GetValueCache($cachekey);
+		$arr = $this->_no_cache ? null : $this->_phreezer->GetValueCache($cachekey);
 		
 		// if no cache, go to the db
 		if ($arr != null)
@@ -271,12 +278,17 @@ class DataSet implements Iterator
     {
 		// check the cache
 		$cachekey = $this->_sql . " PAGE=".$pagenum." SIZE=" . $pagesize;
-		$page = $this->_phreezer->GetValueCache($cachekey);
+		$page = $this->_no_cache ? null : $this->_phreezer->GetValueCache($cachekey);
 		
 		// if no cache, go to the db
 		if ($page != null)
 		{
 			$this->_phreezer->Observe("(CACHED QUERY) " . $this->_sql,OBSERVE_QUERY);
+			
+			foreach ($page->Rows as $obj)
+			{
+				$obj->Refresh($this->_phreezer);
+			}
 		}
 		else
 		{
