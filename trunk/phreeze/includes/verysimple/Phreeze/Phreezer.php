@@ -36,7 +36,7 @@ class Phreezer extends Observable
 	public $Version = 3.2;
 	
 	/** @var int expiration time for query & value cache (in seconds) */
-	public $ValueCacheTimeout = 5;
+	public $ValueCacheTimeout = 15;
 	
 	/** @var int expiration time for single objects cache (in seconds) */
 	public $ObjectCacheTimeout = 300; // 5 minutes
@@ -55,6 +55,11 @@ class Phreezer extends Observable
 	 * @var ICache
 	 */
 	private $_level2Cache;
+
+	/**
+	 * @var array this keeps track of values that have already cached
+	 */
+	private $_level2CacheMonitor = Array();
 	
     /**
     * Contructor initializes the object.  The database connection is opened upon instantiation
