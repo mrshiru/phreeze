@@ -55,11 +55,6 @@ class Phreezer extends Observable
 	 * @var ICache
 	 */
 	private $_level2Cache;
-
-	/**
-	 * @var array this keeps track of values that have already cached
-	 */
-	private $_level2CacheMonitor = Array();
 	
     /**
     * Contructor initializes the object.  The database connection is opened upon instantiation
@@ -103,7 +98,7 @@ class Phreezer extends Observable
 	
 	/**
 	* ValueCache is a utility method allowing any object or value to 
-	* be stored in the 2nd Level cache.  The timout is specified by 
+	* be stored in the cache.  The timout is specified by 
 	* ValueCacheTimeout.  This
 	* 
 	* @param string $sql
@@ -146,6 +141,16 @@ class Phreezer extends Observable
 	public function SetCache($objectclass,$id, Phreezable $val)
 	{
 		if ($val->NoCache) return false;
+		
+		// if the object hasn't changed at level 1, then supress the cache update
+		$obj = $this->_level1Cache->Get($objectclass . "_" . $id);
+		
+		if ($obj && $obj->serialize() == $val->serialize())
+		{
+			$this->Observe("TYPE='$objectclass' ID='$id' has not changed.  SetCache call was supressed",OBSERVE_DEBUG);
+			return false;
+		}
+		
 		$this->_level1Cache->Set($objectclass . "_" . $id,$val, $this->ObjectCacheTimeout);
 		$this->_level2Cache->Set($objectclass . "_" . $id,$val, $this->ObjectCacheTimeout);
 	}
