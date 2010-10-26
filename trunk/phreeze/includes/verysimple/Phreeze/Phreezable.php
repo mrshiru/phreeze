@@ -40,9 +40,8 @@ abstract class Phreezable implements Serializable
 			
 			if (!in_array($propname,$no_cache_props))
 			{
-				$rp->setAccessible(true);
+				if (method_exists($rp,"setAccessible")) $rp->setAccessible(true);
 				$propvals[$propname] = $rp->getValue($this);
-				// $propvals[$propname] = $prop->isStatic() ? $ro->getStaticPropertyValue($propname) : $this->$propname;
 			}
 		}
 
@@ -64,9 +63,8 @@ abstract class Phreezable implements Serializable
 			$propname = $rp->name;
 			if ( array_key_exists($propname,$propvals) )
 			{
-				$rp->setAccessible(true);
+				if (method_exists($rp,"setAccessible")) $rp->setAccessible(true);
 				$rp->setValue($this,$propvals[$propname]);
-				//$ro->setStaticPropertyValue($propname,$data[$propname]);
 			}
 		}
 	}
