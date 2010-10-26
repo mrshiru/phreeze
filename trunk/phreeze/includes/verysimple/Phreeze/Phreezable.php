@@ -40,8 +40,17 @@ abstract class Phreezable implements Serializable
 			
 			if (!in_array($propname,$no_cache_props))
 			{
-				if (method_exists($rp,"setAccessible")) $rp->setAccessible(true);
-				$propvals[$propname] = $rp->getValue($this);
+				if (method_exists($rp,"setAccessible")) 
+				{
+					$rp->setAccessible(true);
+					$propvals[$propname] = $rp->getValue($this);
+				}
+				elseif (!$rp->isPrivate())
+				{
+					// if < php 5.3 we can't serialize private vars
+					$propvals[$propname] = $rp->getValue($this);
+				}
+				
 			}
 		}
 
@@ -55,7 +64,6 @@ abstract class Phreezable implements Serializable
 	function unserialize($data)
 	{
 		$propvals = unserialize($data);
-		
 		$ro = new ReflectionObject($this);
 		
 		foreach ($ro->getProperties() as $rp )
@@ -63,8 +71,17 @@ abstract class Phreezable implements Serializable
 			$propname = $rp->name;
 			if ( array_key_exists($propname,$propvals) )
 			{
-				if (method_exists($rp,"setAccessible")) $rp->setAccessible(true);
-				$rp->setValue($this,$propvals[$propname]);
+				if (method_exists($rp,"setAccessible")) 
+				{
+					$rp->setAccessible(true);
+					$rp->setValue($this,$propvals[$propname]);
+				}
+				elseif (!$rp->isPrivate())
+				{
+					// if < php 5.3 we can't serialize private vars
+					$rp->setValue($this,$propvals[$propname]);
+				}
+				
 			}
 		}
 	}
