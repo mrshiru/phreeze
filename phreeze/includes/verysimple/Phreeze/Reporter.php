@@ -23,7 +23,7 @@ abstract class Reporter
 	 */
 	function serialize()
 	{
-		$no_cache_props = array("_cache","_phreezer","_val_errors","_base_validation_complete","CacheLevel");
+		$no_cache_props = array("_cache","_phreezer","_val_errors","_base_validation_complete","CacheLevel","IsLoaded","NoCache");
 		$propvals = array();
 		$ro = new ReflectionObject($this);
 		
@@ -33,8 +33,17 @@ abstract class Reporter
 			
 			if (!in_array($propname,$no_cache_props))
 			{
-				if (method_exists($rp,"setAccessible")) $rp->setAccessible(true);
-				$propvals[$propname] = $rp->getValue($this);
+				if (method_exists($rp,"setAccessible")) 
+				{
+					$rp->setAccessible(true);
+					$propvals[$propname] = $rp->getValue($this);
+				}
+				elseif (!$rp->isPrivate())
+				{
+					// if < php 5.3 we can't serialize private vars
+					$propvals[$propname] = $rp->getValue($this);
+				}
+				
 			}
 		}
 
@@ -56,15 +65,34 @@ abstract class Reporter
 			$propname = $rp->name;
 			if ( array_key_exists($propname,$propvals) )
 			{
-				if (method_exists($rp,"setAccessible")) $rp->setAccessible(true);
-				$rp->setValue($this,$propvals[$propname]);
+				if (method_exists($rp,"setAccessible")) 
+				{
+					$rp->setAccessible(true);
+					$rp->setValue($this,$propvals[$propname]);
+				}
+				elseif (!$rp->isPrivate())
+				{
+					// if < php 5.3 we can't serialize private vars
+					$rp->setValue($this,$propvals[$propname]);
+				}
+				
 			}
 		}
 	}
 	
+	/**
+	 * Restores the object's connection to the datastore, for example after serialization
+	 * @param $phreezer
+	 * @param $row
+	 */
 	function Refresh(Phreezer $phreezer, $row = null)
 	{
 		$this->_phreezer = $phreezer;
+
+		if ($row)
+        {
+            $this->Load($row);
+        }
 	}
 	
     /**
