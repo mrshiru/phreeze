@@ -36,7 +36,7 @@ class Phreezer extends Observable
 	public $Version = 3.2;
 	
 	/** @var int expiration time for query & value cache (in seconds) */
-	public $ValueCacheTimeout = 15;
+	public $ValueCacheTimeout = 5;
 	
 	/** @var int expiration time for single objects cache (in seconds) */
 	public $ObjectCacheTimeout = 300; // 5 minutes
