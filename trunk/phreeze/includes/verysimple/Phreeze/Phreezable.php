@@ -493,7 +493,13 @@ abstract class Phreezable implements Serializable
 				$this->_phreezer->IncludeModel($km->ForeignObject);
 				$foclass = $km->ForeignObject;
 				$fo = new $foclass($this->_phreezer,$row);
-				$this->_phreezer->SetCache($foclass, $fo->GetPrimaryKeyValue(), $fo);
+				
+				$this->_phreezer->SetCache(
+					$foclass, 
+					$fo->GetPrimaryKeyValue(), 
+					$fo, 
+					$this->_phreezer->CacheQueryObjectLevel2
+				);
 			}
 		}
 		$this->_phreezer->Observe("Firing " . get_class($this) . "->OnLoad()",OBSERVE_DEBUG);

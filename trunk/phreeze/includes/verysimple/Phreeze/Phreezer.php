@@ -35,11 +35,26 @@ class Phreezer extends Observable
 	
 	public $Version = 3.2;
 	
-	/** @var int expiration time for query & value cache (in seconds) */
+	/** 
+	 * @var int expiration time for query & value cache (in seconds)
+	 * Recommended to keep this at a low value to prevent showing stale data
+	 */
 	public $ValueCacheTimeout = 5;
 	
-	/** @var int expiration time for single objects cache (in seconds) */
+	/** 
+	 * @var int expiration time for single objects cache (in seconds) 
+	 * All individual save operations will update the cache so this can be a higher value
+	 * as long as other non-phreeze applications are not also editing the database
+	 * and you are not doing bulk query updates.
+	 */
 	public $ObjectCacheTimeout = 300; // 5 minutes
+
+	/** 
+	 * @var set to true to save each individual query object in the level-2 cache
+	 * this can lead to a lot of save operations on the level-2 cahce that don't
+	 * ever get read, so enable only if you know it will improve performance
+	 */
+	public $CacheQueryObjectLevel2 = false;
 	
 	/**
 	 * @var array
@@ -137,8 +152,9 @@ class Phreezer extends Observable
 	* @param string $objectclass
 	* @param string $id
 	* @param Phreezable $val
+	* @param bool $includeCacheLevel2 true = cache both level 1 and 2.  false = cache only level 1. (default true)
 	*/
-	public function SetCache($objectclass,$id, Phreezable $val)
+	public function SetCache($objectclass,$id, Phreezable $val, $includeCacheLevel2 = true)
 	{
 		if ($val->NoCache) return false;
 		
@@ -152,7 +168,7 @@ class Phreezer extends Observable
 		}
 		
 		$this->_level1Cache->Set($objectclass . "_" . $id,$val, $this->ObjectCacheTimeout);
-		$this->_level2Cache->Set($objectclass . "_" . $id,$val, $this->ObjectCacheTimeout);
+		if ($includeCacheLevel2) $this->_level2Cache->Set($objectclass . "_" . $id,$val, $this->ObjectCacheTimeout);
 	}
 	
 	/**
@@ -285,7 +301,6 @@ class Phreezer extends Observable
 			$criteria = new Criteria();
 		}
 		
-
 		// see if this object has a custom query designated
 		$custom = $this->GetCustomQuery($objectclass, $criteria);
 		
