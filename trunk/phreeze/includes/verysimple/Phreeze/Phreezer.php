@@ -90,7 +90,6 @@ class Phreezer extends Observable
 		$this->Observe("Phreeze Instantiated", OBSERVE_DEBUG);
 		
 		$this->DataAdapter = new DataAdapter($csetting, $observer);
-		$this->DataAdapter->Open();
 	}
 	
 	/**
