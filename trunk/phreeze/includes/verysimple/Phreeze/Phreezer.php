@@ -131,7 +131,7 @@ class Phreezer extends Observable
 	*/
 	public function GetValueCache($key)
 	{
-		return $this->_level2Cache->Get(md5($key));
+		return $this->_level2Cache->Get($key);
 	}
 
 	/**
