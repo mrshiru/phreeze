@@ -203,7 +203,8 @@ class DataSet implements Iterator
     function ToObjectArray()
     {
  		// check the cache
-		$cachekey = md5($this->_sql . " OBJECTARRAY");
+		//$cachekey = md5($this->_sql . " OBJECTARRAY");
+		$cachekey = $this->_sql . " OBJECTARRAY";
 		$arr = $this->_no_cache ? null :  $this->_phreezer->GetValueCache($cachekey);
 		
 		// if no cache, go to the db
@@ -253,7 +254,8 @@ class DataSet implements Iterator
     function GetLabelArray($val_prop, $label_prop)
     {
 		// check the cache
-		$cachekey = md5($this->_sql . " VAL=".$val_prop." LABEL=" . $label_prop);
+		// $cachekey = md5($this->_sql . " VAL=".$val_prop." LABEL=" . $label_prop);
+		$cachekey = $this->_sql . " VAL=".$val_prop." LABEL=" . $label_prop;
 		$arr = $this->_no_cache ? null : $this->_phreezer->GetValueCache($cachekey);
 		
 		// if no cache, go to the db
@@ -299,7 +301,8 @@ class DataSet implements Iterator
     function GetDataPage($pagenum, $pagesize)
     {
 		// check the cache
-		$cachekey = md5($this->_sql . " PAGE=".$pagenum." SIZE=" . $pagesize);
+		// $cachekey = md5($this->_sql . " PAGE=".$pagenum." SIZE=" . $pagesize);
+		$cachekey = $this->_sql . " PAGE=".$pagenum." SIZE=" . $pagesize;
 		$page = $this->_no_cache ? null : $this->_phreezer->GetValueCache($cachekey);
 		
 		// if no cache, go to the db
