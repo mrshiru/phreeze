@@ -120,6 +120,7 @@ class Phreezer extends Observable
 	*/
 	public function SetValueCache($key, $val)
 	{
+		if (strlen($key) > 250) $key = md5($key);
 		$this->_level2Cache->Set($key,$val,0,$this->ValueCacheTimeout);
 	}
 	
@@ -131,6 +132,7 @@ class Phreezer extends Observable
 	*/
 	public function GetValueCache($key)
 	{
+		if (strlen($key) > 250) $key = md5($key);
 		return $this->_level2Cache->Get($key);
 	}
 
