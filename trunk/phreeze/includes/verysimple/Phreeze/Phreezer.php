@@ -426,7 +426,7 @@ class Phreezer extends Observable
 
 					try
 					{
-						$sql .= $delim . "`" . $fm->ColumnName . "` = '" . DataAdapter::Escape($val) . "'";
+						$sql .= $delim . "`" . $fm->ColumnName . "` = '" . $this->Escape($val) . "'";
 					}
 					catch (Exception $ex)
 					{
@@ -436,7 +436,7 @@ class Phreezer extends Observable
 					$delim = ", ";
 				}
 			}
-			$sql .= " where $pkcol = '" . DataAdapter::Escape($id) . "'";
+			$sql .= " where $pkcol = '" . $this->Escape($id) . "'";
 
 			$returnval = $this->DataAdapter->Execute($sql);
 			$obj->OnUpdate(); // fire OnUpdate event
@@ -477,7 +477,7 @@ class Phreezer extends Observable
 						
 						try
 						{
-							$sql .= $delim . "'" . DataAdapter::Escape($val) . "'";
+							$sql .= $delim . "'" . $this->Escape($val) . "'";
 						}
 						catch (Exception $ex)
 						{
@@ -525,7 +525,7 @@ class Phreezer extends Observable
 		$table = $fms[$pk]->TableName;
 		$pkcol = $fms[$pk]->ColumnName;
 		
-		$sql = "delete from `$table` where `$pkcol` = '" . DataAdapter::Escape($id) . "'";
+		$sql = "delete from `$table` where `$pkcol` = '" . $this->Escape($id) . "'";
 		$returnval = $this->DataAdapter->Execute($sql);
 
 		// remove from cache
@@ -723,7 +723,7 @@ class Phreezer extends Observable
 			// code in the constructor, but we have to translate the properties into column names
 			$foreign_table = $this->GetTableName($km->ForeignObject,$km->ForeignKeyProperty);
 			$foreign_column = $this->GetColumnName($km->ForeignObject,$km->ForeignKeyProperty);
-			$criteria = new Criteria("`" . $foreign_table . "`.`" . $foreign_column . "` = '" . DataAdapter::Escape($key_value) . "'");
+			$criteria = new Criteria("`" . $foreign_table . "`.`" . $foreign_column . "` = '" . $this->Escape($key_value) . "'");
 		}
 		else
 		{
@@ -788,6 +788,15 @@ class Phreezer extends Observable
 	public function SetLoadType($objectclass, $keyname, $load_type = KM_LOAD_EAGER)
 	{
 		$this->GetKeyMap($objectclass, $keyname)->LoadType = $load_type;
+	}
+	
+
+	/**
+	 * Escape SQL string for SQL
+	 */
+	public function Escape($val)
+	{
+		return DataAdapter::Escape($val);
 	}
 	
 	/**

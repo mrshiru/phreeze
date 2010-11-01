@@ -27,7 +27,8 @@ class DataAdapter implements IObservable
 	private $_dbopen;
 	private $_driver;
 	
-	static $DRIVER_CLASS = null;
+	/** @var instance of the driver class, used for escaping */
+	static $DRIVER_INSTANCE = null;
 	
     /**
     * Contructor initializes the object
@@ -61,7 +62,7 @@ class DataAdapter implements IObservable
     		}
     	}
     	
-    	DataAdapter::$DRIVER_CLASS = $this->_driver;
+    	DataAdapter::$DRIVER_INSTANCE = $this->_driver;
     	
 		$this->AttachObserver($listener);
 		$this->_csetting =& $csetting;
@@ -306,13 +307,15 @@ class DataAdapter implements IObservable
 	 */	
     public static function Escape($val)
     {
-		// if magic quotes are enabled, then we need to stip the slashes that php added
-		if (get_magic_quotes_runtime() || get_magic_quotes_gpc()) $val = stripslashes($val);
-
 		// this is an unfortunate leftover from poor design of making this function static
 		// we cannon use the driver's escape method without a static reference
-		$driver = DataAdapter::$DRIVER_CLASS;
-		return $driver->Escape($val);
+		if (!DataAdapter::$DRIVER_INSTANCE) throw new Exception("DataAdapter must be instantiated before Escape can be called");
+
+		// if magic quotes are enabled, then we need to stip the slashes that php added
+		if (get_magic_quotes_runtime() || get_magic_quotes_gpc()) $val = stripslashes($val);
+		
+		// $driver->RequireConnection(true);
+		return DataAdapter::$DRIVER_INSTANCE->Escape($val);
 	}
 	
 	

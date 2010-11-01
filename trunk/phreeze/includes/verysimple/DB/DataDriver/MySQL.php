@@ -16,6 +16,12 @@ require_once("IDataDriver.php");
  */
 class DataDriverMySQL implements IDataDriver
 {	
+	/** @var characters that will be escaped */
+	static $BAD_CHARS = array("\\","\0","\n","\r","\x1a","'",'"');
+	
+	/** @var characters that will be used to replace bad chars */
+	static $GOOD_CHARS = array("\\\\","\\0","\\n","\\r","\Z","\'",'\"');
+	
 	/**
 	 * @inheritdocs
 	 */
@@ -115,10 +121,14 @@ class DataDriverMySQL implements IDataDriver
 	
 	/**
 	 * @inheritdocs
+	 * this method currently uses replacement and not mysql_real_escape_string
+	 * so that a database connection is not necessary in order to escape.
+	 * this way cached queries can be used without connecting to the DB server
 	 */
 	function Escape($val) 
 	{
-		return mysql_real_escape_string($val);
+		return str_replace(self::$BAD_CHARS, self::$GOOD_CHARS, $val);
+		// return mysql_real_escape_string($val);
  	}
 	
 	/**
