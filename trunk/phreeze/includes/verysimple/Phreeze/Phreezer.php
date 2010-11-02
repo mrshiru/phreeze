@@ -123,11 +123,14 @@ class Phreezer extends Observable
 	* 
 	* @param string $sql
 	* @param variant $val
+	* @return bool true if cache was set, false if not
 	*/
 	public function SetValueCache($key, $val)
 	{
+		if ($this->ValueCacheTimeout <= 0) return false;
+		
 		if (strlen($key) > 250) $key = substr($key,0,150) . md5($key);
-		$this->_level2Cache->Set($key,$val,0,$this->ValueCacheTimeout);
+		return $this->_level2Cache->Set($key,$val,0,$this->ValueCacheTimeout);
 	}
 	
 	/**
@@ -138,6 +141,8 @@ class Phreezer extends Observable
 	*/
 	public function GetValueCache($key)
 	{
+		if ($this->ValueCacheTimeout <= 0) return null;
+		
 		if (strlen($key) > 250) $key = substr($key,0,150) . md5($key);
 		return $this->_level2Cache->Get($key);
 	}
@@ -163,7 +168,7 @@ class Phreezer extends Observable
 	*/
 	public function SetCache($objectclass,$id, Phreezable $val, $includeCacheLevel2 = true)
 	{
-		if ($val->NoCache) return false;
+		if ($val->NoCache || $this->ObjectCacheTimeout <= 0) return false;
 		
 		// if the object hasn't changed at level 1, then supress the cache update
 		$obj = $this->_level1Cache->Get($objectclass . "_" . $id);
@@ -188,6 +193,8 @@ class Phreezer extends Observable
 	*/
 	public function GetCache($objectclass,$id)
 	{
+		if ($this->ObjectCacheTimeout <= 0) return null;
+		
 		// include the model so any serialized classes will not throw an exception
 		$this->IncludeModel($objectclass);
 		
