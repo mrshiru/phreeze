@@ -34,7 +34,7 @@ class DataSet implements Iterator
 	private $_no_exception;  // used during iteration to suppress exception on the final Next call
 	private $_no_cache;  // if specified then no cached values will be used
 	
-	private $_unable_to_cache = true;
+	public $UnableToCache = true;
 	
     /**
     * Contructor initializes the object
@@ -79,15 +79,17 @@ class DataSet implements Iterator
     */
     function Next()
     {
-    	if ($this->_unable_to_cache) 
+    	if ($this->UnableToCache) 
     	{
     		require_once("verysimple/Util/ExceptionFormatter.php");
     		$info = ExceptionFormatter::FormatTrace(debug_backtrace());
-    		$this->_unable_to_cache = false; // stop this warning from repeating on every next call for this dataset
     		$this->_phreezer->Observe("(DataSet.Next: unable to cache query with cursor) " . $info . "  " . $this->_sql,OBSERVE_QUERY);
     		
     		// use this line to discover where an uncachable query is coming from
     		// throw new Exception("WTF");
+
+    		// stop this warning from repeating on every next call for this dataset
+    	    $this->UnableToCache = false; 
     	}
     	
         $this->_verifyRs();
@@ -202,14 +204,13 @@ class DataSet implements Iterator
     */
     function ToObjectArray()
     {
- 		// check the cache
-		//$cachekey = md5($this->_sql . " OBJECTARRAY");
 		$cachekey = $this->_sql . " OBJECTARRAY";
-		$arr = $this->_no_cache ? null :  $this->_phreezer->GetValueCache($cachekey);
-		
-		// if no cache, go to the db
+
+		$arr = $this->GetDelayedCache($cachekey);
+    	
 		if ($arr != null)
 		{
+			// we have a cache value, so we will repopulate from that
 			$this->_phreezer->Observe("(DataSet.ToObjectArray: skipping query because cache exists) " . $this->_sql,OBSERVE_QUERY);
 			foreach ($arr as $obj)
 			{
@@ -218,8 +219,11 @@ class DataSet implements Iterator
 		}
 		else
 		{
-			$this->_phreezer->Observe("(DataSet.ToObjectArray: query does not exist in cache) " . $this->_sql,OBSERVE_QUERY);
-			$this->_unable_to_cache = false;
+			// there is nothing in the cache so we have to reload it
+			
+			$this->LockCache($cachekey);
+			
+			$this->UnableToCache = false;
 			$arr = Array();
 			
 			while ($object =& $this->Next())
@@ -229,8 +233,10 @@ class DataSet implements Iterator
 			
 			$this->_phreezer->SetValueCache($cachekey,$arr);
 			
+			$this->UnlockCache($cachekey);
 		}
-        return $arr;
+			
+		return $arr;
     }
     
 
@@ -256,7 +262,8 @@ class DataSet implements Iterator
 		// check the cache
 		// $cachekey = md5($this->_sql . " VAL=".$val_prop." LABEL=" . $label_prop);
 		$cachekey = $this->_sql . " VAL=".$val_prop." LABEL=" . $label_prop;
-		$arr = $this->_no_cache ? null : $this->_phreezer->GetValueCache($cachekey);
+		
+		$arr = $this->GetDelayedCache($cachekey);
 		
 		// if no cache, go to the db
 		if ($arr != null)
@@ -265,18 +272,21 @@ class DataSet implements Iterator
 		}
 		else
 		{
-			$this->_phreezer->Observe("(DataSet.GetLabelArray: query does not exist in cache) " . $this->_sql,OBSERVE_QUERY);
+			$this->LockCache($cachekey);
+			
 			$arr = Array();
-			$this->_unable_to_cache = false;
+			$this->UnableToCache = false;
 			
 			while ($object =& $this->Next())
 			{
 				$arr[$object->$val_prop] =& $object->$label_prop;
-				// $arr[] =& $object->$label_prop;
 			}
 
 			$this->_phreezer->SetValueCache($cachekey,$arr);
+			
+			$this->UnlockCache($cachekey);
 		}
+		
         return $arr;
     }
 
@@ -303,7 +313,8 @@ class DataSet implements Iterator
 		// check the cache
 		// $cachekey = md5($this->_sql . " PAGE=".$pagenum." SIZE=" . $pagesize);
 		$cachekey = $this->_sql . " PAGE=".$pagenum." SIZE=" . $pagesize;
-		$page = $this->_no_cache ? null : $this->_phreezer->GetValueCache($cachekey);
+		
+		$page = $this->GetDelayedCache($cachekey);
 		
 		// if no cache, go to the db
 		if ($page != null)
@@ -317,8 +328,9 @@ class DataSet implements Iterator
 		}
 		else
 		{
-			$this->_phreezer->Observe("(DataSet.GetDataPage: query does not exist in cache) " . $this->_sql,OBSERVE_QUERY);
-			$this->_unable_to_cache = false;
+			$this->LockCache($cachekey);
+			
+			$this->UnableToCache = false;
 			
 			$page = new DataPage();
 			$page->ObjectName = $this->_objectclass;
@@ -370,16 +382,82 @@ class DataSet implements Iterator
 			{
 				$page->Rows[] = $obj;
 			}
-			// ~~~ 
 
 			$this->_phreezer->SetValueCache($cachekey,$page);
 
 			$this->Clear();
 			
+			$this->UnlockCache($cachekey);
+			
 		}
 		
 		return $page;
 	}
+
+
+    /**
+     * 
+     * @param string $cachekey
+     */
+    private function GetDelayedCache($cachekey)
+    {
+    	// if no cache then don't return anything
+    	if ($this->_no_cache) return null;
+    	
+        $obj = $this->_phreezer->GetValueCache($cachekey);
+
+        $lockfile = $this->_phreezer->LockFilePath 
+			? $this->_phreezer->LockFilePath . md5($cachekey) . ".lock" 
+			: "";
+			
+    	// no cache, so try three times with a delay to prevent a cache stampede
+    	$counter = 1;
+		while ( $counter < 4 && $obj == null && $lockfile && file_exists($lockfile) )
+		{
+			$this->_phreezer->Observe("(DataSet.GetDelayedCache: flood prevention. delayed attempt ".$counter." of 3...) " . $cachekey,OBSERVE_DEBUG);
+			usleep(50000); // 5/100th of a second
+			$obj = $this->_phreezer->GetValueCache($cachekey);
+			$counter++;
+		}
+		
+		return $obj;
+    }
+    
+    /**
+     * 
+     * @param $cachekey
+     */
+    private function IsLocked($cachekey)
+    {
+		return $this->_phreezer->LockFilePath && file_exists($this->_phreezer->LockFilePath . md5($cachekey) . ".lock" );
+    }
+    
+    /**
+     * 
+     * @param $cachekey
+     */
+    private function LockCache($cachekey)
+    {
+		if ($this->_phreezer->LockFilePath) 
+		{
+			touch($this->_phreezer->LockFilePath . md5($cachekey) . ".lock");
+		}
+    	
+    }
+    
+    /**
+     * 
+     * @param $cachekey
+     */
+    private function UnlockCache($cachekey)
+    {
+		if ($this->_phreezer->LockFilePath) 
+		{
+			$lockfile = $this->_phreezer->LockFilePath . md5($cachekey) . ".lock";
+			if (file_exists($lockfile)) @unlink($lockfile);
+		}
+	}
+
 }
 
 ?>

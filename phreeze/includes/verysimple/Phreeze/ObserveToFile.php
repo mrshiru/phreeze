@@ -36,7 +36,7 @@ class ObserveToFile implements IObserver
 	function Init()
 	{
 		$this->fh = fopen($this->filepath,"a");
-		fwrite($this->fh,"\r\n########## ObserveToFile Initialized: " . RequestUtil::GetCurrentURL() . " ##########\r\n");
+		fwrite($this->fh,"DEBUG:\t". date("Y-m-d H:i:s:u") . "\t" . getmypid() . "\t########## ObserveToFile Initialized: " . RequestUtil::GetCurrentURL() . " ##########\r\n");
 	}
 	
 	public function Observe($obj, $ltype = OBSERVE_INFO)
@@ -50,6 +50,8 @@ class ObserveToFile implements IObserver
 			$msg = $obj;
 		}
 		
+		$msg = date("Y-m-d H:i:s:u") . "\t" . getmypid() . "\t" . str_replace(array("\t","\r","\n"),array(" "," "," "), $msg); 
+		
 		if ($this->eventtype == null || $this->eventtype & $ltype)
 		{
 			
@@ -57,20 +59,20 @@ class ObserveToFile implements IObserver
 			switch ($ltype)
 			{
 				case OBSERVE_DEBUG:
-					fwrite($this->fh, "DEBUG: $msg\r\n");
+					fwrite($this->fh, "DEBUG:\t$msg\r\n");
 					break;
 				case OBSERVE_QUERY:
-					//fwrite($this->fh, "QUERY: " . $this->FormatTrace(debug_backtrace()) . " " . $msg . "\r\n");
-					fwrite($this->fh, "QUERY: " . $msg . "\r\n");
+					//fwrite($this->fh, "QUERY:\t" . $this->FormatTrace(debug_backtrace()) . " " . $msg . "\r\n");
+					fwrite($this->fh, "QUERY:\t" . $msg . "\r\n");
 					break;
 				case OBSERVE_FATAL:
-					fwrite($this->fh, "FATAL: $msg\r\n");
+					fwrite($this->fh, "FATAL:\t$msg\r\n");
 					break;
 				case OBSERVE_INFO:
-					fwrite($this->fh, "INFO: $msg\r\n");
+					fwrite($this->fh, "INFO:\t$msg\r\n");
 					break;
 				case OBSERVE_WARN:
-					fwrite($this->fh, "WARN: $msg\r\n");
+					fwrite($this->fh, "WARN:\t$msg\r\n");
 					break;
 			}
 		}
