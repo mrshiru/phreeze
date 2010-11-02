@@ -18,6 +18,7 @@ class CacheMemCache implements ICache
 	private $_memcache = null;
 	private $_prefix = "";
 	private $_suppressServerErrors = false;
+	private $_lockFilePath = "";
 	
 	/**
 	 * Constructor requires a reference to a MemCache object

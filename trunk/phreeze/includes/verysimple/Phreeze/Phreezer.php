@@ -71,6 +71,11 @@ class Phreezer extends Observable
 	 */
 	private $_level2Cache;
 	
+	/**
+	 * @var string path used for saving lock files to prevent cache stampedes
+	 */
+	public $LockFilePath;
+	
     /**
     * Contructor initializes the object.  The database connection is opened upon instantiation
     * and an exception will be thrown if db connectivity fails, so it is advisable to 
@@ -105,9 +110,10 @@ class Phreezer extends Observable
 	* Sets a cache provider for the level 1 cache
 	* @param ICache $cache
 	*/
-	public function SetLevel2CacheProvider(ICache $cache)
+	public function SetLevel2CacheProvider(ICache $cache, $lockFilePath = "")
 	{
 		$this->_level2Cache = $cache;
+		$this->LockFilePath = $lockFilePath;
 	}
 	
 	/**
@@ -164,11 +170,13 @@ class Phreezer extends Observable
 		
 		if ($obj && $obj->serialize() == $val->serialize())
 		{
-			$this->Observe("TYPE='$objectclass' ID='$id' has not changed.  SetCache call was supressed",OBSERVE_DEBUG);
+			$this->Observe("TYPE='$objectclass' ID='$id' level 1 cache has not changed.  SetCache was supressed",OBSERVE_DEBUG);
 			return false;
 		}
 		
 		$this->_level1Cache->Set($objectclass . "_" . $id,$val, $this->ObjectCacheTimeout);
+		
+		// cache level 2 only if specified
 		if ($includeCacheLevel2) $this->_level2Cache->Set($objectclass . "_" . $id,$val, $this->ObjectCacheTimeout);
 	}
 	
@@ -267,6 +275,8 @@ class Phreezer extends Observable
 		$obj = null;
 		$ds = $this->Query($objectclass, $criteria, $no_cache);
 		
+		$ds->UnableToCache = false;
+		
 		if (!$obj = $ds->Next())
 		{
 			throw new NotFoundException("$objectclass with specified criteria not found");
@@ -361,6 +371,9 @@ class Phreezer extends Observable
 		$criteria->PrimaryKeyValue = $id;
 		
 		$ds = $this->Query($objectclass, $criteria);
+		
+		// tell the dataset that we will be able to cache this query
+		$ds->UnableToCache = false;
 		
 		if (!$obj = $ds->Next())
 		{
