@@ -3,6 +3,7 @@
 
 /** import supporting libraries */
 require_once("ICache.php");
+require_once("verysimple/Util/ExceptionThrower.php");
 
 /**
  * CacheRam is an implementation of a Cache that persists to ram for the current page load only
@@ -41,13 +42,16 @@ class CacheMemCache implements ICache
 		$obj = null;
 		try
 		{
+			ExceptionThrower::Start();
 			$obj = $this->_memcache->get($this->_prefix . $key);
+			ExceptionThrower::Stop();
 		}
 		catch (Exception $ex)
 		{
+			ExceptionThrower::Stop();
 			if (!$this->_suppressServerErrors) throw $ex;
 		}
-		
+
 		return $obj;
 	}
 	
@@ -59,10 +63,13 @@ class CacheMemCache implements ICache
 		$result = null;
 		try
 		{
+			ExceptionThrower::Start();
 			$result = $this->_memcache->set($this->_prefix . $key,$val,$flags,$timeout);
+			ExceptionThrower::Stop();
 		}
 		catch (Exception $ex)
 		{
+			ExceptionThrower::Stop();
 			if (!$this->_suppressServerErrors) throw $ex;
 		}
 		
@@ -77,16 +84,19 @@ class CacheMemCache implements ICache
 		$result = null;
 		try
 		{
+			ExceptionThrower::Start();
 			$result = $this->_memcache->delete($this->_prefix . $key);
+			ExceptionThrower::Stop();
 		}
 		catch (Exception $ex)
 		{
+			ExceptionThrower::Stop();
 			if (!$this->_suppressServerErrors) throw $ex;
 		}
 		
 		return $result;
 	}
 	
-}
+	}
 
 ?>
