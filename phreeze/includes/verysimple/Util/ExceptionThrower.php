@@ -25,12 +25,29 @@
  */
 class ExceptionThrower
 {
+	
+	static $IGNORE_DEPRECATED = true;
+	
 	/**
 	 * Start redirecting PHP errors
-	 * @param int $level the level(s) of PHP error to catch (ex: E_WARNING | E_NOTICE)
+	 * @param int $level PHP Error level to catch (Default = E_ALL & ~E_DEPRECATED)
 	 */
-	static function Start($level = E_ALL)
+	static function Start($level = null)
 	{
+		
+		if ($level == null) 
+		{
+			if (defined("E_DEPRECATED"))
+			{
+				$level = E_ALL & ~E_DEPRECATED ;
+			}
+			else
+			{
+				// php 5.2 and earlier don't support E_DEPRECATED
+				$level = E_ALL;
+				self::$IGNORE_DEPRECATED = true;
+			}
+		}
 		set_error_handler(array("ExceptionThrower", "HandleError"), $level);
 	}
 	
@@ -56,7 +73,10 @@ class ExceptionThrower
 	 */
 	static function HandleError($code, $string, $file, $line, $context)
 	{
+		// ignore supressed errors
 		if (error_reporting() == 0) return;
+		if (self::$IGNORE_DEPRECATED && strpos($string,"deprecated") === true) return true;
+		
 		throw new Exception($string,$code);
 	}
 }
