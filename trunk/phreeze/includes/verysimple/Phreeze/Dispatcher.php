@@ -108,7 +108,24 @@ class Dispatcher
 		
 		return true;
 	}
-	
+
+	/**
+	 * Fired by the PHP error handler function.  Calling this function will
+	 * always throw an exception unless error_reporting == 0.  If the
+	 * PHP command is called with @ preceeding it, then it will be ignored
+	 * here as well.
+	 * 
+	 * @deprecated use ExceptionThrower::HandleError instead
+	 * @param string $code
+	 * @param string $string
+	 * @param string $file
+	 * @param string $line
+	 * @param string $context
+	 */
+	static function HandleError($code, $string, $file, $line, $context)
+	{
+		ExceptionThrower::HandleError($code, $string, $file, $line, $context);
+	}
 }
 
 ?>
