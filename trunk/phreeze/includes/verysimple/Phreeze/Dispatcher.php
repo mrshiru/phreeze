@@ -3,12 +3,7 @@
 
 /** import supporting libraries */
 require_once("verysimple/HTTP/RequestUtil.php");
-
-/**
- * Set to true and Phreeze will not try to handle deprecated function warnings
- * @var boolean default = true
- */
-define("PHREEZE_IGNORE_DEPRECATED",true);
+require_once("verysimple/Util/ExceptionThrower.php");
 
 /**
  * Dispatcher direct a web request to the correct controller & method
@@ -21,6 +16,11 @@ define("PHREEZE_IGNORE_DEPRECATED",true);
  */
 class Dispatcher
 {
+	/**
+	 * Set to true and Phreeze will not try to handle deprecated function warnings
+	 * @var boolean default = true
+	 */
+	static $IGNORE_DEPRECATED = true;
 	
 	/**
 	 * Processes user input and executes the specified controller method, ensuring
@@ -89,14 +89,14 @@ class Dispatcher
 		}
 		
 		// convert any php errors into an exception
-		if (PHREEZE_IGNORE_DEPRECATED && defined('E_DEPRECATED'))
+		if (self::$IGNORE_DEPRECATED)
 		{
-			// for php 5.3 and above convert we can ignore deprecated error warnings
-			set_error_handler(array("Dispatcher", "HandleException"),E_ALL  & ~E_DEPRECATED );
+			ExceptionThrower::Start();
 		}
 		else
 		{
-			set_error_handler(array("Dispatcher", "HandleException"),E_ALL);
+			ExceptionThrower::Start(E_ALL);
+			ExceptionThrower::$IGNORE_DEPRECATED = false;
 		}
 		
 		// file, class and method all are ok, go ahead and call it
@@ -104,28 +104,9 @@ class Dispatcher
 		
 		// reset error handling back to whatever it was
 		//restore_exception_handler();
-		restore_error_handler();
+		ExceptionThrower::Stop();
 		
 		return true;
-	}
-	
-	/**
-	 * Handler that can be used for PHP exceptions.  add the following
-	 * line if you want exceptions thrown in place of php exceptions:
-	 * set_error_handler(array("Dispatcher", "HandleException"));
-	 */
-	public static function HandleException($code, $string, $file, $line, $context)
-	{
-		// if you get a FastCGI error, uncomment this line for debug info
-		//die($string . " file " .$file . " line " . $line );
-		
-		// if error reporting is off then do not handle this (@ prefix)
-		if (error_reporting() == 0) return true;
-		
-		// don't report deprecated errors
-		if (PHREEZE_IGNORE_DEPRECATED && strpos($string,"deprecated") === true) return true;
-		
-		throw new Exception($string,$code);
 	}
 	
 }
