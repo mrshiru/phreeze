@@ -173,10 +173,13 @@ class Phreezer extends Observable
 	* @param string $id
 	* @param Phreezable $val
 	* @param bool $includeCacheLevel2 true = cache both level 1 and 2.  false = cache only level 1. (default true)
+	* @param int optionally override the default cache timeout of Phreezer->ObjectCacheTimeout (in seconds)
 	*/
-	public function SetCache($objectclass,$id, Phreezable $val, $includeCacheLevel2 = true)
+	public function SetCache($objectclass,$id, Phreezable $val, $includeCacheLevel2 = true, $timeout = null)
 	{
-		if ($val->NoCache || $this->ObjectCacheTimeout <= 0) return false;
+		if (is_null($timeout)) $timeout = $this->ObjectCacheTimeout;
+		
+		if ($val->NoCache || $timeout <= 0) return false;
 		
 		// if the object hasn't changed at level 1, then supress the cache update
 		$obj = $this->_level1Cache->Get($objectclass . "_" . $id);
@@ -187,10 +190,10 @@ class Phreezer extends Observable
 			return false;
 		}
 		
-		$this->_level1Cache->Set($objectclass . "_" . $id,$val, $this->ObjectCacheTimeout);
+		$this->_level1Cache->Set($objectclass . "_" . $id,$val, $timeout);
 		
 		// cache level 2 only if specified
-		if ($includeCacheLevel2) $this->_level2Cache->Set($objectclass . "_" . $id,$val, $this->ObjectCacheTimeout);
+		if ($includeCacheLevel2) $this->_level2Cache->Set($objectclass . "_" . $id,$val, $timeout);
 	}
 	
 	/**
@@ -370,11 +373,13 @@ class Phreezer extends Observable
     * @access public
     * @param string $objectclass the type of object that your DataSet will contain
     * @param variant $id the value of the primary key
-    * @param bool $no_cache set to true and any existing cache values will be ignored
+    * @param int cache timeout (in seconds).  Default is Phreezer->ObjectCacheTimeout.  Set to 0 for no cache
     * @return Phreezable
     */
-	public function Get($objectclass, $id, $no_cache = false)
+	public function Get($objectclass, $id, $cache_timeout = null)
 	{
+		if (is_null($cache_timeout)) $cache_timeout = $this->ObjectCacheTimeout;
+		
 		if (strlen($objectclass) < 1)
 		{
 			throw new Exception("\$objectclass argument is required");
@@ -385,7 +390,7 @@ class Phreezer extends Observable
 		}
 		
 		// see if this object was cached & if so return it
-		$obj = $no_cache ? null : $this->GetCache($objectclass,$id);
+		$obj = $cache_timeout == 0 ? null : $this->GetCache($objectclass,$id);
 		if ($obj) return $obj;
 
 		$pkm = $this->GetPrimaryKeyMap($objectclass);
@@ -405,7 +410,7 @@ class Phreezer extends Observable
 		}
 		
 		// cache the object for future use
-		$this->SetCache($objectclass,$id,$obj);
+		$this->SetCache($objectclass,$id,$obj,$cache_timeout);
 		
 		return $obj;
 	}
