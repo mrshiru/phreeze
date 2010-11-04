@@ -286,18 +286,20 @@ class Phreezer extends Observable
 	* @param string $objectclass the type of object that will be queried
     * @param Criteria $criteria a Criteria object to limit results
 	* @param bool $crash_if_multiple_found default value = true
-	* @param bool $no_cache set to true and any existing cache values will be ignored
+	* @param int cache timeout (in seconds).  Default is Phreezer->ValueCacheTimeout.  Set to 0 for no cache
 	* @return Phreezable
 	*/
-	public function GetByCriteria($objectclass, $criteria, $crash_if_multiple_found = true, $no_cache = false)
+	public function GetByCriteria($objectclass, $criteria, $crash_if_multiple_found = true, $cache_timeout = null)
 	{
+		if (is_null($cache_timeout)) $cache_timeout = $this->ValueCacheTimeout;
+		
 		if (strlen($objectclass) < 1)
 		{
 			throw new Exception("\$objectclass argument is required");
 		}
 		
 		$obj = null;
-		$ds = $this->Query($objectclass, $criteria, $no_cache);
+		$ds = $this->Query($objectclass, $criteria, $cache_timeout);
 		
 		$ds->UnableToCache = false;
 		
@@ -325,7 +327,6 @@ class Phreezer extends Observable
     */
  	public function Query($objectclass, $criteria = null, $cache_timeout = null)
 	{
-
 		if (is_null($cache_timeout)) $cache_timeout = $this->ValueCacheTimeout;
 		
 		if (strlen($objectclass) < 1)
