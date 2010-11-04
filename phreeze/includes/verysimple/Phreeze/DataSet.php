@@ -32,7 +32,7 @@ class DataSet implements Iterator
 	private $_last; // the previous object in the set
 	private $_totalcount;
 	private $_no_exception;  // used during iteration to suppress exception on the final Next call
-	private $_no_cache;  // if specified then no cached values will be used
+	private $_cache_timeout;  // length of time to cache query results
 	
 	public $UnableToCache = true;
 	
@@ -43,9 +43,9 @@ class DataSet implements Iterator
     * @param Phreezer
     * @param string class of object this DataSet contains
     * @param string $sql code
-    * @param bool $nocache set to true and any existing cache values will be ignored
+    * @param int cache timeout (in seconds).  Default is Phreezer->ValueCacheTimeout.  Set to 0 for no cache
     */
-    function DataSet(&$preezer, $objectclass, $sql, $nocache = false)
+    function DataSet(&$preezer, $objectclass, $sql, $cache_timeout = null)
     {
         $this->_counter = -1;
 		$this->_totalcount = -1;
@@ -54,7 +54,7 @@ class DataSet implements Iterator
         $this->_phreezer =& $preezer;
         $this->_rs = null;
         $this->_sql = $sql;
-        $this->_no_cache = $nocache;
+        $this->_cache_timeout = is_null($cache_timeout) ? $preezer->ValueCacheTimeout : $cache_timeout;
     }
 
     /**
@@ -171,7 +171,7 @@ class DataSet implements Iterator
 		{
 			// check the cache
 			$cachekey = $this->_sql . " COUNT";
-			$this->_totalcount = $this->_no_cache ? null : $this->_phreezer->GetValueCache($cachekey);
+			$this->_totalcount = $this->GetDelayedCache($cachekey);
 			
 			// if no cache, go to the db
 			if ($this->_totalcount != null)
@@ -180,6 +180,8 @@ class DataSet implements Iterator
 			}
 			else
 			{
+				$this->LockCache($cachekey);
+				
 				$this->_phreezer->Observe("(DataSet.Count: query does not exist in cache) " . $this->_sql,OBSERVE_QUERY);
 				
 				$sql = "select count(1) as counter from (" . $this->_sql . ") tmptable";
@@ -189,7 +191,9 @@ class DataSet implements Iterator
 				$this->_phreezer->DataAdapter->Release($rs);
 				$this->_totalcount = $row["counter"];
 
-				$this->_phreezer->SetValueCache($cachekey,$this->_totalcount);
+				$this->_phreezer->SetValueCache($cachekey, $this->_totalcount, $this->_cache_timeout);
+				
+				$this->UnlockCache($cachekey);
 			}
 		}
 
@@ -231,7 +235,7 @@ class DataSet implements Iterator
 				$arr[] = $object;
 			}
 			
-			$this->_phreezer->SetValueCache($cachekey,$arr);
+			$this->_phreezer->SetValueCache($cachekey, $arr, $this->_cache_timeout);
 			
 			$this->UnlockCache($cachekey);
 		}
@@ -282,7 +286,7 @@ class DataSet implements Iterator
 				$arr[$object->$val_prop] =& $object->$label_prop;
 			}
 
-			$this->_phreezer->SetValueCache($cachekey,$arr);
+			$this->_phreezer->SetValueCache($cachekey, $arr, $this->_cache_timeout);
 			
 			$this->UnlockCache($cachekey);
 		}
@@ -383,7 +387,7 @@ class DataSet implements Iterator
 				$page->Rows[] = $obj;
 			}
 
-			$this->_phreezer->SetValueCache($cachekey,$page);
+			$this->_phreezer->SetValueCache($cachekey, $page, $this->_cache_timeout);
 
 			$this->Clear();
 			
@@ -402,7 +406,7 @@ class DataSet implements Iterator
     private function GetDelayedCache($cachekey)
     {
     	// if no cache then don't return anything
-    	if ($this->_no_cache) return null;
+    	if ($this->_cache_timeout == 0) return null;
     	
         $obj = $this->_phreezer->GetValueCache($cachekey);
 

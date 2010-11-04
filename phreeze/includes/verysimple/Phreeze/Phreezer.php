@@ -36,8 +36,9 @@ class Phreezer extends Observable
 	public $Version = 3.2;
 	
 	/** 
-	 * @var int expiration time for query & value cache (in seconds)
-	 * Recommended to keep this at a low value to prevent showing stale data
+	 * @var int expiration time for query & value cache (in seconds) default = 5
+	 * The default is a low value which will help only with floods of traffic, but
+	 * will prevent stale data from appearing
 	 */
 	public $ValueCacheTimeout = 5;
 	
@@ -123,14 +124,19 @@ class Phreezer extends Observable
 	* 
 	* @param string $sql
 	* @param variant $val
+	* @param int cache timeout (in seconds) default = Phreezer->ValueCacheTimeout.  set to zero for no cache
 	* @return bool true if cache was set, false if not
 	*/
-	public function SetValueCache($key, $val)
+	public function SetValueCache($key, $val, $timeout = null)
 	{
-		if ($this->ValueCacheTimeout <= 0) return false;
+		if (is_null($timeout)) $timeout = $this->ValueCacheTimeout;	
+		
+		if ($timeout <= 0) return false;
 		
 		if (strlen($key) > 250) $key = substr($key,0,150) . md5($key);
-		return $this->_level2Cache->Set($key,$val,0,$this->ValueCacheTimeout);
+		
+		$this->_level1Cache->Set(md5($key),$val,0,$timeout);
+		return $this->_level2Cache->Set($key,$val,0,$timeout);
 	}
 	
 	/**
@@ -141,10 +147,12 @@ class Phreezer extends Observable
 	*/
 	public function GetValueCache($key)
 	{
+		// save the trouble of retrieving the cache if it is not enabled
 		if ($this->ValueCacheTimeout <= 0) return null;
 		
 		if (strlen($key) > 250) $key = substr($key,0,150) . md5($key);
-		return $this->_level2Cache->Get($key);
+		$obj = $this->_level1Cache->Get(md5($key));
+		return $obj ? $obj : $this->_level2Cache->Get($key);
 	}
 
 	/**
@@ -195,11 +203,13 @@ class Phreezer extends Observable
 	{
 		if ($this->ObjectCacheTimeout <= 0) return null;
 		
+		$cachekey = $objectclass . "_" . $id;
+		
 		// include the model so any serialized classes will not throw an exception
 		$this->IncludeModel($objectclass);
 		
 		// see if this object was cached in the level 1 cache
-		$obj = $this->_level1Cache->Get($objectclass . "_" . $id);
+		$obj = $this->_level1Cache->Get($cachekey);
 		
 		if ($obj)
 		{ 
@@ -210,13 +220,17 @@ class Phreezer extends Observable
 		}
 		
 		// try the level 2 cahce
-		$obj = $this->_level2Cache->Get($objectclass . "_" . $id);
+		$obj = $this->_level2Cache->Get($cachekey);
 		
 		if ($obj)
 		{ 
 			$this->Observe("Retrieved TYPE='$objectclass' ID='$id' from 2nd Level Cache",OBSERVE_DEBUG);
 			$obj->Refresh($this);
 			$obj->CacheLevel = 2;
+
+			// we just got this from level 2, but it wasn't in level 1 so let's save it in level 1 for
+			$this->_level1Cache->Set($cachekey,$obj);
+			
 			return $obj;
 		}
 		
@@ -303,18 +317,21 @@ class Phreezer extends Observable
     * @access public
     * @param string $objectclass the type of object that your DataSet will contain
     * @param Criteria $criteria a Criteria object to limit results
-    * @param bool $no_cache set to true and any existing cache values will be ignored
+    * @param int cache timeout (in seconds).  Default is Phreezer->ValueCacheTimeout.  Set to 0 for no cache
     * @return DataSet
     */
- 	public function Query($objectclass, $criteria = null, $no_cache = false)
+ 	public function Query($objectclass, $criteria = null, $cache_timeout = null)
 	{
+
+		if (is_null($cache_timeout)) $cache_timeout = $this->ValueCacheTimeout;
+		
 		if (strlen($objectclass) < 1)
 		{
 			throw new Exception("\$objectclass argument is required");
 		}
-		
+
 		// if criteria is null, then create a generic one
-		if ($criteria == null)
+		if (is_null($criteria))
 		{
 			$criteria = new Criteria();
 		}
@@ -341,7 +358,7 @@ class Phreezer extends Observable
 			$sql = $builder->GetSQL($criteria);
 		}
 		
-		$ds = new DataSet($this, $objectclass, $sql);
+		$ds = new DataSet($this, $objectclass, $sql, $cache_timeout);
 		
 		return $ds;
 
