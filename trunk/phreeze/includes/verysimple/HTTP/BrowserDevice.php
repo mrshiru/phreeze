@@ -27,6 +27,12 @@ class BrowserDevice
 	 * patters to search for devices
 	 * @var Array
 	 */
+	static $DESKTOP_DEVICE_PATTERNS = Array('AdobeAIR'=>'AdobeAIR');
+	
+	/**
+	 * patters to search for devices
+	 * @var Array
+	 */
 	static $MOBILE_DEVICE_PATTERNS = Array(
 		'(ipad|ipod|iphone)'=>'apple',
 		'android'=>'android',
@@ -73,7 +79,8 @@ class BrowserDevice
 	
     	$this->UserAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : "";
     	$wap = isset($_SERVER['HTTP_X_WAP_PROFILE']) ? $_SERVER['HTTP_X_WAP_PROFILE'] : "";
-    	
+    
+
     	if (!$this->UserAgent)
     	{
     		$this->IsConsole = true;
@@ -89,6 +96,21 @@ class BrowserDevice
     				break;
     			}
     		}
+				
+			if ($this->IsMobile == false) {
+				
+				foreach (BrowserDevice::$DESKTOP_DEVICE_PATTERNS as $key => $val )
+	    		{
+	    			if (preg_match('/'.$key.'/i',$this->UserAgent))
+	    			{
+	    				$this->Vendor = $val;
+	    				break;
+	    			}
+	    		}
+	
+			}
+
+
     	}
     }
 
@@ -107,7 +129,7 @@ class BrowserDevice
 
         $browser = self::$instance;
         $browser->Detect();
-        return $browser;
+		return $browser;
     }
 	
 }
