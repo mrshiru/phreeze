@@ -134,7 +134,7 @@ class VerySimpleStringUtil
 			if ( $ord < 9 || ($ord > 13 && $ord < 32) ) $chararray[$i] = ''; // wipe out these control chars
 			
 			// TODO: for now simply don't allow non-western chars
-			if ( $ord > 127 ) $chararray[$i] = $htmlencode_non_western ? "~" : '&#' . $ord . ';';
+			if ( $ord > 127 ) $chararray[$i] = $htmlencode_non_western ? '&#' . $ord . ';' : "~";
 		} 
 		
 		$string = implode('',$chararray); 
