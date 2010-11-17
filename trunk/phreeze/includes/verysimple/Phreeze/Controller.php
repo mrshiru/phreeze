@@ -9,6 +9,7 @@ require_once("verysimple/HTTP/BrowserDevice.php");
 require_once("verysimple/Authentication/Authenticator.php");
 require_once("verysimple/Authentication/Auth401.php");
 require_once("verysimple/Authentication/IAuthenticatable.php");
+require_once("verysimple/String/VerySimpleStringUtil.php");
 require_once("DataPage.php");
 require_once("Phreezer.php");
 require_once("Criteria.php");
@@ -225,6 +226,13 @@ abstract class Controller
 	{
 		if (!is_array($supressProps)) $supressProps = array();
 		
+		// never include these props
+		$suppressProps[] = "NoCache";
+		$suppressProps[] = "CacheLevel";
+		$suppressProps[] = "IsLoaded";
+		$suppressProps[] = "IsPartiallyLoaded";
+		
+		
 		$xml = "";
 		$xml .= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
 
@@ -281,8 +289,10 @@ abstract class Controller
 						$val = serialize($val);
 					}
 					
+					$val = VerySimpleStringUtil::StripSpecialCharacters($val);
+					
 					// $val = htmlentities(print_r($_REQUEST,1) );
-					$xml .= "<" . htmlspecialchars($var) . ">" . htmlspecialchars($val) . "</" . htmlspecialchars($var) . ">\r\n";
+					$xml .= "<" . htmlspecialchars($var) . ">" . $val . "</" . htmlspecialchars($var) . ">\r\n";
 				}
 			}
 			
