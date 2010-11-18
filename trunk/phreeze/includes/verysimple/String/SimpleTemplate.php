@@ -74,6 +74,8 @@ class SimpleTemplate
 		return $html;
 	}
 	
+	/** @var used internally for merging */
+	static $MERGE_TEMPLATE_VALUES = null;
 	
 	/**
 	 * Merges data into a template with placeholder variables 
@@ -84,56 +86,39 @@ class SimpleTemplate
 	 * left delimiters do not appear as normal text within the template
 	 * 
 	 * @param string $template string with placeholder variables
-	 * @param array $vars an array of key/value pairs used to populate the placeholder variables
+	 * @param mixed (array or object) $values an associative array or object with key/value pairs
 	 * @param string the left (opening) delimiter for placeholders. default = {{
 	 * @param string the right (closing) delimiter for placeholders. default = }}
 	 * @return string merged template
 	 */
-	static function Merge($template,$vars, $ldelim = "{{", $rdelim = "}}")
+	static function Merge($template, $values, $ldelim = "{{", $rdelim = "}}")
 	{
- 		$ob_size = strlen($ldelim);
-		$cb_size = strlen($rdelim);
-	   
-		$pos = 0;
-		$end = strlen($template);
-	   
-		while($pos <= $end)
-		{
-			if($pos_1 = strpos($template, $ldelim, $pos))
-			{
-				if($pos_1)
-				{
-					$pos_2 = strpos($template, $rdelim, $pos_1);
-				   
-					if($pos_2)
-					{
-						$return_length = ($pos_2-$cb_size) - $pos_1;
-					   
-						$var = substr($template, $pos_1+$ob_size, $return_length);
-						
-						// if the source value isn't in the array, just blank it out
-						if (empty($source[$var])) $source[$var] = "";
-
-						$template = str_replace($ldelim.$var.$rdelim, $source[$var], $template);
+		self::$MERGE_TEMPLATE_VALUES = $values;
+		
+		if ($ldelim != "{{" || $rdelim != "}}") throw new Exception("Custom delimiters are not yet implemented. Sorry!");
+		
+		$results = preg_replace_callback('!\{\{(\w+)\}\}!', 'SimpleTemplate::MergeCallback', $template);
+		
+		self::$MERGE_TEMPLATE_VALUES = null;
+		
+		return $results;
+		
+	}
 	
-					   
-						$pos = $pos_2 + $cb_size;
-					}
-					else
-					{
-						throw new Exception("Closing delimiter is missing");
-						break;
-					}
-				}
-			}
-			else
-			{
-				//exit the loop
-				break;
-			}
+	/**
+	 * called internally
+	 * @param string $matches
+	 */
+	static function MergeCallback($matches)
+	{
+		if (isset(self::$MERGE_TEMPLATE_VALUES[$matches[1]]))
+		{
+			return self::$MERGE_TEMPLATE_VALUES[$matches[1]];
 		}
-	   
-		return $template; 
+		else
+		{
+			return "";
+		}
 	}
 	
 }
