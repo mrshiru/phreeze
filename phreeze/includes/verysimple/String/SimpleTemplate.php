@@ -13,6 +13,9 @@
 class SimpleTemplate
 {
 	
+	/** @var used internally for merging. */
+	static $_MERGE_TEMPLATE_VALUES = null;
+	
 	/**
 	 * Transforms HTML into formatted plain text.
 	 * 
@@ -25,7 +28,6 @@ class SimpleTemplate
 		$h2t = new html2text($html);
 		return $h2t->get_text(); 
 	}
-	
 	
 	/**
 	 * Transforms plain text into formatted HTML.
@@ -74,9 +76,6 @@ class SimpleTemplate
 		return $html;
 	}
 	
-	/** @var used internally for merging */
-	static $MERGE_TEMPLATE_VALUES = null;
-	
 	/**
 	 * Merges data into a template with placeholder variables 
 	 * (for example "Hello {{NAME}}").  Useful for simple templating
@@ -93,27 +92,27 @@ class SimpleTemplate
 	 */
 	static function Merge($template, $values, $ldelim = "{{", $rdelim = "}}")
 	{
-		self::$MERGE_TEMPLATE_VALUES = $values;
+		self::$_MERGE_TEMPLATE_VALUES = $values;
 		
 		if ($ldelim != "{{" || $rdelim != "}}") throw new Exception("Custom delimiters are not yet implemented. Sorry!");
 		
-		$results = preg_replace_callback('!\{\{(\w+)\}\}!', 'SimpleTemplate::MergeCallback', $template);
+		$results = preg_replace_callback('!\{\{(\w+)\}\}!', 'SimpleTemplate::_MergeCallback', $template);
 		
-		self::$MERGE_TEMPLATE_VALUES = null;
+		self::$_MERGE_TEMPLATE_VALUES = null;
 		
 		return $results;
 		
 	}
 	
 	/**
-	 * called internally
-	 * @param string $matches
+	 * called internally by preg_replace_callback
+	 * @param array $matches
 	 */
-	static function MergeCallback($matches)
+	static function _MergeCallback($matches)
 	{
-		if (isset(self::$MERGE_TEMPLATE_VALUES[$matches[1]]))
+		if (isset(self::$_MERGE_TEMPLATE_VALUES[$matches[1]]))
 		{
-			return self::$MERGE_TEMPLATE_VALUES[$matches[1]];
+			return self::$_MERGE_TEMPLATE_VALUES[$matches[1]];
 		}
 		else
 		{
