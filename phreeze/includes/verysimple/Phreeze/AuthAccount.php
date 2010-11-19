@@ -41,7 +41,8 @@ define("ACCOUNT_PERMISSION_ADMIN",4);
  */
 class AuthAccount extends AccountDAO implements IAuthenticatable
 {
-	private $_original_password = "";
+	/** @var string this is public for serialization */
+	public $_original_password = "";
 
 	/**
 	 * Checks if the current user is "anonymous" meaning they have not authenticated
