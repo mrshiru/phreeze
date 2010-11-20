@@ -28,15 +28,41 @@ class Mailer
 	var $_errors;
 	var $Method;
     var $Path;
+    var $AuthUsername;
+    var $AuthPassword;
     var $Host;
 	var $LangPath;
     
+	/**
+	 * Constructor initializes the mailer object and prepares it for mailing
+
+	 * If path is a SMTP connection string it may be entered in the format:
+	 * host.domain.com -or- username:password@host.domain.com
+	 * 
+	 * @param $method
+	 * @param string $path (either file path to sendmail or SMTP connection string)
+	 */
     function Mailer($method = MAILER_METHOD_SENDMAIL, $path = "/usr/sbin/sendmail")
     {
+    	$pair = explode("@",$path);
+    	
+    	if (count($pair) > 1)
+    	{
+    		$this->Path = $pair[1];
+    		$userpass = explode(":",$pair[0],2);
+    		$this->AuthUsername = $userpass[0];
+    		$this->AuthPassword = count($userpass) > 1 ? $userpass[1] : '';
+    	}
+    	else
+    	{
+    		$this->Path = $path;
+    	}
+    	
         $this->Method = $method;
-        $this->Path = $path;
+        
         $this->Reset();
 		$this->LangPath = $this->_GetLangPath();
+
     }
 
 	function FixBareLB($str) 
@@ -80,6 +106,14 @@ class Mailer
         $mailer->Mailer = strtolower($this->Method);
         $mailer->Host = $this->Path;
         $mailer->Sendmail = $this->Path;
+        
+        // use authentication if necessary
+        if ($this->AuthUsername)
+        {
+        	  $mailer->SMTPAuth = true;
+        	  $mailer->Username = $this->AuthUsername;
+        	  $mailer->Password = $this->AuthPassword;
+        }
 		
 		if ($message->Sender)
 		{
