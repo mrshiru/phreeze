@@ -146,8 +146,6 @@ class Mailer
 
 			$mailer->AddAddress($recipient->Email,$recipient->RealName);
 		}
-
-		print_r($message);
 		
 		foreach ($message->CCRecipients as $recipient)
         {
