@@ -146,7 +146,35 @@ class Mailer
 
 			$mailer->AddAddress($recipient->Email,$recipient->RealName);
 		}
-        
+
+		print_r($message);
+		
+		foreach ($message->CCRecipients as $recipient)
+        {
+			$this->_log[] = "Adding CC Recipient ".$recipient->RealName." [".$recipient->Email."]";
+
+			if (!$this->IsValid($recipient->Email))
+			{
+				$this->_errors[] = "CC Recipient '".$recipient->Email."' is not a valid email address.";
+				return MAILER_RESULT_FAIL;
+			}
+
+			$mailer->AddCC($recipient->Email,$recipient->RealName);
+		}
+
+		foreach ($message->BCCRecipients as $recipient)
+        {
+			$this->_log[] = "Adding BCC Recipient ".$recipient->RealName." [".$recipient->Email."]";
+
+			if (!$this->IsValid($recipient->Email))
+			{
+				$this->_errors[] = "BCC Recipient '".$recipient->Email."' is not a valid email address.";
+				return MAILER_RESULT_FAIL;
+			}
+
+			$mailer->AddBCC($recipient->Email,$recipient->RealName);
+		}
+		
         $result = MAILER_RESULT_OK;
         
         $this->_log[] = "Sending message using " . $mailer->Mailer;

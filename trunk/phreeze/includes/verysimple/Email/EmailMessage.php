@@ -26,8 +26,12 @@ class EmailMessage
     public $Format;
     public $Attachments;
 	public $Sender;
+	
+	static $RECIPIENT_TYPE_TO = "";
+	static $RECIPIENT_TYPE_BCC = "BCC";
+	static $RECIPIENT_TYPE_CC = "CC";
     
-    function Message()
+    function EmailMessage()
     {
         $this->Recipients = Array();
         $this->CCRecipients = Array();
@@ -59,8 +63,9 @@ class EmailMessage
 	 * Adds a recipient to the email message
 	 * @param $email a single email or semi-colon/comma delimited list
 	 * @param $string a single email or semi-colon/comma delimited list
+	 * @param $string $RECIPIENT_TYPE_TO, $RECIPIENT_TYPE_CC or $RECIPIENT_TYPE_BCC (default = $RECIPIENT_TYPE_TO)
 	 */
-    function AddRecipient($email,$name="")
+    function AddRecipient($email,$name="", $recipientType = "")
     {
 		$email = str_replace(",",";",$email);
 		$emails = explode(";",$email);
@@ -72,7 +77,19 @@ class EmailMessage
 		{
 			$addr = trim($emails[$i]);
 			$realname = isset($names[$i]) ? $names[$i] : $addr;
-			$this->Recipients[] = new Recipient( $addr ,$realname);
+			
+			if ($recipientType == self::$RECIPIENT_TYPE_CC)
+			{
+				$this->CCRecipients[] = new Recipient( $addr ,$realname);
+			}
+			elseif ($recipientType == self::$RECIPIENT_TYPE_BCC)
+			{
+				$this->BCCRecipients[] = new Recipient( $addr ,$realname);
+			}
+			else
+			{
+				$this->Recipients[] = new Recipient( $addr ,$realname);
+			}
 		}
     }
     
