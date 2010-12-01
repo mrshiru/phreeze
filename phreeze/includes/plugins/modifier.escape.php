@@ -15,16 +15,16 @@
  * @link http://smarty.php.net/manual/en/language.modifier.escape.php
  *          escape (Smarty online manual)
  * @author   Monte Ohrt <monte at ohrt dot com>
+ * @author   Jason Hinkle <verysimple.com>
  * @param string
  * @param html|htmlall|url|quotes|hex|hexentity|javascript
  * @return string
  */
-function smarty_modifier_escape($string, $esc_type = 'html', $char_set = 'ISO-8859-1')
+function smarty_modifier_escape($string, $esc_type = 'html', $char_set = 'ISO-8859-1', $double_encode = false)
 {
     switch ($esc_type) {
         case 'html':
-            return htmlspecialchars($string, ENT_QUOTES, $char_set);
-
+            return htmlspecialchars($string, ENT_QUOTES, $char_set, $double_encode);
         case 'htmlall':
             return htmlentities($string, ENT_QUOTES, $char_set);
 
