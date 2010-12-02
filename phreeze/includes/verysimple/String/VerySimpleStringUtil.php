@@ -172,11 +172,12 @@ class VerySimpleStringUtil
 	 * out characters that may be disruptive when used in HTML or XML data
 	 *
 	 * @param string value to parse
-	 * @param bool true to additionally escape ENT_QUOTE characters <>&"' (default = true)
-	 * @param bool true to replace "smart quotes" with standard ascii ones, can be useful for stripping out windows-only codes (default = false)
+	 * @param bool $escapeQuotes true to additionally escape ENT_QUOTE characters <>&"' (default = true)
+	 * @param bool $replaceSmartQuotes true to replace "smart quotes" with standard ascii ones, can be useful for stripping out windows-only codes (default = false)
+	 * @param bool $numericEncodingOnly set to true to only use numeric html encoding
 	 * @return string
 	 */
-	static function EncodeSpecialCharacters($string, $escapeQuotes = true, $replaceSmartQuotes = false)
+	static function EncodeSpecialCharacters($string, $escapeQuotes = true, $replaceSmartQuotes = false, $numericEncodingOnly = false)
 	{
 		if (strlen($string) == 0) return "";
 		$val = $string;
@@ -189,7 +190,7 @@ class VerySimpleStringUtil
 		// if ($escapeQuotes) $val = htmlspecialchars($val, ENT_QUOTES, null, false); // this replaces single quotes with a numeric entry
 		
 		// for special chars we don't need to insist on numeric encoding only
-		return self::EncodeNonAscii($val,false);
+		return self::EncodeNonAscii($val,$numericEncodingOnly);
 
 	}
 	
