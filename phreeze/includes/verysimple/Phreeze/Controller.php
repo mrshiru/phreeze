@@ -289,9 +289,8 @@ abstract class Controller
 						$val = serialize($val);
 					}
 					
-					$val = VerySimpleStringUtil::EncodeSpecialCharacters($val, true, false, true);
+					$val = VerySimpleStringUtil::EncodeSpecialCharacters($val, true, true);
 					
-					// $val = htmlentities(print_r($_REQUEST,1) );
 					$xml .= "<" . htmlspecialchars($var) . ">" . $val . "</" . htmlspecialchars($var) . ">\r\n";
 				}
 			}
