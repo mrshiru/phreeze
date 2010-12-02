@@ -3,6 +3,7 @@
 
 /** import supporting libraries */
 require_once("FileUpload.php");
+require_once("verysimple/String/VerySimpleStringUtil.php");
 
 /**
  * Static utility class for processing form post/request data
@@ -18,8 +19,19 @@ require_once("FileUpload.php");
 class RequestUtil
 {
 	
-	static $TestMode = false;
+	
+	/** @var bool set to true and all non-ascii characters in request variables will be html encoded */
+	static $ENCODE_NON_ASCII = false;
+	
+	/** @var bool set to false to skip is_uploaded_file.  This allows for simulated file uploads during unit testing */
+	static $VALIDATE_FILE_UPLOAD = true;
 
+	/** 
+	 * @var bool
+	 * @deprecated use $VALIDATE_FILE_UPLOAD instead  
+	 */
+	static $TestMode = false;
+	
 	/**
 	 * Returns the remote host IP address, attempting to locate originating
 	 * IP of the requester in the case of proxy/load balanced requests.
@@ -167,12 +179,14 @@ class RequestUtil
 			throw new Exception("Error uploading file: " . $error_codes[$upload['error']]);
 		}
 		
+		// backwards compatibility
+		if (self::$TestMode) self::$VALIDATE_FILE_UPLOAD = false;
+		
 		// make sure this is a legit file request
-		if (is_uploaded_file($upload['tmp_name']) == false && RequestUtil::$TestMode == false )
+		if ( self::$VALIDATE_FILE_UPLOAD && is_uploaded_file($upload['tmp_name']) == false )
 		{
 			throw new Exception("Unable to access this upload: " . $fieldname);
 		}
-		
 		
 		// get the filename and Extension
 		$tmp_path = $upload['tmp_name'];
@@ -216,7 +230,7 @@ class RequestUtil
 	 */
 	public static function GetFile($fieldname, $b64encode = true, $ignore_empty = false, $max_kb = 0, $ok_types = null)
 	{
-		$fupload = RequestUtil::GetFileUpload($fieldname, $ignore_empty, $max_kb, $ok_types);
+		$fupload = self::GetFileUpload($fieldname, $ignore_empty, $max_kb, $ok_types);
 		return ($fupload) ? $fupload->ToXML($b64encode) : null;
 	}
 	
@@ -242,17 +256,30 @@ class RequestUtil
 	}
 	
 	/**
-	* Returns a form parameter as a string, handles null values
+	* Returns a form parameter as a string, handles null values.  Note that if
+	* $ENCODE_NON_ASCII = true then the value will be passed through VerySimpleStringUtil::EncodeNonAscii
+	* before being returned.
 	*
 	* @param    string $fieldname
 	* @param    string $default value returned if $_REQUEST[$fieldname] is blank or null (default = empty string)
 	* @param    bool $escape if true htmlspecialchars($val) is returned (default = false)
 	* @return   string
 	*/
-	public static function Get($fieldname,$default = "",$escape = false)
+	public static function Get($fieldname, $default = "", $escape = false)
 	{
 		$val = (isset($_REQUEST[$fieldname]) && $_REQUEST[$fieldname] != "") ? $_REQUEST[$fieldname] : $default;
-		return $escape ? htmlspecialchars($val) : $val;
+		
+		if ($escape)
+		{
+			$val = htmlspecialchars($val, ENT_COMPAT, null, false);
+		}
+		
+		if (self::$ENCODE_NON_ASCII)
+		{
+			$val = VerySimpleStringUtil::EncodeNonAscii($val);
+		}
+		
+		return $val;
 	}
 	
 	/**
@@ -268,15 +295,15 @@ class RequestUtil
 	{
 		if ( isset($_REQUEST[$fieldname]) )
 		{
-			$_SESSION["_PERSISTED_".$fieldname] = ($_REQUEST[$fieldname] != "") ? $_REQUEST[$fieldname] : $default;
+			$_SESSION["_PERSISTED_".$fieldname] = self::Get($fieldname, $default, $escape);
 		}
 		
-		if ( isset($_SESSION["_PERSISTED_".$fieldname]) )
+		if ( !isset($_SESSION["_PERSISTED_".$fieldname]) )
 		{
-			return $escape ? htmlspecialchars($_SESSION["_PERSISTED_".$fieldname]) : $_SESSION["_PERSISTED_".$fieldname];
+			$_SESSION["_PERSISTED_".$fieldname] = $default;
 		}
 		
-		return $default;
+		return $_SESSION["_PERSISTED_".$fieldname];
 	}
 	
 	/**
@@ -292,7 +319,7 @@ class RequestUtil
 	*/
 	public static function GetAsDate($fieldname, $default = "date('Y-m-d')", $includetime = false)
 	{
-		$returnVal = RequestUtil::Get($fieldname,$default);
+		$returnVal = self::Get($fieldname,$default);
 		
 		if ($returnVal == "date('Y-m-d')")
 		{
@@ -310,11 +337,11 @@ class RequestUtil
 		{
 			if ($includetime)
 			{
-				if (RequestUtil::Get($fieldname."Hour"))
+				if (self::Get($fieldname."Hour"))
 				{
-					$hour = RequestUtil::Get($fieldname."Hour",date("H"));
-					$minute = RequestUtil::Get($fieldname."Minute",date("i"));
-					$ampm = RequestUtil::Get($fieldname."AMPM","AM");
+					$hour = self::Get($fieldname."Hour",date("H"));
+					$minute = self::Get($fieldname."Minute",date("i"));
+					$ampm = self::Get($fieldname."AMPM","AM");
 					
 					if ($ampm == "PM")
 					{
@@ -344,7 +371,7 @@ class RequestUtil
 	*/
 	public static function GetAsDateTime($fieldname, $default = "date('Y-m-d H:i:s')")
 	{
-		return RequestUtil::GetAsDate($fieldname,$default,true);
+		return self::GetAsDate($fieldname,$default,true);
 	}
 	
 	/**
@@ -355,7 +382,7 @@ class RequestUtil
 	 */
 	public static function GetCurrency($fieldname)
 	{
-		return str_replace(array(',','$'),'',RequestUtil::Get($fieldname));	
+		return str_replace(array(',','$'),'',self::Get($fieldname));	
 	}
 	
 	
