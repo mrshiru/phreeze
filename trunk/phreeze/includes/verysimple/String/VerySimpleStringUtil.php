@@ -16,7 +16,7 @@ class VerySimpleStringUtil
 	static $DEFAULT_CHARACTER_SET = 'UTF-8';
 	
 	/** @var list of fancy/smart quote characters */
-	static $SPECIAL_CHARS;
+	static $SMART_QUOTE_CHARS;
 	
 	/** @var list of xml reserved characters */
 	static $XML_SPECIAL_CHARS;
@@ -26,6 +26,12 @@ class VerySimpleStringUtil
 	
 	/** @var associative array containing the html translation for special characters with their numeric equivilant */
 	static $HTML_ENTITIES_TABLE;
+	
+	/** @var common characters, especially on windows systems, that are technical not valid */
+	static $INVALID_CODE_CHARS;
+
+	/** @var characters used as control characters such as escape, backspace, etc */
+	static $CONTROL_CODE_CHARS;
 	
 	/**
 	 * VerySimpleStringUtil::InitStaticVars(); is called at the bottom of this file
@@ -39,7 +45,7 @@ class VerySimpleStringUtil
 		    self::$HTML_ENTITIES_TABLE[$entity] = '&#' . ord($char) . ';';
 		}
 		
-		self::$SPECIAL_CHARS = 
+		self::$SMART_QUOTE_CHARS = 
 			array(
 				chr(226) . chr(128) . chr(156) => "\"",
 				chr(226) . chr(128) . chr(157) => "\"",
@@ -58,7 +64,68 @@ class VerySimpleStringUtil
 				chr(151) => "-"
 			);
 			
-			// chr(195) => "'",
+		// 195 was something that appeared in a lot of fancy quotes, but causes problems
+		// chr(195) => "'",
+			
+		self::$CONTROL_CODE_CHARS = 
+			array(
+				chr(0) => "&#0;",
+				chr(1) => "&#1;",
+				chr(2) => "&#2;",
+				chr(3) => "&#3;",
+				chr(4) => "&#4;",
+				chr(5) => "&#5;",
+				chr(6) => "&#6;",
+				chr(7) => "&#7;",
+				chr(8) => "&#8;",
+				chr(14) => "&#14;",
+				chr(15) => "&#15;",
+				chr(16) => "&#16;",
+				chr(17) => "&#17;",
+				chr(18) => "&#18;",
+				chr(19) => "&#19;",
+				chr(20) => "&#20;",
+				chr(21) => "&#21;",
+				chr(22) => "&#22;",
+				chr(23) => "&#23;",
+				chr(24) => "&#24;",
+				chr(25) => "&#25;",
+				chr(26) => "&#26;",
+				chr(27) => "&#27;",
+				chr(28) => "&#28;",
+				chr(29) => "&#29;",
+				chr(30) => "&#30;",
+				chr(31) => "&#31;"
+			);
+			
+		self::$INVALID_CODE_CHARS = array(
+			chr(128) => '&#8364;',
+			chr(130) => '&#8218;',
+			chr(131) => '&#402;',
+			chr(132) => '&#8222;',
+			chr(133) => '&#8230;',
+			chr(134) => '&#8224;',
+			chr(135) => '&#8225;',
+			chr(136) => '&#710;',
+			chr(137) => '&#8240;',
+			chr(138) => '&#352;',
+			chr(139) => '&#8249;',
+			chr(140) => '&#338;',
+			chr(142) => '&#381;',
+			chr(145) => '&#8216;',
+			chr(146) => '&#8217;',
+			chr(147) => '&#8220;',
+			chr(148) => '&#8221;',
+			chr(149) => '&#8226;',
+			chr(150) => '&#8211;',
+			chr(151) => '&#8212;',
+			chr(152) => '&#732;',
+			chr(153) => '&#8482;',
+			chr(154) => '&#353;',
+			chr(155) => '&#8250;',
+			chr(156) => '&#339;',
+			chr(158) => '&#382;',
+			chr(159) => '&#376;');
 
 		self::$XML_SPECIAL_CHARS = array("&","<",">","\"","'");
 		
@@ -114,33 +181,27 @@ class VerySimpleStringUtil
 	 * characters such as <>&"' are not encoded.
 	 * @param string $string
 	 * @param bool $numericEncodingOnly true = return only numeric encoding (ie $oslash; gets converted to &#248;) (default true)
-	 * @param bool $encodeControlCharacters false = wipe control chars.  true = encode control characters (default false)
+	 * @param bool $encodeInvalidCharacters false = wipe illegal ascii chars. (default true)
+	 * * @param bool $encodeControlCharacters false = wipe control chars.  true = encode control characters (default false)
 	 * @return string
 	 */
-	static function EncodeNonAscii($string, $numericEncodingOnly = true, $encodeControlCharacters = false)
+	static function EncodeNonAscii($string, $numericEncodingOnly = true, $encodeInvalidCharacters = true, $encodeControlCharacters = false)
 	{
 		if (strlen($string) == 0) return "";
 		
 		$val = $string;
 		
-		if ($encodeControlCharacters)
-		{
-			$chararray =  self::GetCharArray($string);
+		// note - these encodings happen in a specific order to prevent double-encoding
 		
-			for ( $i = 0; $i < count($chararray); $i++ ) 
-			{ 
-				$ord = ord($chararray[$i]); 
-				if ( $ord < 9 || ($ord > 13 && $ord < 32) ) $chararray[$i] = '&#'.$ord.';';
-			}
-			
-			$val = implode('',$chararray); 
-		}
+		if ($encodeInvalidCharacters) $val = self::ReplaceInvalidCodeChars($val);
+
+		if ($encodeControlCharacters) $val = self::ReplaceControlCodeChars($val); 
+
+		// this will get all non-ascii characters, but will not encode &"'<>
+		$val = mb_convert_encoding($val, 'HTML-ENTITIES');
 		
-		// this will get all non-ascii characters
-		$val = mb_convert_encoding($val, 'HTML-ENTITIES', VerySimpleStringUtil::$DEFAULT_CHARACTER_SET);
-		
-		// replace the special character encodings if necessary
-		if ($numericEncodingOnly) $val = str_replace(array_keys(self::$HTML_ENTITIES_TABLE), self::$HTML_ENTITIES_TABLE, $val);
+		// finally, if only numeric encodings are required
+		if ($numericEncodingOnly) $val = self::ReplaceNonNumericEntities($val);
 		
 		return $val;
 	}
@@ -173,11 +234,11 @@ class VerySimpleStringUtil
 	 *
 	 * @param string value to parse
 	 * @param bool $escapeQuotes true to additionally escape ENT_QUOTE characters <>&"' (default = true)
+	 * @param bool $numericEncodingOnly set to true to only use numeric html encoding (default false)
 	 * @param bool $replaceSmartQuotes true to replace "smart quotes" with standard ascii ones, can be useful for stripping out windows-only codes (default = false)
-	 * @param bool $numericEncodingOnly set to true to only use numeric html encoding
 	 * @return string
 	 */
-	static function EncodeSpecialCharacters($string, $escapeQuotes = true, $replaceSmartQuotes = false, $numericEncodingOnly = false)
+	static function EncodeSpecialCharacters($string, $escapeQuotes = true, $numericEncodingOnly = false, $replaceSmartQuotes = false)
 	{
 		if (strlen($string) == 0) return "";
 		$val = $string;
@@ -185,9 +246,11 @@ class VerySimpleStringUtil
 		// do this first before encoding
 		if ($replaceSmartQuotes) $val = self::ReplaceSmartQuotes($val);
 
-		// do this next because the simple replace method would otherwise double-encode
-		if ($escapeQuotes) $val = str_replace(self::$XML_SPECIAL_CHARS, self::$XML_REPLACEMENT_CHARS, $val);
-		// if ($escapeQuotes) $val = htmlspecialchars($val, ENT_QUOTES, null, false); // this replaces single quotes with a numeric entry
+		// this method does not double-encode, but replaces single-quote with a numeric entity
+		if ($escapeQuotes) $val = htmlspecialchars($val, ENT_QUOTES, null, false);
+		
+		// this method double-encodes values but uses the special character entity for single quotes
+		// if ($escapeQuotes) $val = str_replace(self::$XML_SPECIAL_CHARS, self::$XML_REPLACEMENT_CHARS, $val);
 		
 		// for special chars we don't need to insist on numeric encoding only
 		return self::EncodeNonAscii($val,$numericEncodingOnly);
@@ -196,11 +259,54 @@ class VerySimpleStringUtil
 	
 	/**
 	 * This replaces smart (fancy) quote characters with generic ascii versions
-	 * @param unknown_type $string
+	 * @param string $string
+	 * @return string
 	 */
 	static function ReplaceSmartQuotes($string)
 	{
-		return str_replace(array_keys(self::$SPECIAL_CHARS), array_values(self::$SPECIAL_CHARS), $string);
+		return strtr($string,self::$SMART_QUOTE_CHARS);
+	}
+
+	/**
+	 * This replaces control characters characters with generic ascii versions
+	 * @param string $string
+	 * @return string
+	 */
+	static function ReplaceControlCodeChars($string)
+	{
+		return strtr($string,self::$CONTROL_CODE_CHARS);
+	}
+
+	/**
+	 * This replaces all non-numeric html entities with the numeric equivilant
+	 * @param string $string
+	 * @return string
+	 */
+	static function ReplaceNonNumericEntities($string)
+	{
+		return strtr($string,self::$HTML_ENTITIES_TABLE);
+	}
+	
+	/**
+	 * This replaces illegal ascii code values $INVALID_CODE_CHARS
+	 * @param string $string
+	 * @return string
+	 */
+	static function ReplaceInvalidCodeChars($string)
+	{
+		return strtr($string,self::$INVALID_CODE_CHARS);
+		
+		// less efficient way of handling the replacements...
+//		$chararray =  self::GetCharArray($string);
+//		$illegal = array_keys(self::$INVALID_CODE_CHARS);
+//	
+//		for ( $i = 0; $i < count($chararray); $i++ ) 
+//		{ 
+//			$ord = ord($chararray[$i]); 
+//			if ( in_array($ord,$illegal) ) $chararray[$i] = self::$INVALID_CODE_CHARS[$ord];
+//		}
+//		
+//		return implode('',$chararray); 
 	}
 }
 
