@@ -81,6 +81,9 @@ class SimpleTemplate
 	 * (for example "Hello {{NAME}}").  Useful for simple templating
 	 * needs such as email, form letters, etc.
 	 * 
+	 * If a placeholder is in the template but there is no matching value,
+	 * then the placeholder will be left alone and will appear in the output.
+	 * 
 	 * Note that there is no escape character so ensure the right and
 	 * left delimiters do not appear as normal text within the template
 	 * 
@@ -92,11 +95,35 @@ class SimpleTemplate
 	 */
 	static function Merge($template, $values, $ldelim = "{{", $rdelim = "}}")
 	{
+		$replacements = array();
+		
+		foreach ($values as $key => $val)
+		{
+			$replacements[$ldelim.$key.$rdelim] = $val;
+		}
+
+		return strtr($template, $replacements);
+	}
+	
+	/**
+	 * Same as Merge except using regular expression instead of simple replacement.
+	 * 
+	 * If a placeholder is in the template but there is no matching value,
+	 * it will be replaced with empty string and will NOT appear in the output.
+	 * 
+	 * @param string $template string with placeholder variables
+	 * @param mixed (array or object) $values an associative array or object with key/value pairs
+	 * @param string the left (opening) delimiter for placeholders. default = {{
+	 * @param string the right (closing) delimiter for placeholders. default = }}
+	 * @return string merged template
+	 */
+	static function MergeRegEx($template, $values, $ldelim = "{{", $rdelim = "}}")
+	{
 		self::$_MERGE_TEMPLATE_VALUES = $values;
 		
 		if ($ldelim != "{{" || $rdelim != "}}") throw new Exception("Custom delimiters are not yet implemented. Sorry!");
 		
-		$results = preg_replace_callback('!\{\{(\w+)\}\}!', 'SimpleTemplate::_MergeCallback', $template);
+		$results = preg_replace_callback('!\{\{(\w+)\}\}!', 'SimpleTemplate::_MergeRegExCallback', $template);
 		
 		self::$_MERGE_TEMPLATE_VALUES = null;
 		
@@ -108,7 +135,7 @@ class SimpleTemplate
 	 * called internally by preg_replace_callback
 	 * @param array $matches
 	 */
-	static function _MergeCallback($matches)
+	static function _MergeRegExCallback($matches)
 	{
 		if (isset(self::$_MERGE_TEMPLATE_VALUES[$matches[1]]))
 		{
