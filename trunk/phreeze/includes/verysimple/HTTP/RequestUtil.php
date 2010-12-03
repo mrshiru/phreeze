@@ -283,6 +283,17 @@ class RequestUtil
 	}
 	
 	/**
+	 * Returns true if the given form field has non-ascii characters
+	 * @param string $fieldname
+	 * @return bool
+	 */
+	public static function HasNonAsciiChars($fieldname)
+	{
+		$val = isset($_REQUEST[$fieldname]) ? $_REQUEST[$fieldname] : '';
+		return VerySimpleStringUtil::EncodeNonAscii($val) != $val;
+	}
+	
+	/**
 	* Returns a form parameter and persists it in the session.  If the form parameter was not passed
 	* again, then it returns the session value.  if the session value doesn't exist, then it returns
 	* the default setting
