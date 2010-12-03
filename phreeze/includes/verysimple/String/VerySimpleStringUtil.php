@@ -187,6 +187,7 @@ class VerySimpleStringUtil
 	 */
 	static function EncodeNonAscii($string, $numericEncodingOnly = true, $encodeInvalidCharacters = true, $encodeControlCharacters = false)
 	{
+
 		if (strlen($string) == 0) return "";
 		
 		$val = $string;
@@ -198,21 +199,43 @@ class VerySimpleStringUtil
 		if ($encodeControlCharacters) $val = self::ReplaceControlCodeChars($val); 
 
 		// this will get all non-ascii characters, but will not encode &"'<>
-		$val = mb_convert_encoding($val, 'HTML-ENTITIES');
+		
+		
+		// mb_detect_order("UTF-8, ASCII, JIS, EUC-JP, SJIS");  // this apparently does nothing
+		
+		// first attempt to encode using auto-detect
+		$encoded = mb_convert_encoding($val, 'HTML-ENTITIES');
+		
+		// @TODO @HACK existance of &AElig; char(198) is an indicator that auto-detect failed
+		if (strpos($encoded,"&AElig;") !== false)
+		{
+			// $encoded = mb_detect_encoding($val);
+			$encoded = mb_convert_encoding($val, 'HTML-ENTITIES', self::$DEFAULT_CHARACTER_SET);
+		}
 		
 		// finally, if only numeric encodings are required
-		if ($numericEncodingOnly) $val = self::ReplaceNonNumericEntities($val);
+		if ($numericEncodingOnly) $encoded = self::ReplaceNonNumericEntities($encoded);
 		
-		return $val;
+		return $encoded;
 	}
 	
 	/**
+	 * @TODO: is there any hope of making this work right?
 	 * Decode string that has been encoded using EncodeNonAscii
 	 * @param string $string
 	 * @param destination character set (default = $DEFAULT_CHARACTER_SET)
 	 */
 	static function DecodeNonAscii($string, $charset = null)
 	{
+		// this only gets named characters
+		// return html_entity_decode($string);
+		
+		// this seems to work but doesn't get the encodings right
+		// $name = preg_replace('~&#x([0-9a-f]+);~ei', 'chr(hexdec("\\1"))', $name);
+    	// $name = preg_replace('~&#([0-9]+);~e', 'chr("\\1")', $name);
+    	// $name = html_entity_decode($name);
+    		
+		// this way at least somebody could specify a character set.  UTF will work some of the time
 		if ($charset == null) $charset = VerySimpleStringUtil::$DEFAULT_CHARACTER_SET;
 		return mb_convert_encoding($string, $charset, 'HTML-ENTITIES');
 	}
