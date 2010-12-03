@@ -175,6 +175,8 @@ class VerySimpleStringUtil
 	 */
 	static function EncodeNonAscii($string, $numericEncodingOnly = true, $encodeControlCharacters = false)
 	{
+		if (strlen($string) == 0) return "";
+		
 		$result = $numericEncodingOnly
 			? self::UTF8ToHtml($string)
 			: self::UTFToNamedHTML($string, $encodeControlCharacters);
@@ -374,6 +376,7 @@ class VerySimpleStringUtil
 	 */
 	static function unicode_string_to_array( $string ) 
 	{
+		$array = array();
 		$strlen = mb_strlen($string);
 		while ($strlen) {
 			$array[] = mb_substr( $string, 0, 1, "UTF-8" );
