@@ -30,6 +30,9 @@ class EmailMessage
 	static $RECIPIENT_TYPE_TO = "";
 	static $RECIPIENT_TYPE_BCC = "BCC";
 	static $RECIPIENT_TYPE_CC = "CC";
+	
+	/** set to true and AddREcipient will decode html entities in the email */
+	static $DECODE_HTML_ENTITIES = true;
     
     function EmailMessage()
     {
@@ -65,8 +68,23 @@ class EmailMessage
 	 * @param $string a single email or semi-colon/comma delimited list
 	 * @param $string $RECIPIENT_TYPE_TO, $RECIPIENT_TYPE_CC or $RECIPIENT_TYPE_BCC (default = $RECIPIENT_TYPE_TO)
 	 */
-    function AddRecipient($email,$name="", $recipientType = "")
+    function AddRecipient($email, $name="", $recipientType = "")
     {
+    	if (self::$DECODE_HTML_ENTITIES)
+    	{
+    		// @TODO: we don't know the characterset to use, so just replace w/ empty space
+    		$email = preg_replace('~&#([0-9]+);~e', '""', $email);
+    		$email = preg_replace('~&#x([0-9]+);~ei', '""', $email);
+    		$name = preg_replace('~&#([0-9]+);~e', '""', $name);
+    		$name = preg_replace('~&#x([0-9]+);~ei', '""', $name);
+
+    		// $email = mb_convert_encoding($email, 'UTF-8', 'HTML-ENTITIES');
+    		// $name = mb_convert_encoding($name, 'UTF-8', 'HTML-ENTITIES');
+
+    	}
+    	
+    	// die('email is ' . $email . '\nname is ' . $name . ' = ' . chr(423));
+    	
 		$email = str_replace(",",";",$email);
 		$emails = explode(";",$email);
 

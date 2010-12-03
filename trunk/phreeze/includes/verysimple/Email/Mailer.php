@@ -65,6 +65,10 @@ class Mailer
 
     }
 
+    /**
+     * Bare line feeds do not play nicely with email.  this strips them
+     * @param string $str
+     */
 	function FixBareLB($str) 
 	{
 		$str = str_replace("\r\n", "\n", $str);
@@ -75,6 +79,7 @@ class Mailer
 	 * This function attempts to locate the language file path for 
 	 * PHPMailer because it's a whiney-ass bitch about finding it's
 	 * language file during unit testing
+	 * @return string
 	 */
 	private function _GetLangPath()
 	{
@@ -91,6 +96,13 @@ class Mailer
 		return $lang_path;
 	}
     
+	/**
+	 * Send the message.  If MAILER_RESULT_FAIL is returned, use GetErrors() to 
+	 * determine the problem.
+	 * 
+	 * @param EmailMessage $message
+	 * @return int results of operation (MAILER_RESULT_OK | MAILER_RESULT_FAIL)
+	 */
     function Send($message)
     {
         $mailer = new PHPMailer();
@@ -145,6 +157,7 @@ class Mailer
 			}
 
 			$mailer->AddAddress($recipient->Email,$recipient->RealName);
+
 		}
 		
 		foreach ($message->CCRecipients as $recipient)
@@ -207,6 +220,13 @@ class Mailer
 		$this->_log = array();
 	}
     
+	/**
+	 * Utility method to send a simple text email message
+	 * @param string $to
+	 * @param string $from
+	 * @param string $subject
+	 * @param string $body
+	 */
     function QuickSend($to,$from,$subject,$body)
     {
         $message = new Message();
@@ -218,11 +238,20 @@ class Mailer
         return $this->Send($message);
     }   
     
+    /**
+     * Returns an array of errors that occured during the last attempt
+     * to send a message
+     * @return Array
+     */
     function GetErrors()
     {
         return $this->_errors;   
     }
 
+    /**
+     * Returns a log of the last email transaction in array format
+     * @return Array
+     */
     function GetLog()
     {
 		return $this->_log;   
