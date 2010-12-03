@@ -89,11 +89,30 @@ class SimpleTemplate
 	 * 
 	 * @param string $template string with placeholder variables
 	 * @param mixed (array or object) $values an associative array or object with key/value pairs
+	 * @param bool true to strip out placeholders with missing value, false to leave them as-is in the output (default true)
 	 * @param string the left (opening) delimiter for placeholders. default = {{
 	 * @param string the right (closing) delimiter for placeholders. default = }}
 	 * @return string merged template
 	 */
-	static function Merge($template, $values, $ldelim = "{{", $rdelim = "}}")
+	static function Merge($template, $values, $stripMissingValues = true, $ldelim = "{{", $rdelim = "}}")
+	{
+		return $stripMissingValues 
+			? self::MergeRegEx($template, $values, $ldelim, $rdelim)
+			: self::MergeSimple($template, $values, $ldelim, $rdelim);
+	}
+
+	/**
+	 * Used internally by Merge, or may be called directly.
+	 * If a placeholder is in the template but there is no matching value,
+	 * it will be left alone and appear in the template, for example: {{PLACEHOLDER}}.
+	 * 
+	 * @param string $template string with placeholder variables
+	 * @param mixed (array or object) $values an associative array or object with key/value pairs
+	 * @param string the left (opening) delimiter for placeholders. default = {{
+	 * @param string the right (closing) delimiter for placeholders. default = }}
+	 * @return string merged template
+	 */
+	static function MergeSimple($template, $values, $ldelim = "{{", $rdelim = "}}")
 	{
 		$replacements = array();
 		
@@ -106,8 +125,7 @@ class SimpleTemplate
 	}
 	
 	/**
-	 * Same as Merge except using regular expression instead of simple replacement.
-	 * 
+	 * Used internally by Merge, or may be called directly.
 	 * If a placeholder is in the template but there is no matching value,
 	 * it will be replaced with empty string and will NOT appear in the output.
 	 * 
