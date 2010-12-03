@@ -1,13 +1,13 @@
 <?php
-/** @package    verysimple::String */
+/** @package	verysimple::String */
 
 /**
  * A set of utility functions for working with strings
  *
- * @package    verysimple::String
+ * @package	verysimple::String
  * @author Jason Hinkle
  * @copyright  1997-2008 VerySimple, Inc.
- * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
+ * @license	http://www.gnu.org/licenses/lgpl.html  LGPL
  * @version 1.0
  */
 class VerySimpleStringUtil
@@ -15,7 +15,7 @@ class VerySimpleStringUtil
 	/** @var the character set used when converting non ascii characters */
 	static $DEFAULT_CHARACTER_SET = 'UTF-8';
 	
-	/** @var list of fancy/smart quote characters */
+	/** @var list of fancy/smart quote characters plus emdash w/ generic replacements */
 	static $SMART_QUOTE_CHARS;
 	
 	/** @var list of xml reserved characters */
@@ -42,25 +42,19 @@ class VerySimpleStringUtil
 		self::$HTML_ENTITIES_TABLE = array();
 		foreach (get_html_translation_table(HTML_ENTITIES, ENT_QUOTES) as $char => $entity)
 		{
-		    self::$HTML_ENTITIES_TABLE[$entity] = '&#' . ord($char) . ';';
+			self::$HTML_ENTITIES_TABLE[$entity] = '&#' . ord($char) . ';';
 		}
 		
 		self::$SMART_QUOTE_CHARS = 
 			array(
-				chr(226) . chr(128) . chr(156) => "\"",
-				chr(226) . chr(128) . chr(157) => "\"",
-				chr(226) . chr(128) . chr(153) => "'",
-				chr(226) . chr(128) . chr(152) => "'",
-				chr(167) => " ",
-				chr(212) => "'",
-				chr(213) => "'",
-				chr(149) => "'",
+				"Ô" => "'",
+				"Õ" => "'",
+				"Ò" => "\"",
+				"Ó" => "\"",
 				chr(145) => "'",
 				chr(146) => "'",
 				chr(147) => "\"",
 				chr(148) => "\"",
-				chr(210) => "\"",
-				chr(211) => "\"",
 				chr(151) => "-"
 			);
 			
@@ -172,52 +166,23 @@ class VerySimpleStringUtil
 	{
 		return htmlspecialchars($text);
 	}
-	
+
 	/**
-	 * HTML encode all non-ascii characters (above char code 127)
-	 * and optionall all control characters (backspace, escape, etc)
-	 * 
-	 * Note that this is not the same as html encoding, the
-	 * characters such as <>&"' are not encoded.
 	 * @param string $string
-	 * @param bool $numericEncodingOnly true = return only numeric encoding (ie $oslash; gets converted to &#248;) (default true)
-	 * @param bool $encodeInvalidCharacters false = wipe illegal ascii chars. (default true)
-	 * * @param bool $encodeControlCharacters false = wipe control chars.  true = encode control characters (default false)
+	 * @param bool $numericEncodingOnly set to true to only use numeric html encoding.  warning, setting to false may be slower performance (default true)
+	 * @param bool $encodeControlCharacters (only relevant if $numericEncodingOnly = false) false = wipe control chars.  true = encode control characters (default false)
 	 * @return string
 	 */
-	static function EncodeNonAscii($string, $numericEncodingOnly = true, $encodeInvalidCharacters = true, $encodeControlCharacters = false)
+	static function EncodeNonAscii($string, $numericEncodingOnly = true, $encodeControlCharacters = false)
 	{
-
-		if (strlen($string) == 0) return "";
+		$result = $numericEncodingOnly
+			? self::UTF8ToHtml($string)
+			: self::UTFToNamedHTML($string, $encodeControlCharacters);
 		
-		$val = $string;
-		
-		// note - these encodings happen in a specific order to prevent double-encoding
-		
-		if ($encodeInvalidCharacters) $val = self::ReplaceInvalidCodeChars($val);
-
-		if ($encodeControlCharacters) $val = self::ReplaceControlCodeChars($val); 
-
-		// this will get all non-ascii characters, but will not encode &"'<>
-		
-		
-		// mb_detect_order("UTF-8, ASCII, JIS, EUC-JP, SJIS");  // this apparently does nothing
-		
-		// first attempt to encode using auto-detect
-		$encoded = mb_convert_encoding($val, 'HTML-ENTITIES');
-		
-		// @TODO @HACK existance of &AElig; char(198) is an indicator that auto-detect failed
-		if (strpos($encoded,"&AElig;") !== false)
-		{
-			// $encoded = mb_detect_encoding($val);
-			$encoded = mb_convert_encoding($val, 'HTML-ENTITIES', self::$DEFAULT_CHARACTER_SET);
-		}
-		
-		// finally, if only numeric encodings are required
-		if ($numericEncodingOnly) $encoded = self::ReplaceNonNumericEntities($encoded);
-		
-		return $encoded;
+		return $result;
 	}
+
+
 	
 	/**
 	 * @TODO: is there any hope of making this work right?
@@ -232,22 +197,12 @@ class VerySimpleStringUtil
 		
 		// this seems to work but doesn't get the encodings right
 		// $name = preg_replace('~&#x([0-9a-f]+);~ei', 'chr(hexdec("\\1"))', $name);
-    	// $name = preg_replace('~&#([0-9]+);~e', 'chr("\\1")', $name);
-    	// $name = html_entity_decode($name);
-    		
-		// this way at least somebody could specify a character set.  UTF will work some of the time
+		// $name = preg_replace('~&#([0-9]+);~e', 'chr("\\1")', $name);
+		// $name = html_entity_decode($name);
+			
+		// this way at least somebody could specify a character set.  UTF-8 will work most of the time
 		if ($charset == null) $charset = VerySimpleStringUtil::$DEFAULT_CHARACTER_SET;
 		return mb_convert_encoding($string, $charset, 'HTML-ENTITIES');
-	}
-	
-	/**
-	 * Converts a string into a character array
-	 * @param string $string
-	 * @return array
-	 */
-	static function GetCharArray($string)
-	{
-		return preg_split("//", $string, -1, PREG_SPLIT_NO_EMPTY);
 	}
 
 	/**
@@ -257,27 +212,38 @@ class VerySimpleStringUtil
 	 *
 	 * @param string value to parse
 	 * @param bool $escapeQuotes true to additionally escape ENT_QUOTE characters <>&"' (default = true)
-	 * @param bool $numericEncodingOnly set to true to only use numeric html encoding (default false)
+	 * @param bool $numericEncodingOnly set to true to only use numeric html encoding.  warning, setting to false may be slower performance (default true)
 	 * @param bool $replaceSmartQuotes true to replace "smart quotes" with standard ascii ones, can be useful for stripping out windows-only codes (default = false)
 	 * @return string
 	 */
-	static function EncodeSpecialCharacters($string, $escapeQuotes = true, $numericEncodingOnly = false, $replaceSmartQuotes = false)
+	static function EncodeSpecialCharacters($string, $escapeQuotes = true, $numericEncodingOnly = true, $replaceSmartQuotes = false)
 	{
 		if (strlen($string) == 0) return "";
-		$val = $string;
+		
+		$result = $string;
 		
 		// do this first before encoding
-		if ($replaceSmartQuotes) $val = self::ReplaceSmartQuotes($val);
+		if ($replaceSmartQuotes) $result = self::ReplaceSmartQuotes($result);
 
 		// this method does not double-encode, but replaces single-quote with a numeric entity
-		if ($escapeQuotes) $val = htmlspecialchars($val, ENT_QUOTES, null, false);
+		if ($escapeQuotes) $result = htmlspecialchars($result, ENT_QUOTES, null, false);
 		
 		// this method double-encodes values but uses the special character entity for single quotes
 		// if ($escapeQuotes) $val = str_replace(self::$XML_SPECIAL_CHARS, self::$XML_REPLACEMENT_CHARS, $val);
 		
 		// for special chars we don't need to insist on numeric encoding only
-		return self::EncodeNonAscii($val,$numericEncodingOnly);
+		return self::EncodeNonAscii($result,$numericEncodingOnly);
 
+	}
+
+	/**
+	 * Converts a string into a character array
+	 * @param string $string
+	 * @return array
+	 */
+	static function GetCharArray($string)
+	{
+		return preg_split("//", $string, -1, PREG_SPLIT_NO_EMPTY);
 	}
 	
 	/**
@@ -318,18 +284,135 @@ class VerySimpleStringUtil
 	static function ReplaceInvalidCodeChars($string)
 	{
 		return strtr($string,self::$INVALID_CODE_CHARS);
+	}
+
+	/**
+	 * This is The same as UTFToHTML except it utilizes htmlentities, which will return the Named
+	 * HTML code when possible (ie &pound; &sect;, etc).  It is preferrable in all cases to use
+	 * UTFToHTML instead unless you absolutely have to have named entities
+	 * 
+	 * @param string $string
+	 * @param bool $encodeControlCharacters false = wipe control chars.  true = encode control characters (default false)
+	 * @return string
+	 */
+	static function UTFToNamedHTML($string, $encodeControlCharacters = false)
+	{
+
+		$utf8 = $string;
+		$result = '';
+		for ($i = 0; $i < strlen($utf8); $i++) {
+			$char = $utf8[$i];
+			$ascii = ord($char);
+			if ($ascii < 128) {
+				// one-byte character
+				$result .= $char;
+			} else if ($ascii < 192) {
+				// non-utf8 character or not a start byte
+				$result .= ($encodeControlCharacters) ? htmlentities($char) : '';
+			} else if ($ascii < 224) {
+				// two-byte character
+				$encoded = htmlentities(substr($utf8, $i, 2), ENT_QUOTES, 'UTF-8');
+				
+				// @hack if htmlentities didn't encode it, then we need to do a charset conversion
+			   if ($encoded != '' && substr($encoded,0,1) != '&') $encoded = mb_convert_encoding($encoded, 'HTML-ENTITIES', self::$DEFAULT_CHARACTER_SET);
+			   
+				$result .= $encoded;
+				$i++;
+			} else if ($ascii < 240) {
+				// three-byte character
+				$ascii1 = ord($utf8[$i+1]);
+				$ascii2 = ord($utf8[$i+2]);
+				$unicode = (15 & $ascii) * 4096 +
+						   (63 & $ascii1) * 64 +
+						   (63 & $ascii2);
+				$result .= "&#$unicode;" ;
+				$i += 2;
+			} else if ($ascii < 248) { // (TODO: should this be 245 or 248 ??)
+				// four-byte character
+				$ascii1 = ord($utf8[$i+1]);
+				$ascii2 = ord($utf8[$i+2]);
+				$ascii3 = ord($utf8[$i+3]);
+				$unicode = (15 & $ascii) * 262144 +
+						   (63 & $ascii1) * 4096 +
+						   (63 & $ascii2) * 64 +
+						   (63 & $ascii3);
+				$result .= "&#$unicode;";
+				$i += 3;
+			}
+		}
+
+		return $result;
+	}
+	
+	
+	/**
+	 * Converts UTF-8 character set into html encoded goodness
+	 * 
+	 * @author montana
+	 * @link http://www.php.net/manual/en/function.htmlentities.php#92105
+	 * @param string $content
+	 */
+	static function UTF8ToHTML($content="") 
+	{ 
+		$contents = self::unicode_string_to_array($content);
+		$swap = "";
+		$iCount = count($contents);
+		for ($o=0;$o<$iCount;$o++) {
+			$contents[$o] = self::unicode_entity_replace($contents[$o]);
+			$swap .= $contents[$o];
+		}
+		return mb_convert_encoding($swap,"UTF-8"); //not really necessary, but why not.
+	}
+
+	/**
+	 * takes a unicode string and turns it into an array
+	 * of UTF-8 characters
+	 * 
+	 * @author adjwilli
+	 * @param string $string
+	 * @return array
+	 */
+	static function unicode_string_to_array( $string ) 
+	{
+		$strlen = mb_strlen($string);
+		while ($strlen) {
+			$array[] = mb_substr( $string, 0, 1, "UTF-8" );
+			$string = mb_substr( $string, 1, $strlen, "UTF-8" );
+			$strlen = mb_strlen( $string );
+		}
+		return $array;
+	}
+
+	/**
+	 * Uses scary binary math to replace a character with
+	 * it's html entity
+	 * 
+	 * @author m. perez
+	 * @param char $c
+	 * @return string
+	 */
+	static function unicode_entity_replace($c) 
+	{ 
+		$h = ord($c{0});	
+		if ($h <= 0x7F) { // 127
+			return $c;
+		} else if ($h < 0xC2) { // 194
+			return $c;
+		}
 		
-		// less efficient way of handling the replacements...
-//		$chararray =  self::GetCharArray($string);
-//		$illegal = array_keys(self::$INVALID_CODE_CHARS);
-//	
-//		for ( $i = 0; $i < count($chararray); $i++ ) 
-//		{ 
-//			$ord = ord($chararray[$i]); 
-//			if ( in_array($ord,$illegal) ) $chararray[$i] = self::$INVALID_CODE_CHARS[$ord];
-//		}
-//		
-//		return implode('',$chararray); 
+		if ($h <= 0xDF) { // 0xDF = 223
+			$h = ($h & 0x1F) << 6 | (ord($c{1}) & 0x3F);  // 0x0F = 15, 0x1F = 31, 0x3F = 63
+			$h = "&#" . $h . ";";
+			return $h; 
+		} else if ($h <= 0xEF) { // 0xEF = 239
+			$h = ($h & 0x0F) << 12 | (ord($c{1}) & 0x3F) << 6 | (ord($c{2}) & 0x3F);
+			$h = "&#" . $h . ";";
+			return $h;
+		} else if ($h <= 0xF4) { // 0xF4 = 244 (TODO: should this be 244 or 247 ??)
+			$h = ($h & 0x0F) << 18 | (ord($c{1}) & 0x3F) << 12 | (ord($c{2}) & 0x3F) << 6 | (ord($c{3}) & 0x3F);
+			$h = "&#" . $h . ";";
+			return $h;
+		}
 	}
 }
 
