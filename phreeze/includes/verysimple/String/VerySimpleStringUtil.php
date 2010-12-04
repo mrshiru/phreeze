@@ -21,9 +21,6 @@ class VerySimpleStringUtil
 	/** @var list of xml reserved characters */
 	static $XML_SPECIAL_CHARS;
 	
-	/** @var replacements for xml reserved characters */
-	static $XML_REPLACEMENT_CHARS;
-	
 	/** @var associative array containing the html translation for special characters with their numeric equivilant */
 	static $HTML_ENTITIES_TABLE;
 	
@@ -57,9 +54,6 @@ class VerySimpleStringUtil
 				chr(148) => "\"",
 				chr(151) => "-"
 			);
-			
-		// 195 was something that appeared in a lot of fancy quotes, but causes problems
-		// chr(195) => "'",
 			
 		self::$CONTROL_CODE_CHARS = 
 			array(
@@ -121,9 +115,14 @@ class VerySimpleStringUtil
 			chr(158) => '&#382;',
 			chr(159) => '&#376;');
 
-		self::$XML_SPECIAL_CHARS = array("&","<",">","\"","'");
-		
-		self::$XML_REPLACEMENT_CHARS = array("&amp;","&lt;","&gt;","&quot;","&apos;");
+		self::$XML_SPECIAL_CHARS = array(
+			"&"   =>"&amp;",
+			"<"   =>"&lt;"
+			,">"  =>"&gt;"
+			,"\"" =>"&quot;"
+			,"'"  =>"&apos;"
+		);
+
 	}
 			
 	/**
@@ -173,7 +172,7 @@ class VerySimpleStringUtil
 	 * @param bool $encodeControlCharacters (only relevant if $numericEncodingOnly = false) false = wipe control chars.  true = encode control characters (default false)
 	 * @return string
 	 */
-	static function EncodeNonAscii($string, $numericEncodingOnly = true, $encodeControlCharacters = false)
+	static function EncodeToHTML($string, $numericEncodingOnly = true, $encodeControlCharacters = false)
 	{
 		if (strlen($string) == 0) return "";
 		
@@ -184,23 +183,24 @@ class VerySimpleStringUtil
 		return $result;
 	}
 
-
-	
 	/**
-	 * @TODO: is there any hope of making this work right?
-	 * Decode string that has been encoded using EncodeNonAscii
+	 * Decode string that has been encoded using EncodeToHTML
+	 * used in combination with utf8_decode can be helpful
+	 * @TODO: warning, this function is BETA!
+	 * 
 	 * @param string $string
-	 * @param destination character set (default = $DEFAULT_CHARACTER_SET)
+	 * @param destination character set (default = $DEFAULT_CHARACTER_SET (UTF-8))
 	 */
-	static function DecodeNonAscii($string, $charset = null)
+	static function DecodeFromHTML($string, $charset = null)
 	{
 		// this only gets named characters
 		// return html_entity_decode($string);
 		
-		// this seems to work but doesn't get the encodings right
-		// $name = preg_replace('~&#x([0-9a-f]+);~ei', 'chr(hexdec("\\1"))', $name);
-		// $name = preg_replace('~&#([0-9]+);~e', 'chr("\\1")', $name);
-		// $name = html_entity_decode($name);
+		// this is a complex method that appears to be the reverse of UTF8ToHTML
+		// taken from http://www.php.net/manual/en/function.html-entity-decode.php#68491
+//		$string = self::ReplaceNonNumericEntities($string);
+//		$string = preg_replace_callback('~&(#(x?))?([^;]+);~', 'self::html_entity_replace', $string);
+//        return $string;
 			
 		// this way at least somebody could specify a character set.  UTF-8 will work most of the time
 		if ($charset == null) $charset = VerySimpleStringUtil::$DEFAULT_CHARACTER_SET;
@@ -209,7 +209,7 @@ class VerySimpleStringUtil
 
 	/**
 	 * This HTML encodes special characters and returns an ascii safe version.
-	 * This function extends EncodeNonAscii to additionally strip
+	 * This function extends EncodeToHTML to additionally strip
 	 * out characters that may be disruptive when used in HTML or XML data
 	 *
 	 * @param string value to parse
@@ -231,10 +231,10 @@ class VerySimpleStringUtil
 		if ($escapeQuotes) $result = htmlspecialchars($result, ENT_QUOTES, null, false);
 		
 		// this method double-encodes values but uses the special character entity for single quotes
-		// if ($escapeQuotes) $val = str_replace(self::$XML_SPECIAL_CHARS, self::$XML_REPLACEMENT_CHARS, $val);
+		// if ($escapeQuotes) $result = self::ReplaceXMLSpecialChars($result);
 		
 		// for special chars we don't need to insist on numeric encoding only
-		return self::EncodeNonAscii($result,$numericEncodingOnly);
+		return self::EncodeToHTML($result,$numericEncodingOnly);
 
 	}
 
@@ -246,6 +246,16 @@ class VerySimpleStringUtil
 	static function GetCharArray($string)
 	{
 		return preg_split("//", $string, -1, PREG_SPLIT_NO_EMPTY);
+	}
+	
+	/**
+	 * This replaces XML special characters with HTML encoding
+	 * @param string $string
+	 * @return string
+	 */
+	static function ReplaceXMLSpecialChars($string)
+	{
+		return strtr($string,self::$XML_SPECIAL_CHARS);
 	}
 	
 	/**
@@ -417,6 +427,82 @@ class VerySimpleStringUtil
 			return $h;
 		}
 	}
+	
+	/**
+	 * Used for decoding entities that started as UTF-8
+	 * converts a character that is likely non ascii into the correct UTF-8 char value
+	 * @link http://www.php.net/manual/en/function.html-entity-decode.php#68491
+	 * @param $code
+	 */
+	function chr_utf8($code)
+    {
+        if ($code < 0) return false;
+        elseif ($code < 128) return chr($code);
+        elseif ($code < 160) // Remove Windows Illegals Cars
+        {
+            if ($code==128) $code=8364;
+            elseif ($code==129) $code=160; // not affected
+            elseif ($code==130) $code=8218;
+            elseif ($code==131) $code=402;
+            elseif ($code==132) $code=8222;
+            elseif ($code==133) $code=8230;
+            elseif ($code==134) $code=8224;
+            elseif ($code==135) $code=8225;
+            elseif ($code==136) $code=710;
+            elseif ($code==137) $code=8240;
+            elseif ($code==138) $code=352;
+            elseif ($code==139) $code=8249;
+            elseif ($code==140) $code=338;
+            elseif ($code==141) $code=160; // not affected
+            elseif ($code==142) $code=381;
+            elseif ($code==143) $code=160; // not affected
+            elseif ($code==144) $code=160; // not affected
+            elseif ($code==145) $code=8216;
+            elseif ($code==146) $code=8217;
+            elseif ($code==147) $code=8220;
+            elseif ($code==148) $code=8221;
+            elseif ($code==149) $code=8226;
+            elseif ($code==150) $code=8211;
+            elseif ($code==151) $code=8212;
+            elseif ($code==152) $code=732;
+            elseif ($code==153) $code=8482;
+            elseif ($code==154) $code=353;
+            elseif ($code==155) $code=8250;
+            elseif ($code==156) $code=339;
+            elseif ($code==157) $code=160; // not affected
+            elseif ($code==158) $code=382;
+            elseif ($code==159) $code=376;
+        }
+        if ($code < 2048) return chr(192 | ($code >> 6)) . chr(128 | ($code & 63));
+        elseif ($code < 65536) return chr(224 | ($code >> 12)) . chr(128 | (($code >> 6) & 63)) . chr(128 | ($code & 63));
+        else return chr(240 | ($code >> 18)) . chr(128 | (($code >> 12) & 63)) . chr(128 | (($code >> 6) & 63)) . chr(128 | ($code & 63));
+    }
+
+    /**
+     * Callback for preg_replace_callback('~&(#(x?))?([^;]+);~', 'html_entity_replace', $str);
+     * used internally by decode
+     * @link http://www.php.net/manual/en/function.html-entity-decode.php#68491
+     * @param array
+     */
+    function html_entity_replace($matches)
+    {
+        if ($matches[2])
+        {
+            return self::chr_utf8(hexdec($matches[3]));
+        } 
+        elseif ($matches[1])
+        {
+            return self::chr_utf8($matches[3]);
+        }
+        elseif ($matches[3])
+        {
+        	// return "((&" . $matches[3] . ";))";
+        	// return mb_convert_encoding('&'.$matches[3].';', 'UTF-8', 'HTML-ENTITIES');
+        	return html_entity_decode('&'.$matches[3].';');
+        }
+        
+        return false;
+    }
 }
 
 // this will be executed only once

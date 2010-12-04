@@ -257,7 +257,7 @@ class RequestUtil
 	
 	/**
 	* Returns a form parameter as a string, handles null values.  Note that if
-	* $ENCODE_NON_ASCII = true then the value will be passed through VerySimpleStringUtil::EncodeNonAscii
+	* $ENCODE_NON_ASCII = true then the value will be passed through VerySimpleStringUtil::EncodeToHTML
 	* before being returned.
 	*
 	* @param    string $fieldname
@@ -276,7 +276,7 @@ class RequestUtil
 		
 		if (self::$ENCODE_NON_ASCII)
 		{
-			$val = VerySimpleStringUtil::EncodeNonAscii($val);
+			$val = VerySimpleStringUtil::EncodeToHTML($val);
 		}
 		
 		return $val;
@@ -290,7 +290,7 @@ class RequestUtil
 	public static function HasNonAsciiChars($fieldname)
 	{
 		$val = isset($_REQUEST[$fieldname]) ? $_REQUEST[$fieldname] : '';
-		return VerySimpleStringUtil::EncodeNonAscii($val) != $val;
+		return VerySimpleStringUtil::EncodeToHTML($val) != $val;
 	}
 	
 	/**

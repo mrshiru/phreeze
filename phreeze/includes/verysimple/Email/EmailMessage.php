@@ -3,6 +3,7 @@
 
 /** import supporting libraries */
 require_once("Recipient.php");
+require_once("verysimple/String/VerySimpleStringUtil.php");
 
 define("MESSAGE_FORMAT_TEXT",0);
 define("MESSAGE_FORMAT_HTML",1);
@@ -72,14 +73,10 @@ class EmailMessage
     {
     	if (self::$DECODE_HTML_ENTITIES)
     	{
-    		// @TODO: we don't know the characterset to use, so just replace w/ empty space
-    		$email = preg_replace('~&#([0-9]+);~e', '""', $email);
-    		$email = preg_replace('~&#x([0-9]+);~ei', '""', $email);
-    		$name = preg_replace('~&#([0-9]+);~e', '""', $name);
-    		$name = preg_replace('~&#x([0-9]+);~ei', '""', $name);
 
-    		// $email = mb_convert_encoding($email, 'UTF-8', 'HTML-ENTITIES');
-    		// $name = mb_convert_encoding($name, 'UTF-8', 'HTML-ENTITIES');
+    		// utilize string util to decode to UTF-8, then decode that to ISO-8859-1
+    		$email = utf8_decode ( VerySimpleStringUtil::DecodeFromHTML($email) );
+    		$name = utf8_decode ( VerySimpleStringUtil::DecodeFromHTML($name) );
 
     	}
     	
