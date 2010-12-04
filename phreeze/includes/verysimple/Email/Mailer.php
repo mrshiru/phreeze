@@ -112,8 +112,8 @@ class Mailer
 		
         $mailer->From = $message->From->Email;
         $mailer->FromName = $message->From->RealName;
-        $mailer->Subject = $message->Subject;
-        $mailer->Body = $this->FixBareLB($message->Body);
+        $mailer->Subject = $message->GetSubject();
+        $mailer->Body = $this->FixBareLB($message->GetBody());
         $mailer->ContentType = ($message->Format == MESSAGE_FORMAT_TEXT) ? "text/plain" : "text/html";
         $mailer->Mailer = strtolower($this->Method);
         $mailer->Host = $this->Path;
