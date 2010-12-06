@@ -259,11 +259,13 @@ class RequestUtil
 	* Returns a form parameter as a string, handles null values.  Note that if
 	* $ENCODE_NON_ASCII = true then the value will be passed through VerySimpleStringUtil::EncodeToHTML
 	* before being returned.
+	* 
+	* If the form field is a multi-value type (checkbox, etc) then an array may be returned
 	*
 	* @param    string $fieldname
 	* @param    string $default value returned if $_REQUEST[$fieldname] is blank or null (default = empty string)
 	* @param    bool $escape if true htmlspecialchars($val) is returned (default = false)
-	* @return   string
+	* @return   string | array
 	*/
 	public static function Get($fieldname, $default = "", $escape = false)
 	{
@@ -276,7 +278,17 @@ class RequestUtil
 		
 		if (self::$ENCODE_NON_ASCII)
 		{
-			$val = VerySimpleStringUtil::EncodeToHTML($val);
+			if (is_array($val))
+			{
+				foreach ($val as $k=>$v)
+				{
+					$val[$k] = VerySimpleStringUtil::EncodeToHTML($v);
+				}
+			}
+			else
+			{
+				$val = VerySimpleStringUtil::EncodeToHTML($val);
+			}
 		}
 		
 		return $val;
