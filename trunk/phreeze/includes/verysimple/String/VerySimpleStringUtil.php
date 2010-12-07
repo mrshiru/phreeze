@@ -176,10 +176,14 @@ class VerySimpleStringUtil
 	{
 		if (strlen($string) == 0) return "";
 		
-		$result = $numericEncodingOnly
-			? self::UTF8ToHtml($string)
-			: self::UTFToNamedHTML($string, $encodeControlCharacters);
+//		$result = $numericEncodingOnly
+//			? self::UTF8ToHtml($string)
+//			: self::UTFToNamedHTML($string, $encodeControlCharacters);
+
+		$result = self::UTFToNamedHTML($string, $encodeControlCharacters);
 		
+		if ($numericEncodingOnly) $result = $this->ReplaceNonNumericEntities($result);
+			
 		return $result;
 	}
 
