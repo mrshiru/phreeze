@@ -26,13 +26,18 @@ class {$singular}Criteria extends Criteria
 {foreach from=$table->Columns item=column}	public ${$column->NameWithoutPrefix|studlycaps}_Equals;
 	public ${$column->NameWithoutPrefix|studlycaps}_NotEquals;
 	public ${$column->NameWithoutPrefix|studlycaps}_IsLike;
+	public ${$column->NameWithoutPrefix|studlycaps}_IsNotLike;
 	public ${$column->NameWithoutPrefix|studlycaps}_BeginsWith;
 	public ${$column->NameWithoutPrefix|studlycaps}_EndWith;
 	public ${$column->NameWithoutPrefix|studlycaps}_GreaterThan;
+	public ${$column->NameWithoutPrefix|studlycaps}_GreaterThanOrEqual;
 	public ${$column->NameWithoutPrefix|studlycaps}_LessThan;
+	public ${$column->NameWithoutPrefix|studlycaps}_LessThanOrEqual;
 	public ${$column->NameWithoutPrefix|studlycaps}_In;
 	public ${$column->NameWithoutPrefix|studlycaps}_IsNotEmpty;
 	public ${$column->NameWithoutPrefix|studlycaps}_IsEmpty;
+	public ${$column->NameWithoutPrefix|studlycaps}_BitwiseOr;
+	public ${$column->NameWithoutPrefix|studlycaps}_BitwiseAnd;
 {/foreach}
 
 	/**
