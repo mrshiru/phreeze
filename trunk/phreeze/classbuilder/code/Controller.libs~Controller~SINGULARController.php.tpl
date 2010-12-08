@@ -6,7 +6,9 @@ require_once("verysimple/Phreeze/Controller.php");
 require_once("Model/{$singular}.php");
 
 /**
- * {$singular}Controller is the controller class for the {$singular} object
+ * {$singular}Controller is the controller class for the {$singular} object.  The
+ * controller is responsible for processing input from the user, reading/updating
+ * the model as necessary and displaying the appropriate view.
  *
  * @package {$connection->DBName|studlycaps}::Controller
  * @author ClassBuilder
@@ -17,8 +19,10 @@ class {$singular}Controller extends Controller
 
 	/**
 	 * This function is called on initialization of the controller and
-	 * the property ModelName must be set at this point.  This is a
-	 * suggested place to put authentication
+	 * the property ModelName must be set at this point if you plan
+	 * to use the base Controller ValidateInput method
+	 * TODO: Possibly add authentication checks here
+	 * 
 	 * @inheritdocs
 	 */
 	protected function Init()
@@ -27,8 +31,9 @@ class {$singular}Controller extends Controller
 	{rdelim}
 	
 	/**
-	 * List by default displays View{$singular}ListAll.  It is suggested
-	 * to override this function
+	 * List by default displays View{$singular}ListAll.  
+	 * TODO: it is suggested to override this function
+	 * 
 	 * @inheritdocs
 	 */
 	function ListAll() 
