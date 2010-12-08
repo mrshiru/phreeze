@@ -145,6 +145,8 @@ abstract class Controller
 	 * LoadFromForm should load the object specified by primary key = $pk, or
 	 * create a new instance of the object.  Then should overwrite any applicable
 	 * properties with user input.
+	 * 
+	 * This method is used by ValidateInput for automation AJAX server-side validation.
 	 *
 	 * @param variant $pk the primary key (optional)
 	 * @return Phreezable a phreezable object
