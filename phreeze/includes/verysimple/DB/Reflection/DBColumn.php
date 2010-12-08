@@ -61,7 +61,33 @@
 	
 	function GetPhpType()
 	{
-		return "PHP";
+		$rt = $this->Type;
+		switch ($this->Type)
+		{
+			case "smallint":
+			case "bigint":
+			case "tinyint":
+			case "mediumint":
+				$rt = "int";
+				break;
+			case "varchar":
+			case "text":
+			case "tinytext":
+				$rt = "string";
+				break;
+			case "date":
+			case "datetime":
+				$rt = "date";
+				break;
+			case "decimal":
+			case "float":
+				$rt = "float";
+				break;
+			default;
+				break;
+		}
+		
+		return $rt;
 	}
 	
 	function GetSqliteType()
@@ -106,7 +132,6 @@
 				$rt = "real";
 				break;
 			default;
-				// die("unknown vartype = " . $this->Type);
 				break;
 		}
 		
@@ -152,7 +177,6 @@
 				$rt = "Number";
 				break;
 			default;
-				// die("unknown vartype = " . $this->Type);
 				break;
 		}
 		
