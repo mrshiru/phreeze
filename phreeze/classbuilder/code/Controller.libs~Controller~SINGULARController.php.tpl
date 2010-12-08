@@ -15,14 +15,31 @@ require_once("Model/{$singular}.php");
 class {$singular}Controller extends Controller
 {ldelim}
 
+	/**
+	 * This function is called on initialization of the controller and
+	 * the property ModelName must be set at this point.  This is a
+	 * suggested place to put authentication
+	 * @inheritdocs
+	 */
 	protected function Init()
 	{ldelim}
 		$this->ModelName = "{$singular}";
 	{rdelim}
 	
-	// base functions suggested to override
-	// function ListAll() {ldelim}{rdelim}
+	/**
+	 * List by default displays View{$singular}ListAll.  It is suggested
+	 * to override this function
+	 * @inheritdocs
+	 */
+	function ListAll() 
+	{ldelim}
+		parent::ListAll();
+	{rdelim}
 
+	/**
+	 * ListPage renders a DataPage as XML.  This is used as a data service
+	 * for the AJAX grid used by ListAll
+	 */
 	public function ListPage()
 	{ldelim}
 		// these parameters are supplied by extjs grid pagingtoolbar
@@ -46,24 +63,40 @@ class {$singular}Controller extends Controller
 		$this->RenderXML($datapage);
 	{rdelim}
 	
+	/**
+	 * Render View{$signular}Display to display a read-only view of the specified record.
+	 * This method expects form input to contain a value for {$table->GetPrimaryKeyName()|studlycaps}
+	 */
 	public function Display()
 	{ldelim}
 		$this->_AssignModel(RequestUtil::Get("{$table->GetPrimaryKeyName()|studlycaps}"));
 		$this->Render("{$singular}Display");
 	{rdelim}
 
+	/**
+	 * Render View{$signular}Edit to display an editable form for the specified record.
+	 * A query value is expected for {$table->GetPrimaryKeyName()|studlycaps}.
+	 */
 	function Edit()
 	{ldelim}
 		$this->_AssignModel(RequestUtil::Get("{$table->GetPrimaryKeyName()|studlycaps}"));
 		$this->Render("{$singular}Edit");
 	{rdelim}
 	
+	/**
+	 * Render View{$signular}Edit to display an editable form for a new record.
+	 */
 	function Create()
 	{ldelim}
 		$this->_AssignModel();
 		$this->Render("{$singular}Edit");
 	{rdelim}
-	
+
+	/**
+	 * Save the record that was submitted by the user via an Edit or Create form.
+	 * If a value is provided for {$table->GetPrimaryKeyName()|studlycaps} then it 
+	 * expected that this is an edit, otherwise it is expect that this is an insert.
+	 */
 	function Save()
 	{ldelim}
 		$pk = RequestUtil::Get("{$table->GetPrimaryKeyName()|studlycaps}");
@@ -101,6 +134,10 @@ class {$singular}Controller extends Controller
 		{rdelim}
 	{rdelim}
 
+	/**
+	 * Delete the {$singular} object from the datastore.  This method
+	 * expects a form parameter called {$table->GetPrimaryKeyName()|studlycaps}
+	 */
 	function Delete()
 	{ldelim}
 		$pk = RequestUtil::Get("{$table->GetPrimaryKeyName()|studlycaps}");
@@ -109,6 +146,13 @@ class {$singular}Controller extends Controller
 		$this->Redirect("{$singular}.ListAll","{$singular} was deleted");
 	{rdelim}
 
+	/**
+	 * Retrieves a {$singular} object from the datastore and assigns it to the view.
+	 * Optionally, all child objects are assigned to the view as well
+	 * 
+	 * @param mixed primary key of the object
+	 * @param bool set to true and _AssignChildren will be called
+	 */
 	private function _AssignModel($pk = null, $assign_children = true)
 	{ldelim}
 		${$singular|lower} = $pk ? $this->Phreezer->Get("{$singular}",$pk) : New {$singular}($this->Phreezer);
@@ -121,6 +165,14 @@ class {$singular}Controller extends Controller
 	{rdelim}
 
 	
+	/**
+	 * LoadFromForm creates a new instance of a {$singular} object and populates it with
+	 * form data submitted by the user.  The base controller will utilize this function
+	 * when validating input via AJAX.
+	 * 
+	 * @inheritdocs
+	 * @return {$singular}
+	 */
 	protected function LoadFromForm($pk = null)
 	{ldelim}
 {if $table->PrimaryKeyIsAutoIncrement()}
@@ -148,23 +200,30 @@ class {$singular}Controller extends Controller
 		return ${$singular|lower};
 	{rdelim}
 	
+	/**
+	 * _AssignChildren assigns all necessary dependency records to the view in order to correctly display
+	 * an edit form.  For example, any drop-down lists that need to be populated as well
+	 * as child objects are retrieved from the database and assigned to the view.
+	 * 
+	 * TODO: remove any uneeded assignments here
+	 * TODO: Change the label arrays "label" property to something friendly for displaying to the user
+	 * TODO: a sanity limit of 25 is used on child records
+	 * 
+	 */
 	private function _AssignChildren(${$singular|lower})
 	{ldelim}
+		// label arrays are used for drop-downs:
+
 {foreach from=$table->Constraints item=constraint}
-		// get possible values for {$constraint->KeyColumnNoPrefix|studlycaps} and assign as a value pair for html_options
-		${$constraint->KeyColumnNoPrefix|lower}s = array();
-		$collection = $this->Phreezer->Query("{$constraint->ReferenceTableName|studlycaps}");
-		while (${$constraint->KeyColumnNoPrefix|lower} = $collection->Next())
-		{ldelim}
-			${$constraint->KeyColumnNoPrefix|lower}s[${$constraint->KeyColumnNoPrefix|lower}->{$constraint->ReferenceTable->GetPrimaryKeyName()|studlycaps}] = ${$constraint->KeyColumnNoPrefix|lower}->{$constraint->ReferenceTable->GetDescriptorName()|studlycaps}; // TODO: verify this is the right field
-		{rdelim}
+		${$constraint->KeyColumnNoPrefix|lower}s = $this->Phreezer->Query("{$constraint->ReferenceTableName|studlycaps}")->GetLabelArray('{$constraint->ReferenceTable->GetPrimaryKeyName()|studlycaps}','{$constraint->ReferenceTable->GetDescriptorName()|studlycaps}');
 		$this->Assign("{$constraint->KeyColumnNoPrefix|studlycaps}Pairs",${$constraint->KeyColumnNoPrefix|lower}s);
 
 {/foreach}
+		// get child records and assign as DataPage for grid display
+		// if any of these throw an error, check that your foreign key name is not the same as the table name
+
 {foreach from=$table->Sets item=set}
-		// get {$set->GetterName|studlycaps} child records and assign as DataPage for grid display
-		// if this code throws an error, check that your foreign key name is not the same as the table name
-		${$set->GetterName|studlycaps} = ${$singular|lower}->Get{$set->GetterName|studlycaps}()->GetDataPage(1,9999); // TODO: update if pagination is necessary
+		${$set->GetterName|studlycaps} = ${$singular|lower}->Get{$set->GetterName|studlycaps}()->GetDataPage(1,25);
 		$this->Assign("{$set->GetterName|studlycaps}DataPage",${$set->GetterName|studlycaps});
 
 {/foreach}

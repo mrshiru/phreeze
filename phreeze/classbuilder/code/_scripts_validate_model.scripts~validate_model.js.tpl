@@ -1,141 +1,202 @@
-/**
+{literal}/**
  * ajax validation for a form that uses the phreeze framework
  *
- * @version 1.0
- * @requires YAHOO.util for AJAX connection
+ * @version 2.2
+ * @requires Ext for AJAX connection
  * @requires Ext.util.JSON, Ext.Element and Ext.Fx 
- * @requires shared/js/verysimple/validate.js
+ * @requires scripts/verysimple/validate.js
  */
-
 
 var frm_ref;
 var validate_in_progress = false;
 
 
 /**
- *
+ * server-side validation of the form using the controller for the given model
+ * and, on success, submits the form.  on fail, displays the errors received
+ * from the server.
+ * 
+ * @param Form reference to form containing user input used to update model
+ * @param string name of model to validate
+ * @param saveInline bool true to immediately save the model after validating
+ * @param Function reference to function to call on server response.  if provided, the form will not be automatically submitted
+ * @param Function reference to function to call if validation fails
  */
-function validateModel(frm, model)
-{ldelim}
+function validateModel(frm, model, saveInline, callback, failureCallback)
+{
     
     if (validate_in_progress)
-    {ldelim}
+    {
         alert('Form validation is in progress.  Please wait one moment...');
         return false;
-    {rdelim}
+    }
     
 	// TODO: replace this with Ext DomQuery.
 	var validators = getElementsByClass('validator');
 	for (i=0;i<validators.length;i++)
-	{ldelim}
+	{
 		validators[i].style.display='none';
-	{rdelim}
+	}
    
 	frm_ref = frm;
 	
 	var url = 'index.php?action='+model+'.ValidateInput';
-	var pars = "";
-	var delim = "";
+	var pars = Array();
 	
     for (var i = 0; i < frm.elements.length; i++)
-    {ldelim}
+    {
 		if (frm.elements[i].name != '' && frm.elements[i].name != 'action')
-		{ldelim}
+		{
 			var elem = frm.elements[i];
 
-			if (elem.type == "hidden" || elem.type == "text" || elem.type == "password" || elem.type == "textarea")
-			{ldelim}
-				pars += delim  + elem.name + '=' + escape(getFieldValue(elem));
-				delim = "&";
-			{rdelim} 
+			if (elem.type == "hidden"  || elem.type == "text" || elem.type == "password" || elem.type == "textarea")
+			{
+				pars[ escape(elem.name.replace(/ /g,'_') ) ] = getFieldValue(elem);
+			} 
+			else if (elem.type == "checkbox" && elem.checked == true)
+			{
+				pars[ escape(elem.name.replace(/ /g,'_') ) ] = elem.value;				
+			}
 			else if (elem.type == "select-one" || elem.type == "radio")
-			{ldelim}
-				pars += delim  + elem.name + '=' + escape(getFieldValue(elem));
-				delim = "&";
-			{rdelim}
-        {rdelim}
-    {rdelim}
+			{
+				pars[ escape(elem.name.replace(/ /g,'_') ) ] = getFieldValue(elem);				
+			}
+        }
+    }
+    
+    if (saveInline)
+    {
+		pars['SaveInline'] =true;
+    }
 
-    var validate_callback = 
-    {ldelim} 
-	    success: processServerResponse, 
-	    failure: function(o) {ldelim}alert('Unable to validate via AJAX'){rdelim}, 
-	    argument: [] 
-    {rdelim} 
-
-    YAHOO.util.Connect.asyncRequest('POST', url, validate_callback, pars);
-
+	Ext.Ajax.request({
+		url: url,
+		success: processServerResponse,
+		failure: failureCallback ? failureCallback : function(o) {alert('Unable to connect AJAX service: ' + o.statusText)},
+		params: pars,
+		argument: {inline: saveInline, callbackFunction: callback, failCallbackFunction: failureCallback}
+	});
+	
 	return false;
-{rdelim}
+}
+
+/**
+ * Attempt to parse the error message when the server returns HTML instead of JSON
+ * @param string html
+ * @return string
+ */
+function getErrorMessage(html)
+{
+	var ertxt = '';
+	var arr = html.split('class="warning">');
+	if (arr.length > 1)
+	{
+		var arr2 = arr[1].split('</');
+		errtxt = 'The server returned an error: ' + arr2[0];
+	}
+	else
+	{
+		errtxt = 'Oh Snap! The server sent back an unknown error.';
+	}
+	
+	return errtxt;
+}
 
 /**
  * Processes the validation response from the server, which should be JSON code
  */
 function processServerResponse(response)
-{ldelim}
-
+{
 	var result;
+	var inline = response.argument.inline;
+	var callbackFunction = response.argument.callbackFunction;
+	var failCallbackFunction = response.argument.failCallbackFunction;
 	
 	try
-	{ldelim}
+	{
 		result = Ext.util.JSON.decode(response.responseText);
-	{rdelim}
+	}
 	catch(err)
-	{ldelim}
+	{
 		validate_in_progress = false;
-		if ( confirm('Unable to validate.  Do you want to continue anyway?') ) frm_ref.submit();
-		return false;
-	{rdelim}
 		
+		err_message = getErrorMessage(response.responseText);
+
+	    if (failCallbackFunction)
+	    {
+			failCallbackFunction(result, frm_ref);
+	    }
+	    else
+	    {
+			if ( confirm(err_message + '  Unable to validate.  Do you want to try to submit the form anyway?') ) frm_ref.submit();
+	    }
+
+		return false;
+	}
+	
+	
 	if (result.Success)
-	{ldelim}
-	    // submit the form
-	    frm_ref.submit();
-	{rdelim}
+	{
+	    if (callbackFunction)
+	    {
+			callbackFunction(result, frm_ref);
+	    }
+	    else
+	    {
+			// no callback - submit the form.  (because this is asycronous returning true doens't work.)
+			frm_ref.submit();
+	    }
+	}
 	else
-	{ldelim}
+	{
 	    for (var fldname in result.Errors)
-	    {ldelim}
+	    {
 	        if (fldname != 'toJSONString')
-	        {ldelim}
+	        {
 
 			    var divref = Ext.get(fldname + '_Error');
 
 			    if (divref)
-			    {ldelim}
+			    {
 			        // divref.style.display = 'inline';
 			        divref.update("" + result.Errors[fldname] + "");
 			        divref.setStyle('display','inline');
 			        divref.highlight();
-			    {rdelim}
+			    }
 			    else
-			    {ldelim}
+			    {
 			        alert(fldname + ": " + result.Errors[fldname]);
-			    {rdelim}
-	        {rdelim}
-	    {rdelim}
+			    }
+	        }
+	    }
 	    
-		    var divref = Ext.get('Validator_Error');
-		    if (divref)
-		    {ldelim}
-		        divref.update("Errors were found on this form.  Please correct them and submit again.");
-			    divref.setStyle('display','block');
-		        divref.slideIn();
-		    {rdelim}
-		    else
-		    {ldelim}
-		        alert("Errors were found on this form.  Please correct them and submit again.");
-		    {rdelim}
+	    var divref = Ext.get('Validator_Error');
+	    if (divref)
+	    {
+	        divref.update("Errors were found on this form.  Please correct them and submit again.");
+		    divref.setStyle('display','block');
+	        divref.slideIn();
+	    }
+	    else
+	    {
+	        alert("Errors were found on this form.  Please correct them and submit again.");
+	    }
 	    
 	    validate_in_progress = false;
-	{rdelim}
-{rdelim}
+	    
+	    // if a hander was specified, make sure it gets called
+	    if (callbackFunction)
+	    {
+			callbackFunction(result, frm_ref);
+	    }
+	}
+}
 
 /**
  * getElementByClass function from jquery.
  * TODO: replace this with functionality already present in Ext
  */
-function getElementsByClass(searchClass,node,tag) {ldelim}
+function getElementsByClass(searchClass,node,tag) {
 	var classElements = new Array();
 	if ( node == null )
 		node = document;
@@ -144,11 +205,11 @@ function getElementsByClass(searchClass,node,tag) {ldelim}
 	var els = node.getElementsByTagName(tag);
 	var elsLen = els.length;
 	var pattern = new RegExp("(^|\\s)"+searchClass+"(\\s|$)");
-	for (i = 0, j = 0; i < elsLen; i++) {ldelim}
-		if ( pattern.test(els[i].className) ) {ldelim}
+	for (i = 0, j = 0; i < elsLen; i++) {
+		if ( pattern.test(els[i].className) ) {
 			classElements[j] = els[i];
 			j++;
-		{rdelim}
-	{rdelim}
+		}
+	}
 	return classElements;
-{rdelim}
+}{/literal}

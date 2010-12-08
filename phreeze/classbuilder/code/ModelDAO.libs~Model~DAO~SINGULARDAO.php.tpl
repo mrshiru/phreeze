@@ -19,16 +19,27 @@ require_once("{$singular}Map.php");
  */
 class {$singular}DAO extends Phreezable
 {ldelim}
-{foreach from=$table->Columns item=column}	public ${$column->NameWithoutPrefix|studlycaps};
+{foreach from=$table->Columns item=column}	/** @var {$column->GetPhpType()} */
+	public ${$column->NameWithoutPrefix|studlycaps};
+
 {/foreach}
 
-{foreach from=$table->Sets item=set}	public function Get{$set->GetterName|studlycaps}($criteria = null)
+{foreach from=$table->Sets item=set}	/**
+	 * Returns a dataset of {$set->SetTableName|studlycaps} objects with matching {$set->SetKeyColumnNoPrefix|studlycaps}
+	 * @param Criteria
+	 * @return DataSet
+	 */
+	public function Get{$set->GetterName|studlycaps}($criteria = null)
 	{ldelim}
 		return $this->_phreezer->GetOneToMany($this, "{$set->Name}", $criteria);
 	{rdelim}
 
 {/foreach}
-{foreach from=$table->Constraints item=constraint}	public function Get{$constraint->GetterName|studlycaps}()
+{foreach from=$table->Constraints item=constraint}	/**
+	 * Returns the foreign object based on the value of {$constraint->KeyColumnNoPrefix|studlycaps}
+	 * @return {$constraint->ReferenceTableName|studlycaps}
+	 */
+	public function Get{$constraint->GetterName|studlycaps}()
 	{ldelim}
 		return $this->_phreezer->GetManyToOne($this, "{$constraint->Name}");
 	{rdelim}
