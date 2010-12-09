@@ -132,11 +132,10 @@ class BrowserDevice
         {
             $c = __CLASS__;
             self::$instance = new $c;
+            self::$instance->Detect();
         }
 
-        $browser = self::$instance;
-        $browser->Detect();
-		return $browser;
+		return self::$instance;
     }
 	
 }
