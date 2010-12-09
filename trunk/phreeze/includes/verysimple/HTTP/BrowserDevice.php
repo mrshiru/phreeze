@@ -27,7 +27,13 @@ class BrowserDevice
 	 * patters to search for devices
 	 * @var Array
 	 */
-	static $DESKTOP_DEVICE_PATTERNS = Array('AdobeAIR'=>'AdobeAIR');
+	static $DESKTOP_DEVICE_PATTERNS = Array(
+		'AdobeAIR'=>'AdobeAIR',
+		'chrome'=>'google',
+		'firefox'=>'mozilla',
+		'MSIE'=>'microsoft',
+		'safari'=>'apple'
+	);
 	
 	/**
 	 * patters to search for devices
@@ -53,6 +59,7 @@ class BrowserDevice
     public $Vendor;
 	public $SupportsJS;
 	public $SupportsCSS;
+	public $IsNativeDevice;
    
     /**
      * Private constructor enforces the Singleton pattern
