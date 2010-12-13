@@ -29,7 +29,7 @@ class TextImageWriter
 	 */
 	static function Write($message, $width = 250, $height = 150, $backgroundColor = array(255,255,255), $fontColor = array(0,0,0))
 	{
-		$im = self::GetErrorImage($message);
+		$im = self::GetErrorImage($message, $width, $height, $backgroundColor, $fontColor);
 		header('Content-type: image/png');
 		imagepng($im);
 		imagedestroy($im);
