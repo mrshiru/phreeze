@@ -12,14 +12,33 @@
  */
 class ExceptionFormatter
 {
+	
 	/**
-	* Formats the debug_backtrace array into a printable string
-	*
-	* @access public
-	* @param array  debug_backtrace array
-	* @param string $join the string used to join the array
-	* @return string
-	*/
+	 * This is a utility function for tracing errors.  It will return a string that
+	 * displys the current execution stack
+	 * 
+	 * @param string $msg a debugging message to include
+	 * @param int $depth how far to go back in the stack (default = unlimited)
+	 * @param string $join the delimiter between lines
+	 * @param bool $show_lines true to include line numbers
+	 */
+	static function GetTraceAsString($msg = "DEBUG", $depth = 0, $join = " :: ", $show_lines = true)
+	{
+		$error = new Exception($msg);
+		return self::FormatTrace($error->getTrace(), $depth, $join, $show_lines);
+	}
+	
+	/**
+	 * Formats the debug_backtrace array into a printable string.  
+	 * You can create a debug traceback using $exception->getTrace() 
+	 * or using the php debug_backtrace() function
+	 *
+	 * @access public
+	 * @param array debug_backtrace.  For example: debug_backtrace() -or- $exception->getTrace()
+	 * @param int $depth how far to go back in the stack (default = unlimited)
+	 * @param string $join the delimiter between lines
+	 * @param bool $show_lines true to include line numbers
+	 */
 	static function FormatTrace($tb, $depth = 0, $join = " :: ", $show_lines = true)
 	{
 		$msg = "";
@@ -42,7 +61,7 @@ class ExceptionFormatter
 			
 			if ($depth >= $x)
 			{ 
-				$msg .= "$calling_function" . ($show_lines ? " ($s_file Line $s_line)" : "");
+				$msg .= $delim . "$calling_function" . ($show_lines ? " ($s_file Line $s_line)" : "");
 				$delim = $join;
 			}
 
