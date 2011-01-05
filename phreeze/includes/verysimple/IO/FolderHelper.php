@@ -44,8 +44,10 @@ class FolderHelper
 		{
 			if (is_file($this->Path.$fname))
 			{
-				// TODO: implement patter search as regex
-				$files[] = new FileHelper($this->Path.$fname);
+				if ($pattern == "" || preg_match($pattern,$fname) > 0)
+				{
+					$files[] = new FileHelper($this->Path.$fname);
+				}
 			}
 		}
 		
