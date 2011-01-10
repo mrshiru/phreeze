@@ -30,7 +30,14 @@ abstract class Controller
 {
 	protected $Phreezer;
 	protected $RenderEngine;
+	
+	/**
+	 * @var string ModelName is used by the base Controller class for certain functions in which
+	 * require knowledge of what Model is being used.  For example, when validating user input.
+	 * This may be defined in Init() if any of thes base Controller features will be used.
+	 */
 	protected $ModelName;
+	
 	protected $Context;
 	protected $UrlWriter;
 	
@@ -86,17 +93,13 @@ abstract class Controller
 		
 		$this->Init();
 		
-		if (!$this->ModelName)
-		{
-			throw new Exception(get_class($this) . " did not set ModelName during Init()");
-		}
 	}
 	
 	/**
-	 * Init is called by the base constructor.  You must set the property
-	 * $this->ModelName to the name of the primary model that this controller
-	 * manages.  If this controller doesn't manage any specific model, you 
-	 * may set ModelName to any dummy value.
+	 * Init is called by the base constructor immediately after construction.  
+	 * This method must be implemented and provided an oportunity to 
+	 * set any class-wide variables such as ModelName, implement 
+	 * authentication for this Controller or any other class-wide initialization
 	 */
 	abstract protected function Init();
 
@@ -188,6 +191,11 @@ abstract class Controller
 	 */
 	public function ListAll()
 	{
+		if (!$this->ModelName)
+		{
+			throw new Exception("ModelName must be defined in " . get_class($this) . "::ListAll");
+		}
+				
 		// capture output instead of rendering if specified
 		if ($this->CaptureOutputMode)
 		{
@@ -210,6 +218,11 @@ abstract class Controller
 	 */
 	protected function _ListAll(Criteria $criteria, $current_page, $limit)
 	{
+		if (!$this->ModelName)
+		{
+			throw new Exception("ModelName must be defined in " . get_class($this) . "::_ListAll.");
+		}
+		
 		$page = $this->Phreezer->Query($this->ModelName,$criteria)->GetDataPage($current_page,$limit);
 		$this->RenderEngine->assign($this->ModelName . "DataPage", $page);
 		$this->RenderEngine->display("View" . $this->ModelName .  "ListAll.tpl");
@@ -421,6 +434,11 @@ abstract class Controller
 	 */
 	protected function GetColumns()
 	{
+		if (!$this->ModelName)
+		{
+			throw new Exception("ModelName must be defined in " . get_class($this) . "::GetColumns");
+		}
+		
 		$counter = 0;
 		$props = array();
 		foreach (get_class_vars($this->ModelName)as $var => $val)
