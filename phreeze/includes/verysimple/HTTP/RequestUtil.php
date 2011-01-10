@@ -91,9 +91,10 @@ class RequestUtil
 	/** Returns the full URL of the PHP page that is currently executing
 	 *
 	 * @param bool $include_querystring (optional) Specify true/false to include querystring. Default is true.
+	 * @param bool $append_post_vars true to append post variables to the querystring as GET parameters Default is false
 	 * @return string URL
 	 */
-	public static function GetCurrentURL($include_querystring = true)
+	public static function GetCurrentURL($include_querystring = true, $append_post_vars = false)
 	{
 		$server_protocol = isset($_SERVER["SERVER_PROTOCOL"]) ? $_SERVER["SERVER_PROTOCOL"] : "";
 		$http_host = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : "";
@@ -116,7 +117,7 @@ class RequestUtil
 		{
 			// REQUEST_URI is more accurate but isn't always defined on windows
 			// in particular for the format http://www.domain.com/?var=val
-			$pq = explode("?",$_SERVER['REQUEST_URI']);
+			$pq = explode("?",$_SERVER['REQUEST_URI'],2);
 			$path = $pq[0];
 			$qs = isset($pq[1]) ? "?" . $pq[1] : "";
 		}
@@ -125,6 +126,13 @@ class RequestUtil
 			// otherwise use SCRIPT_NAME & QUERY_STRING
 			$path = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : "";
 			$qs = isset($_SERVER['QUERY_STRING']) ? "?" . $_SERVER['QUERY_STRING'] : "";
+		}
+		
+		// if we also want the post variables appended we can get them as a querystring from php://input
+		if ($append_post_vars && isset($_POST))
+		{
+			$post = file_get_contents("php://input");
+			$qs .= $qs ? "&$post" : "?$post";
 		}
 		
 		$url = strtolower($protocol) . "://" . $domain . $port . $path . ($include_querystring ? $qs : "");
