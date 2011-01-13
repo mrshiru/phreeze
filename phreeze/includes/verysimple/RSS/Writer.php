@@ -14,7 +14,7 @@ require_once("verysimple/XML/XMLUtil.php");
  *     $rss_writer = new RSS_Writer('Channel','www.dev.nul','Feed Title');
  *     $rss_writer->setLanguage('us-en');
  *     $rss_writer->addCategory("Category Name");
- *     $rss_writer->addItem("Title","http://...",'Category Name','Author',date(DATE_RFC822,strtotime('2008-01-04: 01:01:01')));
+ *     $rss_writer->addItem("Title","http://...",'Category Name','Author',date(DATE_RSS,strtotime('2008-01-04: 01:01:01')));
  *     $rss_writer->writeOut();
  */
 class RSS_Writer
@@ -48,7 +48,7 @@ class RSS_Writer
 		$this->title = $this->elementCreate($this->channel,'title', $channel_title);
 		$this->link = $this->elementCreate($this->channel,'link',$channel_link);
 		$this->description = $this->elementCreate($this->channel,'description',$channel_description);
-		$this->elementCreate($this->channel, 'lastBuildDate',date(DATE_RFC822),false,false);
+		$this->elementCreate($this->channel, 'lastBuildDate',date(DATE_RSS),false,false);
 		$this->elementCreate($this->channel, 'generator',$generator,false,false);
 		$this->elementCreate($this->channel, 'docs', $docs,false,false);
 		$this->rss_simplexml = simplexml_import_dom($this->rss_dom);
@@ -133,15 +133,16 @@ class RSS_Writer
 		$this->elementCreate($image,'description',$description);
 	}
 	
-	public function addItem($title,$link,$description,$author,$date,$source='')
+	public function addItem($title,$link,$description,$author,$date,$source='', $guid='')
 	{
 		$this->item_counter++;
+		if (!$guid) $guid = 'item'.$this->item_counter;
 		$item_element = $this->elementCreate($this->channel,'item','',false,true);
 		$this->elementCreate($item_element, 'title', $title);
 		$this->elementCreate($item_element, 'link', $link);
 		$this->elementCreate($item_element, 'description',$description);
 		$this->elementCreate($item_element, 'author', $author);
-		$this->elementCreate($item_element, 'guid', 'item' . $this->item_counter);
+		$this->elementCreate($item_element, 'guid', $guid);
 		$this->elementCreate($item_element, 'pubDate', $date);
 		if ( $source )
 		{
