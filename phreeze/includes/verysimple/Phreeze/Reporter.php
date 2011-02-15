@@ -129,7 +129,10 @@ abstract class Reporter
     * @param      Criteria $criteria
     * @return     string
     */
-    abstract static function GetCustomQuery($criteria);
+    static function GetCustomQuery($criteria)
+    {
+    	return "";
+    }
 	
 	/**
     * Returns this object as an associative array with properties as keys and

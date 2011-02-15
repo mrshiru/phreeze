@@ -230,7 +230,7 @@ class DataSet implements Iterator
 			$this->UnableToCache = false;
 			$arr = Array();
 			
-			while ($object =& $this->Next())
+			while ($object = $this->Next())
 			{
 				$arr[] = $object;
 			}
@@ -281,9 +281,9 @@ class DataSet implements Iterator
 			$arr = Array();
 			$this->UnableToCache = false;
 			
-			while ($object =& $this->Next())
+			while ($object = $this->Next())
 			{
-				$arr[$object->$val_prop] =& $object->$label_prop;
+				$arr[$object->$val_prop] = $object->$label_prop;
 			}
 
 			$this->_phreezer->SetValueCache($cachekey, $arr, $this->_cache_timeout);
