@@ -1,4 +1,4 @@
-#How to Add a Foreign Table Column to a Grid
+#summary How to Add a Foreign Table Column to a Grid
 
 = Introduction =
 
