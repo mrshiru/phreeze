@@ -25,6 +25,8 @@ define("FM_TYPE_TIMESTAMP",17);
 define("FM_TYPE_ENUM",18);
 define("FM_TYPE_TINYTEXT",19);
 
+define("FM_TYPE_YEAR",21);
+
 define("FM_CALCULATION",99); // not to be used during save
 
 /**
