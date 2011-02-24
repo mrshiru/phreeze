@@ -36,16 +36,24 @@ class UrlWriter
 	 * @param string $method
 	 * @param string $params in the format param1=val1&param2=val2
 	 * @param bool $strip_api set to true to strip virtual part of the url in a rest call
+	 * @param string $delim the querystring variable delimiter (& or &amp; for generating valid html)
 	 * @return string URL
 	 */
-	public function Get($controller,$method,$params = "",$strip_api = true)
+	public function Get($controller, $method, $params = "", $strip_api = true, $delim="&")
 	{
+		$format = str_replace("{delim}",$delim,$this->_format);
+		
 		$qs = "";
+		$d = "";
 		if (is_array($params))
 		{
 			foreach ($params as $key => $val)
 			{
-				$qs .= "&amp;" . $key . "=" . urlencode($val);
+				if (strlen($val))
+				{
+					$qs .= $d . $key . "=" . urlencode($val);
+					$d = $delim;
+				}
 			}
 		}
 		else
@@ -53,11 +61,12 @@ class UrlWriter
 			$qs = $params;
 		}
 		
-		$url = sprintf($this->_format,$controller,$method,$qs);
+		$url = sprintf($format,$controller,$method,$qs);
 		
-		$url = (substr($url,-1,1) == "&" || substr($url,-1,1) == "?") ? substr($url,0,strlen($url)-1) : $url;
-
-		//
+		// strip off trailing delimiters from the url
+		$url = (substr($url,-5) == "&amp;") ? substr($url,0,strlen($url)-5) : $url;
+		$url = (substr($url,-1) == "&" || substr($url,-1) == "?") ? substr($url,0,strlen($url)-1) : $url;
+		
 		$api_check = explode("/api/",RequestUtil::GetCurrentUrl());
 		if ($strip_api && count($api_check) > 1)
 		{
