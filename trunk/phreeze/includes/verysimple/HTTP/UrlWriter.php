@@ -45,7 +45,7 @@ class UrlWriter
 		{
 			foreach ($params as $key => $val)
 			{
-				$qs .= "&" . $key . "=" . urlencode($val);
+				$qs .= "&amp;" . $key . "=" . urlencode($val);
 			}
 		}
 		else
