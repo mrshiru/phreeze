@@ -26,7 +26,7 @@ class HttpRequest
 	 * @param $method
 	 * @param $params
 	 */
-	function RestRequest($endpoint, $method, $params = Array())
+	static function RestRequest($endpoint, $method, $params = Array())
 	{
 		$qs = HttpRequest::ArrayToQueryString($params);
 		$ch = null;
@@ -81,7 +81,7 @@ class HttpRequest
 	* @param bool true to require verification of SSL cert
 	* @return string
 	*/
-	function Post($url, $data, $verify_cert = false)
+	static function Post($url, $data, $verify_cert = false)
 	{
 		if (function_exists("curl_init"))
 		{
@@ -101,7 +101,7 @@ class HttpRequest
 	* @param bool true to require verification of SSL cert
 	* @return string
 	*/
-	function Get($url, $data = "", $verify_cert = false)
+	static function Get($url, $data = "", $verify_cert = false)
 	{
 		if (function_exists("curl_init"))
 		{
@@ -121,7 +121,7 @@ class HttpRequest
 	 * @param bool true to require verification of SSL cert
 	 * @return string
 	 */
-	function FileGet($url, $data = "", $verify_cert = false)
+	static function FileGet($url, $data = "", $verify_cert = false)
 	{
 		$qs = HttpRequest::ArrayToQueryString($data);
 		$full_url = $url . ($qs ? "?" . $qs : "");
@@ -136,7 +136,7 @@ class HttpRequest
 	 * @param bool true to require verification of SSL cert
 	 * @return string
 	 */
-	function FilePost($url, $data = "", $verify_cert = false) 
+	static function FilePost($url, $data = "", $verify_cert = false) 
 	{
 		$qs = HttpRequest::ArrayToQueryString($data);
 		$url = $url . ($qs ? "?" . $qs : "");
@@ -185,7 +185,7 @@ class HttpRequest
 	 * @param bool true to require verification of SSL cert
 	 * @return string
 	 */
-	function CurlGet($url, $data = "", $verify_cert = false) 
+	static function CurlGet($url, $data = "", $verify_cert = false) 
 	{
 		return HttpRequest::CurlRequest("GET",$url, $data, $verify_cert);
 	}
@@ -198,7 +198,7 @@ class HttpRequest
 	 * @param bool true to require verification of SSL cert
 	 * @return string
 	 */
-	function CurlPost($url, $data, $verify_cert = false) 
+	static function CurlPost($url, $data, $verify_cert = false) 
 	{
 		return HttpRequest::CurlRequest("POST",$url, $data, $verify_cert);
 	}
@@ -212,7 +212,7 @@ class HttpRequest
 	 * @param bool true to require verification of SSL cert
 	 * @return string
 	 */
-	function CurlRequest($method, $url, $data, $verify_cert = false) 
+	static function CurlRequest($method, $url, $data, $verify_cert = false) 
 	{
 		$qs = HttpRequest::ArrayToQueryString($data);
 
@@ -256,7 +256,7 @@ class HttpRequest
 	 * @param array key/value pairs
 	 * @return string
 	 */
-	function ArrayToQueryString($arr)
+	static function ArrayToQueryString($arr)
 	{
 		$qs = $arr;
 		
