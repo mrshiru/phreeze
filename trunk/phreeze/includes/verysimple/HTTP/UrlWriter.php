@@ -49,11 +49,9 @@ class UrlWriter
 		{
 			foreach ($params as $key => $val)
 			{
-				if (strlen($val))
-				{
-					$qs .= $d . $key . "=" . urlencode($val);
-					$d = $delim;
-				}
+				// if no val, the omit the equal sign (this might be used in rest-type requests)
+				$qs .= $d . $key . (strlen($val) ? ("=" . urlencode($val)) : "");
+				$d = $delim;
 			}
 		}
 		else
