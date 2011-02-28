@@ -41,11 +41,19 @@ class PayPal extends PaymentProcessor
 		$resp->OrderNumber = $req->OrderNumber;
 
 		// before bothering with contacting the processor, check for some basic fields
-		if ($req->CCNumber == '' || $req->CustomerFirstName = '')
+		if ($req->CCNumber == '')
 		{
 			$resp->IsSuccess = false;
 			$resp->ResponseCode = "0";
 			$resp->ResponseMessage = "No Credit Card Number Provided";
+			return $resp;
+		}
+
+		if ($req->CustomerFirstName == '')
+		{
+			$resp->IsSuccess = false;
+			$resp->ResponseCode = "0";
+			$resp->ResponseMessage = "No Cardholder Name Provided";
 			return $resp;
 		}
 		
