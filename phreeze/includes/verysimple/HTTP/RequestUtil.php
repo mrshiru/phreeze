@@ -47,6 +47,14 @@ class RequestUtil
 		return "0.0.0.0";
 	}
 	
+	/**
+	 * Returns true if the current session is running in SSL
+	 */
+	static function IsSSL()
+	{
+		return isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != "" && $_SERVER['HTTPS'] != "off";
+	}
+	
 	/** In the case of URL re-writing, sometimes querystrings appended to a URL can get
 	 * lost.  This function examines the original request URI and updates $_REQUEST
 	 * superglobal to ensure that it contains all of values in the qeurtystring
