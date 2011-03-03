@@ -24,7 +24,7 @@ require_once("Criteria.php");
  * @author     VerySimple Inc.
  * @copyright  1997-2011 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    2.5
+ * @version    3.0
  */
 abstract class Controller
 {
@@ -341,6 +341,55 @@ abstract class Controller
 			print $xml;
 		}
 		
+	}
+
+	/**
+	 * Render an array of IRSSFeedItem objects as an RSS feed
+	 * @param array $feedItems array of IRSSFeedItem objects
+	 * @param string $feedTitle
+	 * @param string $feedDescription
+	 */
+	protected function RenderRSS(Array $feedItems, $feedTitle = "RSS Feed", $feedDescription = "RSS Feed")
+	{
+		require_once('verysimple/RSS/Writer.php');
+		require_once('verysimple/RSS/IRSSFeedItem.php');
+
+		$baseUrl = RequestUtil::GetBaseURL();
+		$rssWriter = new RSS_Writer($feedTitle,$baseUrl,$feedDescription);
+		$rssWriter->setLanguage('us-en');
+		$rssWriter->addCategory("Items");
+		
+		if (count($feedItems))
+		{
+			$count = 0;
+			foreach ($feedItems as $item)
+			{
+				$count++;
+				
+				if ($item instanceof IRSSFeedItem)
+				{
+					$rssWriter->addItem(
+						$item->GetRSSTitle(), 						// title
+						$item->GetRSSLink($baseUrl), 				// link
+						$item->GetRSSDescription(), 				// description
+						$item->GetRSSAuthor(), 						// author
+						date(DATE_RSS, $item->GetRSSPublishDate()), // date
+						null, 										// source
+						$item->GetRSSGUID() 						// guid
+					);
+				}
+				else
+				{
+					$rssWriter->addItem("Item $count doesn't implment IRSSFeedItem","about:blank",'','Error',date(DATE_RSS) );
+				}
+			}
+		}
+		else
+		{
+			$rssWriter->addItem("No Items","about:blank",'','No Author',date(DATE_RSS) );
+		}
+		
+		$rssWriter->writeOut();
 	}
 	
 	/**
