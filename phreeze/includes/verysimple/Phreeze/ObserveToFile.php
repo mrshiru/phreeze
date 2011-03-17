@@ -19,6 +19,7 @@ class ObserveToFile implements IObserver
 	private $filepath;
 	private $eventtype;
 	private $fh;
+	private $fileIsOpen = false;
 	
 	public function ObserveToFile($filepath, $eventtype = null)
 	{
@@ -31,11 +32,13 @@ class ObserveToFile implements IObserver
 	public function __destruct()
 	{
 		@fclose($this->fh);
+		$this->fileIsOpen = false;
 	}
 	
 	function Init()
 	{
 		$this->fh = fopen($this->filepath,"a");
+		$this->fileIsOpen = true;
 		fwrite($this->fh,"DEBUG:\t". date("Y-m-d H:i:s:u") . "\t" . getmypid() . "\t########## ObserveToFile Initialized: " . RequestUtil::GetCurrentURL() . " ##########\r\n");
 	}
 	
@@ -54,7 +57,12 @@ class ObserveToFile implements IObserver
 		
 		if ($this->eventtype == null || $this->eventtype & $ltype)
 		{
-			
+			// this can occur if the file has been closed due to the php script terminating
+			if (!$this->fileIsOpen) 
+			{
+				$this->Init();
+				fwrite($this->fh, "WARN:\t". date("Y-m-d H:i:s:u") . "\tfilehandle was re-opened due to Observe being called after destruction\r\n");
+			}
 			
 			switch ($ltype)
 			{
@@ -75,6 +83,7 @@ class ObserveToFile implements IObserver
 					fwrite($this->fh, "WARN:\t$msg\r\n");
 					break;
 			}
+			
 		}
 	}
 	
