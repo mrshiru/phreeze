@@ -237,6 +237,29 @@ class Criteria
 						$this->_where .= ")";
 						$this->_where_delim = " and";
 					}
+					elseif (substr($prop,-6) == "_NotIn" && isset($val) && is_array($val))
+					{
+						// if the count is zero, technically the user is saying that they don't
+						// want any results.  the only way to do that is to make the criteria
+						// something that will for sure not match any existing records.  we cannot
+						// 100% guarantee this, though, we can choose a highly unlikely value
+						// that will never return a match under ordinary circumstances
+						if (count($val) == 0)
+						{
+							array_push($val,"$prop EMPTY PHREEZE CRITERIA ARRAY");
+						}
+						
+						$dbfield = $this->GetFieldFromProp(str_replace("_NotIn","",$prop));
+						$this->_where .= $this->_where_delim . " " . $dbfield ." not in (";
+						$indelim = "";
+						foreach ($val as $n)
+						{ 
+							$this->_where .= $indelim . "'" . $this->Escape($n) . "'";
+							$indelim = ",";
+						}
+						$this->_where .= ")";
+						$this->_where_delim = " and";
+					}
 				}
 			}
 
