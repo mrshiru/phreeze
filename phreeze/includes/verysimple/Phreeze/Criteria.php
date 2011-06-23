@@ -214,6 +214,12 @@ class Criteria
 						$this->_where .= $this->_where_delim . " (" . $dbfield ." & ". $this->Escape($val) . ")";
 						$this->_where_delim = " and";
 					}
+					elseif (substr($prop,-16) == "_LiteralFunction" && strlen($this->$prop))
+					{
+						$dbfield = $this->GetFieldFromProp(str_replace("_LiteralFunction","",$prop));
+						$this->_where .= $this->_where_delim . " (" . $dbfield ." ". $val . ")";
+						$this->_where_delim = " and";
+					}
 					elseif (substr($prop,-3) == "_In" && isset($val) && is_array($val))
 					{
 						// if the count is zero, technically the user is saying that they don't
