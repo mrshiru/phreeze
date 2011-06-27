@@ -19,6 +19,14 @@ class Context
 	public $GUID;
 	
 	/**
+	 * Constructor initializes the session
+	 */
+	public function Context()
+	{
+		@session_start();
+	}
+	
+	/**
 	 * Returns a persisted object or value
 	 *
 	 * @param var
