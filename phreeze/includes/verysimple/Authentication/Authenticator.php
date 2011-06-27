@@ -18,6 +18,16 @@ require_once("AuthenticationException.php");
 class Authenticator
 {
 	static $user = null;
+	static $is_initialized = false;
+	
+	public static function Init()
+	{
+		if (!self::$is_initialized)
+		{
+			self::$is_initialized = true;
+			@session_start();
+		}
+	}
 	
 	/**
 	 * Returns the currently authenticated user or null
@@ -27,14 +37,16 @@ class Authenticator
 	 */
 	public static function GetCurrentUser($guid = "CURRENT_USER")
 	{
-		if (Authenticator::$user == null)
+		if (self::$user == null)
 		{
+			self::Init();
+			
 			if (isset($_SESSION[$guid]))
 			{
-				Authenticator::$user = unserialize($_SESSION[$guid]);
+				self::$user = unserialize($_SESSION[$guid]);
 			}		
 		}
-		return Authenticator::$user;
+		return self::$user;
 	}
 
 	
@@ -48,8 +60,8 @@ class Authenticator
 	 */
 	public static function SetCurrentUser(IAuthenticatable $user, $guid = "CURRENT_USER")
 	{
-		Authenticator::UnsetAllSessionVars();
-		Authenticator::$user = $user;
+		self::UnsetAllSessionVars(); // this calls Init so we don't have to here
+		self::$user = $user;
 		$_SESSION[$guid] = serialize($user);
 	}
 
@@ -60,6 +72,7 @@ class Authenticator
 	 */
 	public static function UnsetAllSessionVars()
 	{
+		self::Init();
 		foreach (array_keys($_SESSION) as $key)
 		{
 			unset($_SESSION[$key]);
@@ -73,10 +86,11 @@ class Authenticator
 	 */
 	public static function ClearAuthentication($guid = "CURRENT_USER")
 	{
-		Authenticator::$user = null;
+		self::Init();
+		self::$user = null;
 		unset($_SESSION[$guid]);
 		
-		Authenticator::UnsetAllSessionVars();
+		self::UnsetAllSessionVars();
 		
 		@session_destroy();
 	}

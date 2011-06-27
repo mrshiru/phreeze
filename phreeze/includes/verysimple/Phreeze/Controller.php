@@ -633,7 +633,7 @@ abstract class Controller
 		}
 		
 		// if the render engine is Smarty then structure the filename, otherwise don't touch it
-		$viewPath = (get_class($this->RenderEngine) == "Smarty") 
+		$viewPath = (strpos(get_class($this->RenderEngine),"Smarty") > -1) 
 			? "View".$view.".tpl" 
 			: $view;
 		
