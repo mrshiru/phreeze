@@ -146,7 +146,7 @@ class SkipJack extends PaymentProcessor
 	private function GetMessage($code)
 	{
 		$errors = array();
-		$errors["1"] = "Error in request Data was not by received intact by Skipjack Transaction Network.";
+		$errors["-1"] = "Error in request Data was not by received intact by Skipjack Transaction Network.";
 		$errors["0"] = "Communication Failure Error in Request and Response at IP level. Use Get Transaction Status before retrying transaction.";
 		$errors["1"] = "Success";
 		$errors["-35"] = "Credit card number does not comply with the Mod10 check. Retry with correct credit card number.";
