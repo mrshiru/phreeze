@@ -37,9 +37,9 @@ class TestGateway extends PaymentProcessor
 		$resp = new PaymentResponse();
 		$resp->OrderNumber = $req->OrderNumber;
 		
-		$expdate = strtotime("1/".$req->CCExpMonth."/".$req->CCExpYear." + 1 month");
+		$expdate = strtotime("1/". $req->CCExpMonth . "/" . $this->GetFullYear($req->CCExpYear) . " + 1 month");
 
-			// before bothering with contacting the processor, check for some basic fields
+		// before bothering with contacting the processor, check for some basic fields
 		if ($req->CCNumber == '')
 		{
 			$resp->IsSuccess = false;
