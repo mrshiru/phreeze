@@ -58,13 +58,8 @@ abstract class PaymentProcessor
 	{
 		if ( strlen($year) < 4 )
 		{
-			// assume the current century
+			// assume the current century (could be problematic around 2098, 2099, etc)
 			$century = substr(date("Y"),0,2);
-			$currentYear = substr(date("Y"),2,2);
-			
-			// if the expire year is less the current year then assume it's the next century
-			if ($year < $currentYear) $century = (1* $century) + 1;
-			
 			$year = $century . $year;
 		}
 		
