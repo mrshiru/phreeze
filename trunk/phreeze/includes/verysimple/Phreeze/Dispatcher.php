@@ -78,16 +78,7 @@ class Dispatcher
 		{
 			throw new Exception("Controller file was found, but class '".$controller_class."' is not defined");
 		}
-		
-		// create an instance of the controller class
-		$controller = new $controller_class($phreezer,$smarty,$context,$urlwriter);
-		
-		// we have a valid instance, just verify there is a matching method
-		if (!is_callable(array($controller, $method_param)))
-		{
-			throw new Exception("'".$controller_class.".".$method_param."' is not a valid action");
-		}
-		
+
 		// convert any php errors into an exception
 		if (self::$IGNORE_DEPRECATED)
 		{
@@ -99,6 +90,15 @@ class Dispatcher
 			ExceptionThrower::$IGNORE_DEPRECATED = false;
 		}
 		
+		// create an instance of the controller class
+		$controller = new $controller_class($phreezer,$smarty,$context,$urlwriter);
+		
+		// we have a valid instance, just verify there is a matching method
+		if (!is_callable(array($controller, $method_param)))
+		{
+			throw new Exception("'".$controller_class.".".$method_param."' is not a valid action");
+		}
+				
 		// file, class and method all are ok, go ahead and call it
 		call_user_func(array(&$controller, $method_param));
 		
