@@ -141,8 +141,8 @@ class PayPal extends PaymentProcessor
 						// this will usually be "ProcessorResponse" in which case we don't need to display it
 						$processor_prefix = $this->GetArrayVal($httpParsedResponseAr,"L_ERRORPARAMID0");
 						$processor_prefix = ($processor_prefix == "ProcessorResponse") 
-							? $processor_prefix . ' - '
-							: '';
+							? ''
+							: $processor_prefix . ' - ';
 	
 						$processor_message =  $processor_prefix . $this->getProcessorResponseDescription($processor_code);
 						
