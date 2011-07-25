@@ -71,12 +71,7 @@ class PayPal extends PaymentProcessor
 		$padDateMonth = urlencode( trim(str_pad($req->CCExpMonth, 2, '0', STR_PAD_LEFT)) );
 		
 		// year needs to be full 4-digit
-		$expDateYear = urlencode( trim($req->CCExpYear) );
-		if ( strlen($expDateYear) < 4 )
-		{
-			/** HACK - THIS WILL BREAK IN THE YEAR 2100 **/
-			$expDateYear = "20" . $expDateYear;
-		}
+		$expDateYear = urlencode( $this->GetFullYear( trim($req->CCExpYear) ) );
 		
 		$email = (urlencode($req->CustomerEmail));
 		$invoiceNum = (urlencode($req->InvoiceNumber));
@@ -121,27 +116,40 @@ class PayPal extends PaymentProcessor
 				$resp->IsSuccess = false;
 				$resp->ResponseCode = urldecode( $this->GetArrayVal($httpParsedResponseAr,"L_ERRORCODE0") );
 				
-				// this variable contains an error code from the credit processor if one was given
-				$processor_code = $this->GetArrayVal($httpParsedResponseAr,"L_ERRORPARAMVALUE0");
+				$errmsg = $this->GetArrayVal($httpParsedResponseAr,"L_SHORTMESSAGE0") . ": ";
 				
-				if ($processor_code) 
+				// figure out the message as PayPal reports it
+				$longmessage = $this->GetArrayVal($httpParsedResponseAr,"L_LONGMESSAGE0");
+				
+				// paypal prepends this to every message, so strip it out
+				$longmessage = str_replace("This%20transaction%20cannot%20be%20processed%2e","", $longmessage );
+				
+				if ($longmessage != "") 
 				{
-					// we have an error from the credit processor, so we should show that one
-					// because it will indicate the root cause of the problem
-					$errmsg = $this->GetArrayVal($httpParsedResponseAr,"L_ERRORPARAMID0") . ": " . $this->getProcessorResponseDescription($processor_code);
+					// this will generally be the best description of the error
+					$errmsg .= $longmessage;
 				}
 				else
 				{
-					// there was no processor messages which means the error was caught first at the gateway
-					// so we should show whatever that message is
-					$longmessage = $this->GetArrayVal($httpParsedResponseAr,"L_LONGMESSAGE0");
-					// paypal prepends this to every message, so strip it out if necessary
-					if ($longmessage != "This%20transaction%20cannot%20be%20processed%2e") $longmessage = str_replace("This%20transaction%20cannot%20be%20processed%2e","", $longmessage );
+					// paypal didn't give a simple error description so we have to try to decipher the gateway response
 					
-					$errmsg = $this->GetArrayVal($httpParsedResponseAr,"L_SHORTMESSAGE0") . ": " . $longmessage;
+					// this is the response code from the gateway
+					$processor_code = $this->GetArrayVal($httpParsedResponseAr,"L_ERRORPARAMVALUE0");
 					
-				}
+					if ($processor_code) 
+					{
+						// this will usually be "ProcessorResponse" in which case we don't need to display it
+						$processor_prefix = $this->GetArrayVal($httpParsedResponseAr,"L_ERRORPARAMID0");
+						$processor_prefix = ($processor_prefix == "ProcessorResponse") 
+							? $processor_prefix . ' - '
+							: '';
 	
+						$processor_message =  $processor_prefix . $this->getProcessorResponseDescription($processor_code);
+						
+						$errmsg .= $processor_message;
+					}
+				}
+
 				$resp->ResponseMessage = urldecode( $errmsg );
 				
 			}
@@ -251,15 +259,18 @@ class PayPal extends PaymentProcessor
 	}
 	
 	/**
-	 * Returns a possible description based on the code given.  These
-	 * codes are returned by the PayPal processor.  If the code is not
-	 * found, this function just returns "Error $code"
-	 *
+	 * This returns a formatted error given a payment processor error response code.
+	 * 
+	 * @link https://www.x.com/blogs/matt/2010/10/26/error-codes-explained-15005
 	 * @param string $code
 	 * @return string possible description of error
 	 */
 	private function getProcessorResponseDescription($code)
 	{
+		return "Transaction was rejected by the issuing bank with error code $code.";
+		
+		// @TODO these have proven to be unreliable, but maybe somebody can do something better?
+		/*
 		$responses = Array();
       	$responses['0005'] = "The transaction was declined without explanation by the card issuer.";
 		$responses['0013'] = "The transaction amount is greater than the maximum the issuer allows.";
@@ -271,7 +282,11 @@ class PayPal extends PaymentProcessor
 		$responses['1899'] = "Timeout waiting for host response.";
 		$responses['2075'] = "Approval from the card issuer's voice center is required to process this transaction.";
 		
-		return array_key_exists($code,$responses) ? $responses[$code] : "Error " . $code;
+		return array_key_exists($code,$responses) 
+			? "Error Code " . $code . ": " .$responses[$code] 
+			: "Error Code " . $code;
+		*/
+		
 		
 	}
 	

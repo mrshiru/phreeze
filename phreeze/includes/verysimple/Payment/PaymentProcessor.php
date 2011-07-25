@@ -51,6 +51,27 @@ abstract class PaymentProcessor
 	abstract function Process(PaymentRequest $req);
 	
 	/**
+	 * Given a 2-digit year, return the full 4-digit year
+	 * @param numeric $year
+	 */
+	protected function GetFullYear($year)
+	{
+		if ( strlen($year) < 4 )
+		{
+			// assume the current century
+			$century = substr(date("Y"),0,2);
+			$currentYear = substr(date("Y"),2,2);
+			
+			// if the expire year is less the current year then assume it's the next century
+			if ($year < $currentYear) $century = (1* $century) + 1;
+			
+			$year = $century . $year;
+		}
+		
+		return $year;
+	}
+	
+	/**
 	* @param string $url url to post
 	* @param array $data array of arguments for post request
 	* @param bool $verify_cert whether to verify an SSL cert. default = false
