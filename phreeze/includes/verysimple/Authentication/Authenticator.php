@@ -25,7 +25,11 @@ class Authenticator
 		if (!self::$is_initialized)
 		{
 			self::$is_initialized = true;
-			@session_start();
+			
+			if (session_id() == '')
+			{
+				@session_start();
+			}
 		}
 	}
 	

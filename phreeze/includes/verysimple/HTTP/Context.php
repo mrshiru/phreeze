@@ -23,7 +23,10 @@ class Context
 	 */
 	public function Context()
 	{
-		@session_start();
+		if (session_id() == '')
+		{
+			@session_start();
+		}
 	}
 	
 	/**
