@@ -70,15 +70,6 @@ class Dispatcher
 			if (!$found) throw new Exception("File ~/libs/".$controller_file." was not found in include path");
 		}
 		
-		// we should be fairly certain the file exists at this point
-		require_once($controller_file);
-		
-		// we found the file but the expected class doesn't appear to be defined
-		if (!class_exists($controller_class))
-		{
-			throw new Exception("Controller file was found, but class '".$controller_class."' is not defined");
-		}
-
 		// convert any php errors into an exception
 		if (self::$IGNORE_DEPRECATED)
 		{
@@ -89,6 +80,16 @@ class Dispatcher
 			ExceptionThrower::Start(E_ALL);
 			ExceptionThrower::$IGNORE_DEPRECATED = false;
 		}
+		
+		// we should be fairly certain the file exists at this point
+		include_once($controller_file);
+		
+		// we found the file but the expected class doesn't appear to be defined
+		if (!class_exists($controller_class))
+		{
+			throw new Exception("Controller file was found, but class '".$controller_class."' is not defined");
+		}
+
 		
 		// create an instance of the controller class
 		$controller = new $controller_class($phreezer,$smarty,$context,$urlwriter);

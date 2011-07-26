@@ -42,6 +42,7 @@ class DataAdapter implements IObservable
     {
     	$this->_driver = $driver;
     	
+    	
     	if ($this->_driver == null) 
     	{
     		// the driver was not explicitly provided so we will try to create one from 
@@ -49,15 +50,17 @@ class DataAdapter implements IObservable
     		switch($csetting->Type)
     		{
     			case "mysql":
-					require_once("verysimple/DB/DataDriver/MySQL.php");
+					include_once("verysimple/DB/DataDriver/MySQL.php");
     				$this->_driver  = new DataDriverMySQL();
     				break;
     			case "sqlite":
-					require_once("verysimple/DB/DataDriver/SQLite.php");
+					include_once("verysimple/DB/DataDriver/SQLite.php");
     				$this->_driver  = new DataDriverSQLite();
     				break;
     			default:
-    				throw new Exception("No driver was provided and the ConnectionSetting->Type is not recognized.");
+					include_once("verysimple/DB/DataDriver/".$csetting->Type.".php");
+					$classname = "DataDriver" . $csetting->Type;
+    				$this->_driver  = new $classname();
     				break;
     		}
     	}

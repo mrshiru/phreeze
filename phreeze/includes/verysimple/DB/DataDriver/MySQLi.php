@@ -40,14 +40,10 @@ class DataDriverMySQLi implements IDataDriver
 	 */
 	function Open($connectionstring,$database,$username,$password) 
 	{
-		if ( !$connection = @mysqli_connect($connectionstring, $username, $password) )
+		
+		if ( !$connection = @mysqli_connect($connectionstring, $username, $password, $database) )
 		{
-			throw new Exception("Error connecting to database: " . mysqli_error());
-		}
-
-		if (!@mysqli_select_db($database, $connection))
-		{
-			throw new Exception("Unable to select database " . $database);
+			throw new Exception("Error connecting to database: " . mysqli_error($connection));
 		}
 		
 		return $connection;
@@ -66,9 +62,9 @@ class DataDriverMySQLi implements IDataDriver
 	 */
 	function Query($connection,$sql) 
 	{
-		if ( !$rs = @mysqli_query($sql, $connection) )
+		if ( !$rs = @mysqli_query($connection,$sql) )
 		{
-			throw new Exception(mysqli_error());
+			throw new Exception(mysqli_error($connection));
 		}
 		
 		return $rs;
@@ -79,9 +75,9 @@ class DataDriverMySQLi implements IDataDriver
 	 */
 	function Execute($connection,$sql) 
 	{
-		if ( !$result = @mysqli_query($sql, $connection) )
+		if ( !$result = @mysqli_query($connection,$sql) )
 		{
-			throw new Exception(mysqli_error());
+			throw new Exception(mysqli_error($connection));
 		}
 		
 		return mysqli_affected_rows($connection);
