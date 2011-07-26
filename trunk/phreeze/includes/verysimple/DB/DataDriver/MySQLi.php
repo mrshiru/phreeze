@@ -40,10 +40,11 @@ class DataDriverMySQLi implements IDataDriver
 	 */
 	function Open($connectionstring,$database,$username,$password) 
 	{
+		$connection = mysqli_connect($connectionstring, $username, $password, $database);
 		
-		if ( !$connection = @mysqli_connect($connectionstring, $username, $password, $database) )
+		if ( mysqli_connect_errno() )
 		{
-			throw new Exception("Error connecting to database: " . mysqli_error($connection));
+			throw new Exception("Error connecting to database: " . mysqli_connect_error());
 		}
 		
 		return $connection;
