@@ -77,6 +77,6 @@ class ExceptionThrower
 		if (error_reporting() == 0) return;
 		if (self::$IGNORE_DEPRECATED && strpos($string,"deprecated") === true) return true;
 		
-		throw new Exception($string,$code);
+		throw new Exception($string . " in ".basename($file)." at line $line",$code);
 	}
 }
