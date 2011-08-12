@@ -133,6 +133,19 @@ abstract class Reporter
     {
     	return "";
     }
+    
+    /**
+    * This static function can be overridden to count the number of results
+    * in the query
+    *
+    * @access     public
+    * @param      Criteria $criteria
+    * @return     string
+    */
+    static function GetCustomCountQuery($criteria)
+    {
+    	return "";
+    }
 	
 	/**
     * Returns this object as an associative array with properties as keys and

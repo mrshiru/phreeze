@@ -344,11 +344,15 @@ class Phreezer extends Observable
 		$custom = $this->GetCustomQuery($objectclass, $criteria);
 		
 		$sql = "";
+		$count_sql = "";
 		
 		if ($custom)
 		{
 			$this->Observe("Using Custom Query",OBSERVE_DEBUG);
 			$sql = $custom;
+			
+			// the counter query may be blank, in which case DataSet will generate one
+			$count_sql = $this->GetCustomCountQuery($objectclass, $criteria);
 		}
 		else
 		{
@@ -360,9 +364,12 @@ class Phreezer extends Observable
 			$builder->RecurseFieldMaps($objectclass, $fms);
 
 			$sql = $builder->GetSQL($criteria);
+			
+			$count_sql = $builder->GetCountSQL($criteria);
 		}
 		
 		$ds = new DataSet($this, $objectclass, $sql, $cache_timeout);
+		$ds->CountSQL = $count_sql;
 		
 		return $ds;
 
@@ -632,6 +639,20 @@ class Phreezer extends Observable
 	{
 		$this->IncludeModel($objectclass);
 		$sql = call_user_func( array($objectclass,"GetCustomQuery"),$criteria );
+		return $sql;
+	}
+	
+	/**
+	* Returns the custom "counter" query for the given object class if it is defined
+	*
+	* @access public
+	* @param string $objectclass the type of object that your DataSet will contain
+	* @return Array of FieldMap objects
+	*/
+	public function GetCustomCountQuery($objectclass, $criteria)
+	{
+		$this->IncludeModel($objectclass);
+		$sql = call_user_func( array($objectclass,"GetCustomCountQuery"),$criteria );
 		return $sql;
 	}
 
