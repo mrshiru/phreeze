@@ -128,23 +128,22 @@
 	}
 	
 	/**
-	 * Builds a SQL statement from the given criteria object
-	 *
+	 * Determines what tables need to be included in the query 
+	 * based on the mapping
 	 * @param Criteria $criteria
-	 * @return string fully formed SQL statement
+	 * @return string "from" sql
 	 */
-	public function GetSQL($criteria)
+	private function GetTableJoinSQL($criteria)
 	{
-		// start building the sql statement
-		$sql = "select " . $this->GetColumnNames() . "";
-
+		$sql = "";
+		
 		$tablenames = array_keys($this->Tables);
-
+		
 		if (count($tablenames) > 1)
 		{
 			// we're selecting from multiple tables so we have to do an outer join
 			$sql .= " from `" . $tablenames[0] . "`";
-			
+				
 			// WARNING: if tables are being joined in the incorrect order, it is likely
 			// caused by a query that goes across more than one foreign relationship.
 			// you can force tables to be joined in a specific order by adding a field
@@ -166,12 +165,19 @@
 			// (LL) added backticks here
 			$sql .= " from `" . $tablenames[0] . "` ";
 		}
-
-		$sql .= $criteria->GetJoin();
 		
+		return $sql;
+	}
+	
+	/**
+	 * Returns the "where" part of the query based on the criteria parameters
+	 * @param Criteria $criteria
+	 * @return String "where" part of the sql query
+	 */
+	private function GetWhereSQL($criteria)
+	{
 		$ands = $criteria->GetAnds();
 		$ors = $criteria->GetOrs();
-		
 		
 		// TODO: this all needs to move to the criteria object so it will recurse properly  ....
 		$where = str_replace("where", "", $criteria->GetWhere());
@@ -188,14 +194,14 @@
 					$where .= $wdelim . $buff;
 					$wdelim = " and ";
 				}
-			}			
+			}
 		}
-
+		
 		if (count($ors))
 		{
 			$where = trim($where) ? "(" . $where . ")" : ""; // no primary criteria.  kinda strange
 			$wdelim = $where ? " or " : "";
-			
+				
 			foreach($ors as $c)
 			{
 				$tmp = $c->GetWhere();
@@ -208,12 +214,52 @@
 			}
 		}
 		
-		// .. end of stuff that should be in criteria
+		// .. end of stuff that should be in criteria	
+
+		// prepend the "where" onto the statement
+		if ($where) $where = " where (" . trim($where) . ") ";
 		
-		$sql .= $where ?  " where (" . trim($where) . ") " : "";
+		return $where;
+	}
+	
+	/**
+	 * Builds a SQL statement from the given criteria object
+	 *
+	 * @param Criteria $criteria
+	 * @return string fully formed SQL statement
+	 */
+	public function GetSQL($criteria)
+	{
+		// start building the sql statement
+		$sql = "select " . $this->GetColumnNames() . "";
+
+		$sql .= $this->GetTableJoinSQL($criteria);		
+
+		$sql .= $criteria->GetJoin();
+				
+		$sql .= $this->GetWhereSQL($criteria);
 		
 		$sql .= $criteria->GetOrder();
 		
+		return $sql;
+	}
+	
+	/**
+	* Builds a SQL statement from the given criteria object to count the results
+	*
+	* @param Criteria $criteria
+	* @return string fully formed SQL statement
+	*/
+	public function GetCountSQL($criteria)
+	{
+		$sql = "select count(1) as counter ";
+	
+		$sql .= $this->GetTableJoinSQL($criteria);
+	
+		$sql .= $criteria->GetJoin();
+	
+		$sql .= $this->GetWhereSQL($criteria);
+	
 		return $sql;
 	}
 }

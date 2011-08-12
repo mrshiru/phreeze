@@ -36,6 +36,16 @@ class DataSet implements Iterator
 	
 	public $UnableToCache = true;
 	
+	/**
+	 * A custom SQL query may be provided to count the results of the query.
+	 * This query should return one column "counter" which is the number of rows
+	 * and must take into account all criteria parameters.
+	 * If no value is provided, the counter query will be generated (which is likely less efficient)
+	 *  
+	 * @var string
+	 */
+	public $CountSQL = "";
+	
     /**
     * Contructor initializes the object
     *
@@ -183,8 +193,18 @@ class DataSet implements Iterator
 				$this->LockCache($cachekey);
 				
 				$this->_phreezer->Observe("(DataSet.Count: query does not exist in cache) " . $this->_sql,OBSERVE_QUERY);
+				$sql = "";
 				
-				$sql = "select count(1) as counter from (" . $this->_sql . ") tmptable";
+				// if a custom counter sql query was provided, use that because it should be more efficient
+				if ($this->CountSQL)
+				{
+					$sql = $this->CountSQL;
+				}
+				else
+				{
+					$this->_phreezer->Observe("(DataSet.Count: CountSQL was not provided so a counter query will be generated.  Implement GetCustomCountQuery in the reporter class to improve performance.)",OBSERVE_WARN);
+					$sql = "select count(1) as counter from (" . $this->_sql . ") tmptable";
+				}
 				
 				$rs = $this->_phreezer->DataAdapter->Select($sql);
 				$row = $this->_phreezer->DataAdapter->Fetch($rs);
