@@ -203,7 +203,7 @@ class DataSet implements Iterator
 				else
 				{
 					$this->_phreezer->Observe("(DataSet.Count: CountSQL was not provided so a counter query will be generated.  Implement GetCustomCountQuery in the reporter class to improve performance.)",OBSERVE_WARN);
-					$sql = "select count(1) as counter from (" . $this->_sql . ") tmptable";
+					$sql = "select count(1) as counter from (" . $this->_sql . ") tmptable" . rand(1000,9999);
 				}
 				
 				$rs = $this->_phreezer->DataAdapter->Select($sql);
