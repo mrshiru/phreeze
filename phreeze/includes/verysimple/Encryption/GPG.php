@@ -8,7 +8,21 @@ require_once("GPG/AES.php");
 require_once("arbitrary.php");
 
 /**
- * @package    verysimple::Encryption::GPG
+ * Pure PHP implementation of PHP/GPG encryption.  
+ * Supports RSA, DSA public key length of 2,4,8,16,512,1024,2048 or 4096
+ * Currently supports only encrypt
+ *
+ * @package verysimple::Encryption
+ * @link http://www.verysimple.com/
+ * @copyright 1997-2011 VerySimple, Inc.
+ * @license http://www.gnu.org/licenses/lgpl.html  LGPL
+ * @todo implement decryption
+ * @version 1.0
+ * 
+ * @example 
+ * 		$gpg = new GPG();
+ * 		$pub_key = new GPG_Public_Key($public_key_ascii);
+ * 		$encrypted = $gpg->encrypt($pub_key,$plain_text_string);
  */
 class GPG 
 {

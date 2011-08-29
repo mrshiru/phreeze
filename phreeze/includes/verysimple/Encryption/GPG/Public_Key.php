@@ -9,7 +9,14 @@ define("PK_TYPE_RSA", 0);
 define("PK_TYPE_UNKNOWN", -1);
 
 /**
- * @package    verysimple::Encryption::GPG
+ * Pure PHP implementation of PHP/GPG public key
+ *
+ * @package verysimple::Encryption::GPG
+ * @link http://www.verysimple.com/
+ * @copyright  1997-2011 VerySimple, Inc.
+ * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
+ * @todo implement decryption
+ * @version 1.0
  */
 class GPG_Public_Key {
     var $version;
