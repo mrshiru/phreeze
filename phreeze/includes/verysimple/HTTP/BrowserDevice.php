@@ -60,6 +60,7 @@ class BrowserDevice
 	public $SupportsJS;
 	public $SupportsCSS;
 	public $IsNativeDevice;
+	public $NativeClientVersion;
    
     /**
      * Private constructor enforces the Singleton pattern
