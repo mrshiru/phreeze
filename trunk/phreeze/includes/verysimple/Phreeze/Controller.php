@@ -24,7 +24,7 @@ require_once("Criteria.php");
  * @author     VerySimple Inc.
  * @copyright  1997-2011 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
- * @version    3.0
+ * @version    3.1
  */
 abstract class Controller
 {
@@ -105,7 +105,7 @@ abstract class Controller
 
 	/**
 	 * Requires 401 Authentication.  If authentication fails, this function
-	 * terminates with a 401 header.  If success, sets CurrentUser.
+	 * terminates with a 401 header.  If success, sets CurrentUser and returns null.
 	 * @param IAuthenticatable any IAuthenticatable object
 	 * @param string http realm (basically the login message shown to the user)
 	 * @param string username querystring field (optional) if provided, the username can be passed via querystring instead of through the auth headers
@@ -113,35 +113,81 @@ abstract class Controller
 	 */
 	protected function Require401Authentication(IAuthenticatable $authenticatable, $realm = "Login Required", $qs_username_field = "", $qs_password_field = "")
 	{
-		// if the user is already authenticated, we don't need to reload from the DB
-		if ($this->GetCurrentUser())
-		{
-			return;
-		}
+		$user = $this->Get401Authentication($authenticatable,$qs_username_field, $qs_password_field);
 		
-		// the user is not already logged in.  if a username was provided via
-		// either the headers or querystring, attempt to authenticate
-		if( ($qs_username_field && RequestUtil::Get($qs_username_field)) 
-			|| Auth401::GetUsername() ) 
+		// we only want to output 401 headers if the user is not already authenticated
+		if (!$user)
 		{
-			// accept username passed in either headers or querystring
-			$username = RequestUtil::Get($qs_username_field,Auth401::GetUsername());
-			$password = RequestUtil::Get($qs_password_field,Auth401::GetPassword());
-			
-			if ( $authenticatable->Login($username,$password) )
+			if( $this->Get401AuthUsername($qs_username_field) ) 
 			{
-				$this->SetCurrentUser($authenticatable);
-			}
-			else
-			{
+				// a username was provided, which means login failed
 				Auth401::OutputHeaders("Invalid Login");
 			}
+			else 
+			{
+				// no username provided, which means prompt for username
+				Auth401::OutputHeaders($realm);
+			}
 		}
-		else 
+	}
+	
+	/**
+	 * accept username passed in either headers or querystring.  if a querystring parameter name is 
+	 * provided, that will be checked first before the 401 auth headers
+	 * @param string $qs_username_field the querystring parameter to check for username (optional)
+	 */
+	protected function Get401AuthUsername($qs_username_field = "")
+	{
+		$qsv = $qs_username_field ? RequestUtil::Get($qs_username_field) : '';
+		return $qsv ? $qsv : Auth401::GetUsername();
+	}
+
+	/**
+	* accept password passed in either headers or querystring.  if a querystring parameter name is
+	* provided, that will be checked first before the 401 auth headers
+	* @param string $qs_password_field the querystring parameter to check for password (optional)
+	*/
+	protected function Get401AuthPassword($qs_password_field = "")
+	{
+		$qsv = $qs_password_field ? RequestUtil::Get($qs_password_field) : '';
+		return $qsv ? $qsv : Auth401::GetPassword();
+	}
+
+	/**
+	* Gets the user from 401 auth headers (or optionally querystring).  There are three scenarios
+	*   - The user is already logged authenticated = IAuthenticatable is returned
+	*   - The user was not logged in and valid login credentials were provided = SetCurrentUser is called and IAuthenticatable is returned
+	*   - The user was not logged in and invalid (or no) credientials were provided = NULL is returned
+	* @param IAuthenticatable any IAuthenticatable object
+	* @param string username querystring field (optional) if provided, the username can be passed via querystring instead of through the auth headers
+	* @param string password querystring field (optional) if provided, the password can be passed via querystring instead of through the auth headers
+	* @return IAuthenticatable or NULL
+	*/
+	protected function Get401Authentication(IAuthenticatable $authenticatable, $qs_username_field = "", $qs_password_field = "")
+	{
+		$user = null;
+		$username = $this->Get401AuthUsername($qs_username_field);
+		
+		if( $username )
 		{
-			// require authentication
-			Auth401::OutputHeaders($realm);
+			// username was provided so let's attempt a login
+			$password = $this->Get401AuthPassword($qs_password_field);
+				
+			if ( $authenticatable->Login($username,$password) )
+			{
+				$user = $authenticatable;
+				$this->SetCurrentUser($authenticatable);
+			}
 		}
+		else
+		{
+			// no login info was provided so return whatever is in the session 
+			// (which will be null if the user is not authenticated)
+			$user = $this->GetCurrentUser();
+		}
+		
+		return $user;
+
 	}
 	
 	/**
@@ -657,6 +703,8 @@ abstract class Controller
 	{
 		require_once("JSON.php");
 		$json = new Services_JSON();
+		
+		// @header('Content-type: application/json');
 
 		// capture output instead of rendering if specified
 		if ($this->CaptureOutputMode)
