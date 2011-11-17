@@ -170,6 +170,26 @@
 	}
 	
 	/**
+	 * Removes the "where" from the beginning of a statement
+	 * @param string partial query to parse
+	 * @return string query without the preceeding "where"
+	 */
+	private function RemoveWherePrefix($sql)
+	{
+		while (substr($sql,0,1) == " ")
+		{
+			$sql = substr($sql,1);
+		}
+		
+		if (strtolower( substr($sql, 0, 5) ) == "where")
+		{
+			$sql = substr($sql,5);
+		}
+		
+		return $sql;
+	}
+	
+	/**
 	 * Returns the "where" part of the query based on the criteria parameters
 	 * @param Criteria $criteria
 	 * @return String "where" part of the sql query
@@ -180,7 +200,7 @@
 		$ors = $criteria->GetOrs();
 		
 		// TODO: this all needs to move to the criteria object so it will recurse properly  ....
-		$where = str_replace("where", "", $criteria->GetWhere());
+		$where = $this->RemoveWherePrefix($criteria->GetWhere());
 		
 		if (count($ands))
 		{
@@ -188,7 +208,7 @@
 			foreach($ands as $c)
 			{
 				$tmp = $c->GetWhere();
-				$buff = str_replace("where", "", $tmp);
+				$buff = $this->RemoveWherePrefix($tmp);
 				if ($buff)
 				{
 					$where .= $wdelim . $buff;
@@ -205,7 +225,7 @@
 			foreach($ors as $c)
 			{
 				$tmp = $c->GetWhere();
-				$buff = str_replace("where", "", $tmp);
+				$buff = $this->RemoveWherePrefix($tmp);
 				if ($buff)
 				{
 					$where .= $wdelim . "(" . $buff . ")";
