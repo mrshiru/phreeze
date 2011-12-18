@@ -20,7 +20,7 @@ require_once("DataPage.php");
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
  * @version    1.1
  */
-class DataSet implements Iterator
+class DataSet implements Iterator // @TODO implement Countable, ArrayAccess
 {
     protected $_phreezer;
     protected $_rs;
@@ -162,6 +162,17 @@ class DataSet implements Iterator
 	public function valid() {
 		return $this->key() <= $this->Count();
 	}
+	
+	/**
+	 * Returns true if the total number of records is known.  Because calling "Count"
+	 * directly may fire a database query, this method can be used to tell if 
+	 * the number of records is known without actually firing any queries
+	 * @return boolean
+	 */
+	function CountIsKnown()
+	{
+		return $this->_totalcount > -1;
+	}
     
     /**
     * Count returns the number of objects in the collection.  If the 
@@ -177,7 +188,7 @@ class DataSet implements Iterator
     */
     function Count()
     {
-		if ($this->_totalcount == -1)
+		if (!$this->CountIsKnown())
 		{
 			// check the cache
 			$cachekey = $this->_sql . " COUNT";
@@ -248,11 +259,16 @@ class DataSet implements Iterator
 			$this->LockCache($cachekey);
 			
 			$this->UnableToCache = false;
-			$arr = Array();
 			
+			// use a fixed count array if the count is known for performance
+			$arr = $this->CountIsKnown()
+				? new SplFixedArray($this->Count())
+				: Array();
+			
+			$i = 0;
 			while ($object = $this->Next())
 			{
-				$arr[] = $object;
+				$arr[$i++] = $object;
 			}
 			
 			$this->_phreezer->SetValueCache($cachekey, $arr, $this->_cache_timeout);
@@ -392,6 +408,7 @@ class DataSet implements Iterator
 			
 			$start = $pagesize * $pagenum;
 			
+			// @TODO the limit statement should come from the DataAdapter
 			// ~~~ more efficient method where we limit the data queried ~~~  
 			// since we are doing paging, we want to get only the records that we
 			// want from the database, so we wrap the original query with a 
@@ -400,11 +417,16 @@ class DataSet implements Iterator
 			$sql = $this->_sql . ($pagesize == 0 ? "" : " limit $start,$pagesize");
 			$this->_rs = $this->_phreezer->DataAdapter->Select($sql);
 	        
-	        
+	        // if we know the number of rows we have, then use SplFixedArray for performance
+			$page->Rows = ($page->TotalPages > $page->CurrentPage) 
+				? new SplFixedArray($pagesize)
+				: Array();
+
 			// transfer all of the results into the page object
+			$i = 0;
 			while ( $obj = $this->Next() )
 			{
-				$page->Rows[] = $obj;
+				$page->Rows[$i++] = $obj;
 			}
 
 			$this->_phreezer->SetValueCache($cachekey, $page, $this->_cache_timeout);

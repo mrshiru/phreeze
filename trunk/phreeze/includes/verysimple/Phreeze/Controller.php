@@ -698,24 +698,29 @@ abstract class Controller
 	 * Renders the given value as JSON
 	 *
 	 * @param variant the variable, array, object, etc to be rendered as JSON
+	 * @param string if a callback is provided, this will be rendered as JSONP
 	 */
-	protected function RenderJSON($var)
+	protected function RenderJSON($var, $callback = "")
 	{
 		require_once("JSON.php");
 		$json = new Services_JSON();
 		
 		// @header('Content-type: application/json');
 
+		$output = $json->encode($var);
+		if ($callback) $output = "$callback(" . $output . ")";
+		
 		// capture output instead of rendering if specified
 		if ($this->CaptureOutputMode)
 		{
-			$this->DebugOutput = $json->encode($var);
+			$this->DebugOutput = $output;
 		}
 		else
 		{
-			print $json->encode($var);
+			print $output;
 		}
 	}
+
 	
 	/**
 	 * Send a crash message to the browser and terminate
