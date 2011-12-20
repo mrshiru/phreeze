@@ -58,6 +58,26 @@ abstract class Phreezable implements Serializable
 	}
 	
 	/**
+	 * Return an object with a limited number of properties from 
+	 * this Phreezable object.  This can be used if not all properties
+	 * are necessary, for example rendering as JSON
+	 * 
+	 * @param array $props array of the properties to include
+	 * @return stdClass
+	 */
+	function GetObject(array $props)
+	{
+		$obj = new stdClass();
+		
+		foreach ($props as $prop)
+		{
+			$obj->$prop = $this->$prop;
+		}
+		
+		return $obj;
+	}
+	
+	/**
 	 * Reload the object when it awakes from serialization
 	 * @param $data
 	 */
