@@ -262,7 +262,7 @@ class DataSet implements Iterator // @TODO implement Countable, ArrayAccess
 			
 			// use a fixed count array if the count is known for performance
 			$arr = $this->CountIsKnown()
-				? new SplFixedArray($this->Count())
+				? $this->GetEmptyArray($this->Count())
 				: Array();
 			
 			$i = 0;
@@ -286,6 +286,22 @@ class DataSet implements Iterator // @TODO implement Countable, ArrayAccess
     function ToLabelArray($val_prop, $label_prop)
     {
         return $this->GetLabelArray($val_prop, $label_prop);
+    }
+    
+    /**
+     * Returns an empty array structure, determining which is appropriate
+     * based on the system capabilities and whether a count is known.
+     * If the count parameter is provided then the returned array may be
+     * a fixed-size array (depending on php version)
+     * 
+     * @param int count (if known)
+     * @return Array or SplFixedArray
+     */
+    private function GetEmptyArray($count = 0)
+    {
+    	return ($count && class_exists('SplFixedArray'))
+    		? new SplFixedArray($count) 
+    		: array();
     }
 	
 	/**
@@ -419,7 +435,7 @@ class DataSet implements Iterator // @TODO implement Countable, ArrayAccess
 	        
 	        // if we know the number of rows we have, then use SplFixedArray for performance
 			$page->Rows = ($page->TotalPages > $page->CurrentPage) 
-				? new SplFixedArray($pagesize)
+				? $this->GetEmptyArray($pagesize)
 				: Array();
 
 			// transfer all of the results into the page object
