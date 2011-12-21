@@ -403,7 +403,7 @@ class Phreezer extends Observable
 
 		$pkm = $this->GetPrimaryKeyMap($objectclass);
 		
-		if ($pkm) throw new Exception("Table for '$objectclass' has no primary key");
+		if (!$pkm) throw new Exception("Table for '$objectclass' has no primary key");
 
 		$criteria = new Criteria();
 		$criteria->PrimaryKeyField = "`" . $pkm->TableName . "`.`" . $pkm->ColumnName . "`";
