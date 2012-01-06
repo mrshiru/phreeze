@@ -21,6 +21,7 @@
  * @param dev set to true to overlay the rendering time on the image
  * 
  * @version:
+ * 2012-01-05 Friendly output when file type is not supported such as pdf, swf, etc (JH)
  * 2010-10-03 Friendly output when file size is empty due to unknown error (JH)
  * 2008-03-13 set default param values to avoid various warnings in strict mode
               error handling when cache is not writable
@@ -194,7 +195,10 @@
 	$_SRC['hash'] 		= md5($_SRC['file'].$_SRC['modified'].implode('',$params));
 	
 	if (empty($_SRC['type'])) return "<div class='warning'>thumb: unsupported image type</div>";
-
+	
+	// image types: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(orden de bytes intel), 8 = TIFF(orden de bytes motorola), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM
+	if ($_SRC['type'] > 3) return "<div class='warning'>thumb: image type is not supported.  supported types are GIF, JPG and PNG</div>";
+	
 	### Infos über Destination (DST) errechnen
 	if (is_numeric($params['width'])) $_DST['width'] = $params['width'];
 	else 
