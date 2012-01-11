@@ -14,7 +14,7 @@ class Recipient
     var $Email;
     var $RealName;
 	
-    function Recipient($email, $name="")
+    function __construct($email, $name="")
     {
         $this->Email = $email;
         $this->RealName = $name!="" ? $name : $email;

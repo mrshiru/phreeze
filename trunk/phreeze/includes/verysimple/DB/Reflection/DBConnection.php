@@ -37,7 +37,7 @@ class DBConnection extends PEAR  // extend PEAR to use the destructor functional
 	 * @param DBConnectionString $host
 	 * @param DBEventHandler $port
 	 */	
-	function DBConnection($dbconnstring, $handler = null)
+	function __construct($dbconnstring, $handler = null)
 	{
         $this->PEAR();  // call the base class
         

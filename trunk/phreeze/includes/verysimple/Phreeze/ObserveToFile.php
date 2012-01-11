@@ -21,7 +21,7 @@ class ObserveToFile implements IObserver
 	private $fh;
 	private $fileIsOpen = false;
 	
-	public function ObserveToFile($filepath, $eventtype = null)
+	public function __construct($filepath, $eventtype = null)
 	{
 		$this->filepath = $filepath;
 		$this->eventtype = $eventtype;

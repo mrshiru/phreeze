@@ -27,12 +27,12 @@ class Dispatcher
 	 * that the controller dependencies are all injected properly
 	 * 
 	 * @param Phreezer $phreezer Object persistance engine
-	 * @param Smarty $smarty rendering engine
+	 * @param Smarty $renderEngine rendering engine
 	 * @param string $action the user requested action
 	 * @param Context (optional) a context object for persisting the state of the current page
 	 * @param UrlWriter (optional) a custom writer for URL formatting
 	 */
-	static function Dispatch($phreezer,$smarty,$action,$context=null,$urlwriter=null)
+	static function Dispatch($phreezer,$renderEngine,$action,$context=null,$urlwriter=null)
 	{
 		// get the action requested
 		$params = explode(".", str_replace("/",".", $action) );
@@ -92,7 +92,7 @@ class Dispatcher
 
 		
 		// create an instance of the controller class
-		$controller = new $controller_class($phreezer,$smarty,$context,$urlwriter);
+		$controller = new $controller_class($phreezer,$renderEngine,$context,$urlwriter);
 		
 		// we have a valid instance, just verify there is a matching method
 		if (!is_callable(array($controller, $method_param)))

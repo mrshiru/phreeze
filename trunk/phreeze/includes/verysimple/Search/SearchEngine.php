@@ -28,7 +28,7 @@ class SearchEngine
 	* @param string $key the API key for this search engine
 	* @param string $pass the API password (if required)
 	*/
-	final function SearchEngine($key, $pass = "")
+	final function __construct($key, $pass = "")
 	{
 		$this->Key = $key;
 		$this->Pass = $pass;

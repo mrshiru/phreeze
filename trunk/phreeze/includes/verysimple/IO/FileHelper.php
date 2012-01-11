@@ -25,7 +25,7 @@
 	 * @access public
 	 * @param $path The full path to the file
 	 */
-	function FileHelper($path)
+	function __construct($path)
 	{
 		//TODO: user build-in php functions to extract these properties
 		

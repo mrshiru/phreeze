@@ -19,7 +19,7 @@ class ObserveToSmarty implements IObserver
 	private $_smarty = null;
 	private $_counter = 0;
 	
-	public function ObserveToSmarty($smarty)
+	public function __construct($smarty)
 	{
 		$this->_smarty = $smarty;
 		$this->_smarty->debugging = true;

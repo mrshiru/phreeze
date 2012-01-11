@@ -38,7 +38,7 @@ class EmailMessage
 	/** @var bool this controls the default value for DecodeEntities */
 	static $DECODE_HTML_ENTITIES = true;
 	
-	function EmailMessage()
+	function __construct()
 	{
 		$this->Recipients = Array();
 		$this->CCRecipients = Array();

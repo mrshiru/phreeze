@@ -24,7 +24,7 @@ abstract class Reporter
     * @param      Phreezer $phreezer
     * @param      Array $row
     */
-    final function Reporter(&$phreezer, $row = null)
+    final function __construct(&$phreezer, $row = null)
     {
 		$this->_phreezer = $phreezer;
 		

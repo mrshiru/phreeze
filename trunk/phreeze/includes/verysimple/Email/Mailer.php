@@ -42,7 +42,7 @@ class Mailer
 	 * @param $method
 	 * @param string $path (either file path to sendmail or SMTP connection string)
 	 */
-    function Mailer($method = MAILER_METHOD_SENDMAIL, $path = "/usr/sbin/sendmail")
+    function __construct($method = MAILER_METHOD_SENDMAIL, $path = "/usr/sbin/sendmail")
     {
     	$pair = explode("@",$path);
     	

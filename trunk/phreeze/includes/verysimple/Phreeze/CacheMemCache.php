@@ -27,7 +27,7 @@ class CacheMemCache implements ICache
 	 * @param string a unique prefix to use so this app doesn't conflict with any others that may use the same memcache pool
 	 * @param bool set to true to ignore errors if a connection can't be made to the cache server
 	 */
-	public function CacheMemCache($memcache,$uniquePrefix = "CACHE-",$suppressServerErrors=false)
+	public function __construct($memcache,$uniquePrefix = "CACHE-",$suppressServerErrors=false)
 	{
 		$this->_memcache = $memcache;
 		$this->_prefix = $uniquePrefix ? $uniquePrefix . "-" : "";

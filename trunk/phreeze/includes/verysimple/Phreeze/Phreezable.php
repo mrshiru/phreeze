@@ -114,7 +114,7 @@ abstract class Phreezable implements Serializable
     * @param      Phreezer $phreezer
     * @param      Array $row
     */
-	final function Phreezable(Phreezer &$phreezer, $row = null)
+	final function __construct(Phreezer &$phreezer, $row = null)
     {
 		$this->_phreezer = $phreezer;
 		$this->_cache = Array();

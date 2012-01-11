@@ -28,7 +28,7 @@ class PHPRenderEngine
 	 * Constructor
 	 * @param string $templatePath full path to template directory
 	 */
-	function PHPRenderEngine($path)
+	function __construct($path)
 	{
 		$this->templatePath = $path;
 		

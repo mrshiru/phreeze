@@ -36,7 +36,7 @@ class DBSet
 	 * @param DBTable $table that is the dependent/child table
 	 * @param Array $row array that is result from parsing show create table	
 	 */	
-	function DBSet($table, $row)
+	function __construct($table, $row)
 	{
 		$this->Table =& $table->Schema->Tables[$row[2]];
 		

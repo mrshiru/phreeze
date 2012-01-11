@@ -18,7 +18,7 @@ class SimpleAccount implements IAuthenticatable
 	private $_username;
 	private $_password;
 	
-	public function SimpleAccount($required_username,$required_password)
+	public function __construct($required_username,$required_password)
 	{
 		$this->_username = $required_username;
 		$this->_password = $required_password;

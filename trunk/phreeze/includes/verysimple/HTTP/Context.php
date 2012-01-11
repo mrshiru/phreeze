@@ -21,7 +21,7 @@ class Context
 	/**
 	 * Constructor initializes the session
 	 */
-	public function Context()
+	public function __construct()
 	{
 		if (session_id() == '')
 		{
