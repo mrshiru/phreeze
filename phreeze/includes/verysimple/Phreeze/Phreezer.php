@@ -86,7 +86,7 @@ class Phreezer extends Observable
     * @param ConnectionSetting $csetting
     * @param Observable $observer
     */
-    public function Phreezer($csetting, $observer = null)
+    public function __construct($csetting, $observer = null)
 	{
 		$this->_mapCache = new CacheRam();
 		$this->_level1Cache = new CacheRam();

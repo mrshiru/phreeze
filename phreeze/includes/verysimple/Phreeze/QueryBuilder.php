@@ -23,7 +23,7 @@
 	 *
 	 * @param Phreezer $phreezer persistance engine
 	 */
-	public function QueryBuilder($phreezer)
+	public function __construct($phreezer)
 	{
 		$this->_phreezer =& $phreezer;
 		$this->Columns = Array();

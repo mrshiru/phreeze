@@ -28,7 +28,7 @@ abstract class PaymentProcessor
 	* Constructor
 	* @param bool $testmode default = false 
 	*/
-	final function PaymentProcessor($testmode = false, $username = "", $password = "", $signature = "")
+	final function __construct($testmode = false, $username = "", $password = "", $signature = "")
 	{
 		$this->Username = $username;
 		$this->Password = $password;

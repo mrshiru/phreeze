@@ -34,7 +34,7 @@ class Criteria
 	public $PrimaryKeyField;
 	public $PrimaryKeyValue;
 	
-	public function Criteria($where = "", $order = "")
+	public function __construct($where = "", $order = "")
 	{
 		$this->_where = $where;
 		$this->_order = $order;

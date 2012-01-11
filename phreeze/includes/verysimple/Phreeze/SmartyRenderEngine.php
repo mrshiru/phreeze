@@ -17,9 +17,9 @@ require_once("verysimple/Phreeze/IRenderEngine.php");
  */
 class SmartyRenderEngine extends Smarty implements IRenderEngine
 {
-	public function SmartyRenderEngine()
+	public function __construct()
 	{
-		parent::Smarty();
+		parent::__construct();
 	}
 }
 

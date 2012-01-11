@@ -62,7 +62,7 @@ class FieldMap
 	* @param variant $dv Default value  (optional default = null)
 	* @param bool $iai True if column is auto insert column  (optional default = null)
 	*/
-	public function FieldMap($pn, $tn, $cn, $pk = false, $ft = FM_TYPE_UNKNOWN, $fs = 0, $dv = null, $iai = null)
+	public function __construct($pn, $tn, $cn, $pk = false, $ft = FM_TYPE_UNKNOWN, $fs = 0, $dv = null, $iai = null)
 	{
 		$this->PropertyName = $pn;
 		$this->TableName = $tn;

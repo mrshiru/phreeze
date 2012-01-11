@@ -21,7 +21,7 @@ class NameValue
 	 * @param $line the line to be parsed
 	 * @param $delim (default "=")
 	 */
-	function NameValue($line = "", $delim = "=", $nameonly=false)
+	function __construct($line = "", $delim = "=", $nameonly=false)
 	{
 		$keyval = explode($delim,$line);
 		$this->Name = $keyval[0];

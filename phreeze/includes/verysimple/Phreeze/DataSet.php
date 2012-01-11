@@ -55,7 +55,7 @@ class DataSet implements Iterator // @TODO implement Countable, ArrayAccess
     * @param string $sql code
     * @param int cache timeout (in seconds).  Default is Phreezer->ValueCacheTimeout.  Set to 0 for no cache
     */
-    function DataSet(&$preezer, $objectclass, $sql, $cache_timeout = null)
+    function __construct(&$preezer, $objectclass, $sql, $cache_timeout = null)
     {
         $this->_counter = -1;
 		$this->_totalcount = -1;

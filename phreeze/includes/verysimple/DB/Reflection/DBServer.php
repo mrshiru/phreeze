@@ -25,7 +25,7 @@ class DBServer
 	 * @access public
 	 * @param DBConnection $connection
 	 */	
-	function DBServer($connection)
+	function __construct($connection)
 	{
 		$this->Connection =& $connection;
 	}

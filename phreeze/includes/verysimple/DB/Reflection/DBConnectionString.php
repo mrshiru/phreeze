@@ -28,7 +28,7 @@
 	 * @param string $password	 
 	 * @param string $$dbname	 
 	 */
-	function DBConnectionString($host = "", $port = "", $username = "", $password = "", $dbname = "")
+	function __construct($host = "", $port = "", $username = "", $password = "", $dbname = "")
 	{
 		$this->Host = $host;
 		$this->Port = $port;

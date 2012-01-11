@@ -37,7 +37,7 @@ class KeyMap
 	 * @param int $kt Key Type (optional default = KM_TYPE_ONETOMANY)
 	 * @param int $lt Load Type KM_LOAD_LAZY | KM_LOAD_EAGER (optional default = KM_LOAD_LAZY)
 	 */
-	public function KeyMap($kn, $kp, $fo, $fkp, $kt = KM_TYPE_ONETOMANY, $lt = KM_LOAD_LAZY)
+	public function __construct($kn, $kp, $fo, $fkp, $kt = KM_TYPE_ONETOMANY, $lt = KM_LOAD_LAZY)
 	{
 		$this->KeyName = $kn;
 		$this->KeyProperty = $kp;

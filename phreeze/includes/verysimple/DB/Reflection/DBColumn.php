@@ -33,7 +33,7 @@
 	 * @param DBTable $table
 	 * @param Array $row result from "describe table" statement
 	 */	
-	function DBColumn($table, $row)
+	function __construct($table, $row)
 	{
 		// typical type is something like varchar(40)
 		$typesize = explode("(",$row["Type"]);

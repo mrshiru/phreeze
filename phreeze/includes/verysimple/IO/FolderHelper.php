@@ -23,7 +23,7 @@ class FolderHelper
 	 * @access public
 	 * @param string $path uri to directory to manipulate
 	 */	
-	function FolderHelper($path)
+	function __construct($path)
 	{
 		$this->Path = $path;
 	}

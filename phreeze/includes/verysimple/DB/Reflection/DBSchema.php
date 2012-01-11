@@ -26,7 +26,7 @@ class DBSchema
 	 * @param DBServer $server
 	 * @param string $name name of schema to parse	
 	 */	
-	function DBSchema($server)
+	function __construct($server)
 	{
 		$this->Server =& $server;
 		$this->Name = $server->Connection->DBName;

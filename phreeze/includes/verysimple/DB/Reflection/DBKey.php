@@ -27,7 +27,7 @@ class DBKey
 	 * @param string $keyname	
 	 * @param string $columnname	
 	 */	
-	function DBKey($table, $keyname, $columnname)
+	function __construct($table, $keyname, $columnname)
 	{
 		$this->Table =& $table;
 		$this->Name = $keyname;

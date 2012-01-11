@@ -24,7 +24,7 @@ class UrlWriter
 	 * @param string $format sprintf compatible format
 	 * @param string UrlWriterMode string
 	 */
-	public function UrlWriter($format = "%s.%s.page?%s", $mode = UrlWriterMode::WEB )
+	public function __construct($format = "%s.%s.page?%s", $mode = UrlWriterMode::WEB )
 	{
 		$this->_mode = $mode;
 		$this->_format = $format;

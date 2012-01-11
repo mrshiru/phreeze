@@ -38,7 +38,7 @@ class DataAdapter implements IObservable
     * @param Observable $listener
     * @param IDataDriver (optional) if not provided, then DataAdapter will attempt to instantiate one based on ConnectionSetting->Type
     */
-    function DataAdapter($csetting, $listener = null, IDataDriver $driver = null)
+    function __construct($csetting, $listener = null, IDataDriver $driver = null)
     {
     	$this->_driver = $driver;
     	

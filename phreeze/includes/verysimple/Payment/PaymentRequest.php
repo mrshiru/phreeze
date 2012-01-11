@@ -61,7 +61,7 @@ class PaymentRequest
 	/**
 	 * Constructor
 	 */
-	final function PaymentRequest()
+	final function __construct()
 	{
 		$this->Init();
 	}

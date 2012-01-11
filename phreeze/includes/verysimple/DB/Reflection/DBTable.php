@@ -38,7 +38,7 @@ class DBTable
 	 * @param DBSchema $schema
 	 * @return Array $row array that is result from "show tables" statement	
 	 */	
-	function DBTable($schema, $row)
+	function __construct($schema, $row)
 	{
 		$this->Schema = $schema;
 		$this->Name = $row["Tables_in_" . $this->Schema->Name];

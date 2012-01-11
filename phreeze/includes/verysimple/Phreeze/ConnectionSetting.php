@@ -24,7 +24,7 @@ class ConnectionSetting
      * Constructor
      *
      */
-    function ConnectionSetting($connection_code = "")
+    function __construct($connection_code = "")
     {
         if ($connection_code != "")
         {
