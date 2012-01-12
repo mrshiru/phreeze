@@ -120,6 +120,21 @@ class RequestUtil
 		return $parts;
 	}
 	
+	/**
+	 * Returns the body/payload of a request
+	 * @return string
+	 */
+	public static function GetBody()
+	{
+		$payload = '';
+		$fp = fopen('php://input','r');
+		while (!feof($fp)) 
+		{
+			$payload .= fgets($fp);
+		}
+		return $payload;
+	}
+	
 	/** Returns the full URL of the PHP page that is currently executing
 	 *
 	 * @param bool $include_querystring (optional) Specify true/false to include querystring. Default is true.
