@@ -104,7 +104,8 @@ class RequestUtil
 	 */
 	public static function GetUrlParts($appRoot = '')
 	{
-		list($url,$querystring) = explode("?", self::GetCurrentURL(),2);
+		$urlqs = explode("?", self::GetCurrentURL(),2);
+		$url = $urlqs[0];
 		
 		// if a root folder was provided, then we need to strip that out as well
 		$url = str_replace($appRoot.'/','',$url);
