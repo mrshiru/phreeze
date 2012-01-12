@@ -96,6 +96,29 @@ class RequestUtil
 		return substr($url,0,$slash+1);
 	}
 	
+	/**
+	 * Returns the parts of the url as deliminated by forward slashes for example /this/that/other
+	 * will be returned as an array [this,that,other]
+	 * @param string root folder for the app (ex. 'myapp' or 'myapp/subdir1')
+	 * @return array
+	 */
+	public static function GetUrlParts($appRoot = '')
+	{
+		list($url,$querystring) = explode("?", self::GetCurrentURL(),2);
+		
+		// if a root folder was provided, then we need to strip that out as well
+		$url = str_replace($appRoot.'/','',$url);
+		
+		$parts = explode("/", $url);
+		// we only want the parts starting with #3 (after http://server/)
+		
+		array_shift($parts);
+		array_shift($parts);
+		array_shift($parts);
+		
+		return $parts;
+	}
+	
 	/** Returns the full URL of the PHP page that is currently executing
 	 *
 	 * @param bool $include_querystring (optional) Specify true/false to include querystring. Default is true.
