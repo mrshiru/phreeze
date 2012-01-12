@@ -50,6 +50,9 @@ abstract class Controller
 	public $UnitTestMode = false;
 	public $CaptureOutputMode = false;
 	
+	/* */
+	static $SmartyViewPrefix = "View";
+	
 	/**
 	 * Constructor initializes the controller.  This method cannot be overriden.  If you need
 	 * to do something during construction, add it to Init
@@ -116,7 +119,7 @@ abstract class Controller
 	protected function GetUrlParam($index)
 	{
 		$params = $this->GetUrlParams();
-		return count($params) >= $index ? $params[$index] : '';
+		return count($params) > $index ? $params[$index] : '';
 	}
 	
 	/**
@@ -463,9 +466,7 @@ abstract class Controller
 	}
 	
 	/**
-	 * Sets a value in the current context
-	 * @param var
-	 * @param value
+	 * @deprecated use Controller->Context->Set instead
 	 */
 	protected function Set($var,$val)
 	{
@@ -473,10 +474,7 @@ abstract class Controller
 	}
 	
 	/**
-	 * Gets a value from the current context
-	 * @param var
-	 * @param default value (default = null)
-	 * @return value of var (or default)
+	 * @deprecated use Controller->Context->Get instead
 	 */
 	protected function Get($var,$default=null)
 	{
@@ -691,21 +689,25 @@ abstract class Controller
 	 * Renders the specified view
 	 *
 	 * @param string $view (optional) if not provided, the view is automatically bound using the class and method name
-	 * @param string $format (optional) default = "View"
+	 * @param string $format (optional) defaults to $self::SmartyViewPrefix
 	 */
-	protected function Render($view="",$format="View")
+	protected function Render($view="",$format = null)
 	{
+		$isSmarty = (strpos(get_class($this->RenderEngine),"Smarty") > -1);
+		
+		if ($isSmarty && $format == null) $format = self::$SmartyViewPrefix;
+		
+		if ($format == null) $format = '';
+		
 		if ($view == "")
 		{
 			// automatic binding
 			$backtrace = debug_backtrace();
 			$view = str_replace("Controller","", $backtrace[1]['class']) . $backtrace[1]['function'];
 		}
-		
-		// if the render engine is Smarty then structure the filename, otherwise don't touch it
-		$viewPath = (strpos(get_class($this->RenderEngine),"Smarty") > -1) 
-			? "View".$view.".tpl" 
-			: $view;
+
+		// if the render engine is Smarty then add the '.tpl' suffix
+		$viewPath = $isSmarty ? $format.$view.".tpl" : $format.$view;
 		
 		// capture output instead of rendering if specified
 		if ($this->CaptureOutputMode)
