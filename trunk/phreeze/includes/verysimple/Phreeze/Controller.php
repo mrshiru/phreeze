@@ -96,6 +96,30 @@ abstract class Controller
 	}
 	
 	/**
+	 * In the case of a rewrite url, the url itself contains the parameter
+	 * for example http://server/param1/param2/param3.  These params
+	 * are parsed and returned as an array
+	 * @return array
+	 */
+	protected function GetUrlParams()
+	{
+		$subdir = defined('APP_ROOT_SUBDIRECTORY') ? APP_ROOT_SUBDIRECTORY : '';
+		return RequestUtil::GetUrlParts($subdir);
+	}
+
+	/**
+	* In the case of a rewrite url, the url itself contains the parameter
+	* for example http://server/param1/param2/param3.  These params
+	* are parsed and the param with the given index is returned
+	* @return string (or empty string if index is out of bounds)
+	*/
+	protected function GetUrlParam($index)
+	{
+		$params = $this->GetUrlParams();
+		return count($params) >= $index ? $params[$index] : '';
+	}
+	
+	/**
 	 * Init is called by the base constructor immediately after construction.  
 	 * This method must be implemented and provided an oportunity to 
 	 * set any class-wide variables such as ModelName, implement 
