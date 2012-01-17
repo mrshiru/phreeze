@@ -121,6 +121,14 @@ class RequestUtil
 	}
 	
 	/**
+	 * Returns the request method (GET, POST, PUT, DELETE)
+	 */
+	public static function GetMethod()
+	{
+		return array_key_exists('REQUEST_METHOD', $_SERVER) ? $_SERVER['REQUEST_METHOD'] : '';
+	}
+	
+	/**
 	 * Returns the body/payload of a request
 	 * @return string
 	 */
