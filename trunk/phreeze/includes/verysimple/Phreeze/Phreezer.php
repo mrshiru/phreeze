@@ -179,7 +179,7 @@ class Phreezer extends Observable
 	{
 		if (is_null($timeout)) $timeout = $this->ObjectCacheTimeout;
 		
-		if ($val->NoCache || $timeout <= 0) return false;
+		if ($val->NoCache() || $timeout <= 0) return false;
 		
 		// if the object hasn't changed at level 1, then supress the cache update
 		$obj = $this->_level1Cache->Get($objectclass . "_" . $id);
@@ -217,7 +217,7 @@ class Phreezer extends Observable
 		if ($obj)
 		{ 
 			$this->Observe("Retrieved TYPE='$objectclass' ID='$id' from 1st Level Cache",OBSERVE_DEBUG);
-			$obj->CacheLevel = 1;
+			$obj->CacheLevel(1);
 			if (!$obj->IsLoaded) $obj->Refresh($this);
 			return $obj;
 		}
@@ -229,7 +229,7 @@ class Phreezer extends Observable
 		{ 
 			$this->Observe("Retrieved TYPE='$objectclass' ID='$id' from 2nd Level Cache",OBSERVE_DEBUG);
 			$obj->Refresh($this);
-			$obj->CacheLevel = 2;
+			$obj->CacheLevel(2);
 
 			// we just got this from level 2, but it wasn't in level 1 so let's save it in level 1 for
 			$this->_level1Cache->Set($cachekey,$obj);

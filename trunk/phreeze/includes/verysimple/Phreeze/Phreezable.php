@@ -19,10 +19,58 @@ abstract class Phreezable implements Serializable
 	protected $_val_errors = Array();
 	protected $_base_validation_complete = false;
 	
-    public $IsLoaded;
-	public $IsPartiallyLoaded;
-	public $CacheLevel = 0;
-	public $NoCache = false;
+    private $_isLoaded;
+	private $_isPartiallyLoaded;
+	private $_cacheLevel = 0;
+	private $_noCache = false;
+	
+	/**
+	* Returns true if the current object has been loaded
+	* @access     public
+	* @param      bool (optional) if provided will change the value
+	* @return     bool
+	*/
+	public function IsLoaded($value = null)
+	{
+		if ($value != null) $this->_isLoaded = $value;
+		return $this->_isLoaded;
+	}
+
+	/**
+	* Returns true if the current object has been partially loaded
+	* @access     public
+	* @param      bool (optional) if provided will change the value
+	* @return     bool
+	*/
+	public function IsPartiallyLoaded($value = null)
+	{
+		if ($value != null) $this->_isPartiallyLoaded = $value;
+		return $this->_isPartiallyLoaded;
+	}
+
+	/**
+	* Returns 0 if this was loaded from the DB, 1 if from 1st level cache and 2 if 2nd level cache
+	* @access     public
+	* @param      bool (optional) if provided will change the value
+	* @return     bool
+	*/
+	public function CacheLevel($value = null)
+	{
+		if ($value != null) $this->_cacheLevel = $value;
+		return $this->_cacheLevel;
+	}
+
+	/**
+	* Returns true if the current object should never be cached
+	* @access     public
+	* @param      bool (optional) if provided will change the value
+	* @return     bool
+	*/
+	public function NoCache($value = null)
+	{
+		if ($value != null) $this->_noCache = $value;
+		return $this->_noCache;
+	}
 	
 	/**
 	 * When serializing, make sure that we ommit certain properties that
@@ -30,7 +78,7 @@ abstract class Phreezable implements Serializable
 	 */
 	function serialize()
 	{
-		$no_cache_props = array("_cache","_phreezer","_val_errors","_base_validation_complete","CacheLevel","IsLoaded","NoCache");
+		$no_cache_props = array("_cache","_phreezer","_val_errors","_base_validation_complete","CacheLevel","IsLoaded","IsPartiallyLoaded","NoCache");
 		$propvals = array();
 		$ro = new ReflectionObject($this);
 		
@@ -169,21 +217,21 @@ abstract class Phreezable implements Serializable
 	*/
 	public function LoadFromObject($src)
 	{
-		$this->IsLoaded = true;
+		$this->IsLoaded(true);
 		$src_cls = get_class($src);
 
 		foreach (get_object_vars($this) as $key => $val)
 		{
-			if ($key != "IsLoaded" && $key != "IsPartiallyLoaded" && substr($key,0,1) != "_")
+			if (substr($key,0,1) != "_")
 			{
 				if (property_exists($src_cls ,$key))
 				{
 					$this->$key = $src->$key;
-					$this->IsPartiallyLoaded = true;
+					$this->IsPartiallyLoaded(true);
 				}
 				else
 				{
-					$this->IsLoaded = false;
+					$this->IsLoaded(false);
 				}
 			}
 		}
@@ -457,8 +505,8 @@ abstract class Phreezable implements Serializable
         $fms = $this->_phreezer->GetFieldMaps(get_class($this));
 		$this->_phreezer->Observe("Loading " . get_class($this),OBSERVE_DEBUG);
 
-        $this->IsLoaded = true; // assume true until fail occurs
-		$this->IsPartiallyLoaded = false; // at least we tried
+        $this->IsLoaded(true); // assume true until fail occurs
+		$this->IsPartiallyLoaded(false); // at least we tried
 		
 		// in order to prevent collisions on fields, QueryBuilder appends __tablename__rand to the
 		// sql statement.  We need to strip that out so we can match it up to the property names 
@@ -496,8 +544,8 @@ abstract class Phreezable implements Serializable
             {
                 // there is a required column missing from this $row array - mark as partially loaded
                 $this->_phreezer->Observe("Missing column '".$fm->ColumnName."' while loading " . get_class($this), OBSERVE_WARN);
-                $this->IsLoaded = false;
-				$this->IsPartiallyLoaded = true;
+                $this->IsLoaded(false);
+				$this->IsPartiallyLoaded(true);
             }
         }
         
@@ -619,18 +667,7 @@ abstract class Phreezable implements Serializable
     */
     public function OnRefresh(){}
     
-    /**
-    * Returns true if the current object has been loaded
-    *
-    * @access     public
-    * @return     bool
-    */
-    public function IsLoaded()
-    {
-        return $this->IsLoaded;
-    }
-    
-   
+ 
     /**
     * Throw an exception if an undeclared property is accessed
     *
