@@ -218,7 +218,7 @@ class Phreezer extends Observable
 		{ 
 			$this->Observe("Retrieved TYPE='$objectclass' ID='$id' from 1st Level Cache",OBSERVE_DEBUG);
 			$obj->CacheLevel(1);
-			if (!$obj->IsLoaded) $obj->Refresh($this);
+			if (!$obj->IsLoaded()) $obj->Refresh($this);
 			return $obj;
 		}
 		
