@@ -125,6 +125,9 @@ class RequestUtil
 	 */
 	public static function GetMethod()
 	{
+		// support backbone.js Backbone.emulateHTTP
+		if (array_key_exists('_method', $_REQUEST)) return $_REQUEST['_method'];
+		
 		return array_key_exists('REQUEST_METHOD', $_SERVER) ? $_SERVER['REQUEST_METHOD'] : '';
 	}
 	
