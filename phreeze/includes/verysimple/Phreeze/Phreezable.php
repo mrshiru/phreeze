@@ -24,6 +24,9 @@ abstract class Phreezable implements Serializable
 	private $_cacheLevel = 0;
 	private $_noCache = false;
 	
+	/** @var these properties will never be cached */
+	static $NoCacheProperties = array("_cache","_phreezer","_val_errors","_base_validation_complete");
+	
 	/**
 	* Returns true if the current object has been loaded
 	* @access     public
@@ -78,7 +81,7 @@ abstract class Phreezable implements Serializable
 	 */
 	function serialize()
 	{
-		$no_cache_props = array("_cache","_phreezer","_val_errors","_base_validation_complete","CacheLevel","IsLoaded","IsPartiallyLoaded","NoCache");
+		
 		$propvals = array();
 		$ro = new ReflectionObject($this);
 		
@@ -86,7 +89,7 @@ abstract class Phreezable implements Serializable
 		{
 			$propname = $rp->getName();
 			
-			if (!in_array($propname,$no_cache_props))
+			if (!in_array($propname,self::$NoCacheProperties))
 			{
 				if (method_exists($rp,"setAccessible")) 
 				{
