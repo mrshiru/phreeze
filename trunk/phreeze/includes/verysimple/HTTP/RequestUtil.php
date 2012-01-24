@@ -117,6 +117,12 @@ class RequestUtil
 		array_shift($parts);
 		array_shift($parts);
 		
+		// if there is no action specified then we don't want to return an array with an empty string
+		while (count($parts) && $parts[0] == '')
+		{
+			array_shift($parts);
+		}
+
 		return $parts;
 	}
 	
