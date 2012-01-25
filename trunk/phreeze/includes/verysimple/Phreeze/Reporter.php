@@ -14,9 +14,64 @@
 abstract class Reporter
 {
     protected $_phreezer;
-    
-    public $CacheLevel = 0;
-    
+
+private $_isLoaded;
+	private $_isPartiallyLoaded;
+	private $_cacheLevel = 0;
+	private $_noCache = false;
+
+	/** @var these properties will never be cached */
+	static $NoCacheProperties = array("_cache","_phreezer","_val_errors","_base_validation_complete");
+
+	/**
+	* Returns true if the current object has been loaded
+	* @access     public
+	* @param      bool (optional) if provided will change the value
+	* @return     bool
+	*/
+	public function IsLoaded($value = null)
+	{
+		if ($value != null) $this->_isLoaded = $value;
+		return $this->_isLoaded;
+	}
+
+	/**
+	* Returns true if the current object has been partially loaded
+	* @access     public
+	* @param      bool (optional) if provided will change the value
+	* @return     bool
+	*/
+	public function IsPartiallyLoaded($value = null)
+	{
+		if ($value != null) $this->_isPartiallyLoaded = $value;
+		return $this->_isPartiallyLoaded;
+	}
+
+	/**
+	* Returns 0 if this was loaded from the DB, 1 if from 1st level cache and 2 if 2nd level cache
+	* @access     public
+	* @param      bool (optional) if provided will change the value
+	* @return     bool
+	*/
+	public function CacheLevel($value = null)
+	{
+		if ($value != null) $this->_cacheLevel = $value;
+		return $this->_cacheLevel;
+	}
+
+	/**
+	* Returns true if the current object should never be cached
+	* @access     public
+	* @param      bool (optional) if provided will change the value
+	* @return     bool
+	*/
+	public function NoCache($value = null)
+	{
+		if ($value != null) $this->_noCache = $value;
+		return $this->_noCache;
+	}
+
+
     /**
     * constructor
     *
@@ -27,30 +82,29 @@ abstract class Reporter
     final function __construct(&$phreezer, $row = null)
     {
 		$this->_phreezer = $phreezer;
-		
+
         if ($row)
         {
             $this->Load($row);
         }
     }
-    
+
     /**
 	 * When serializing, make sure that we ommit certain properties that
 	 * should never be cached or serialized.
 	 */
 	function serialize()
 	{
-		$no_cache_props = array("_cache","_phreezer","_val_errors","_base_validation_complete","CacheLevel","IsLoaded","NoCache");
 		$propvals = array();
 		$ro = new ReflectionObject($this);
-		
+
 		foreach ($ro->getProperties() as $rp )
 		{
 			$propname = $rp->getName();
-			
-			if (!in_array($propname,$no_cache_props))
+
+			if (!in_array($propname,self::$NoCacheProperties))
 			{
-				if (method_exists($rp,"setAccessible")) 
+				if (method_exists($rp,"setAccessible"))
 				{
 					$rp->setAccessible(true);
 					$propvals[$propname] = $rp->getValue($this);
@@ -60,13 +114,13 @@ abstract class Reporter
 					// if < php 5.3 we can't serialize private vars
 					$propvals[$propname] = $rp->getValue($this);
 				}
-				
+
 			}
 		}
 
 		return serialize($propvals);
 	}
-	
+
 	/**
 	 * Reload the object when it awakes from serialization
 	 * @param $data
@@ -74,15 +128,15 @@ abstract class Reporter
 	function unserialize($data)
 	{
 		$propvals = unserialize($data);
-		
+
 		$ro = new ReflectionObject($this);
-		
+
 		foreach ($ro->getProperties() as $rp )
 		{
 			$propname = $rp->name;
 			if ( array_key_exists($propname,$propvals) )
 			{
-				if (method_exists($rp,"setAccessible")) 
+				if (method_exists($rp,"setAccessible"))
 				{
 					$rp->setAccessible(true);
 					$rp->setValue($this,$propvals[$propname]);
@@ -92,11 +146,11 @@ abstract class Reporter
 					// if < php 5.3 we can't serialize private vars
 					$rp->setValue($this,$propvals[$propname]);
 				}
-				
+
 			}
 		}
 	}
-	
+
 	/**
 	 * Restores the object's connection to the datastore, for example after serialization
 	 * @param $phreezer
@@ -110,7 +164,7 @@ abstract class Reporter
         {
             $this->Load($row);
         }
-        
+
          $this->OnRefresh();
 	}
 
@@ -133,7 +187,7 @@ abstract class Reporter
     {
     	return "";
     }
-    
+
     /**
     * This static function can be overridden to count the number of results
     * in the query
@@ -146,7 +200,7 @@ abstract class Reporter
     {
     	return "";
     }
-	
+
 	/**
     * Returns this object as an associative array with properties as keys and
     * values as values
@@ -158,16 +212,16 @@ abstract class Reporter
     {
 		$fms = $this->_phreezer->GetFieldMaps(get_class($this));
 		$cols = Array();
-		
+
         foreach ($fms as $fm)
         {
 			$prop = $fm->PropertyName;
 			$cols[$fm->ColumnName] = $this->$prop;
         }
-        
+
         return $cols;
 	}
-    
+
     /**
     * Loads the object with data given in the row array.
     *
@@ -185,24 +239,13 @@ abstract class Reporter
 
         $this->OnLoad();
     }
-    
+
     /**
     * Called after object is loaded, may be overridden
     *
     * @access     protected
     */
     protected function OnLoad(){}
-    
-    /**
-    * Returns true if the current object has been loaded
-    *
-    * @access     public
-    * @return     bool
-    */
-    public function IsLoaded()
-    {
-        return $this->IsLoaded;
-    }
 
 }
 
