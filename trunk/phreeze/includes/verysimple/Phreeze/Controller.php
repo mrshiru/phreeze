@@ -13,6 +13,7 @@ require_once("verysimple/String/VerySimpleStringUtil.php");
 require_once("DataPage.php");
 require_once("Phreezer.php");
 require_once("Criteria.php");
+require_once("IRouter.php");
 
 /**
  * Controller is a base controller object used for an MVC pattern
@@ -20,7 +21,7 @@ require_once("Criteria.php");
  * This controller could be extended to use a differente ORM and
  * Rendering engine as long as they implement compatible functions.
  *
- * @package    verysimple::Phreeze 
+ * @package    verysimple::Phreeze
  * @author     VerySimple Inc.
  * @copyright  1997-2011 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
@@ -30,49 +31,49 @@ abstract class Controller
 {
 	protected $Phreezer;
 	protected $RenderEngine;
-	
+
 	/**
 	 * @var string ModelName is used by the base Controller class for certain functions in which
 	 * require knowledge of what Model is being used.  For example, when validating user input.
 	 * This may be defined in Init() if any of thes base Controller features will be used.
 	 */
 	protected $ModelName;
-	
+
 	protected $Context;
 	protected $UrlWriter;
-	
+
 	/** @deprecated use RenderEngine */
 	protected $Smarty;
-	
+
 	private $_cu;
 	public $GUID;
 	public $DebugOutput = "";
 	public $UnitTestMode = false;
 	public $CaptureOutputMode = false;
-	
+
 	/* */
 	static $SmartyViewPrefix = "View";
-	
+
 	/**
 	 * Constructor initializes the controller.  This method cannot be overriden.  If you need
 	 * to do something during construction, add it to Init
-	 * 
+	 *
 	 * @param Phreezer $phreezer Object persistance engine
 	 * @param IRenderEngine $renderEngine rendering engine
 	 * @param Context (optional) a context object for persisting the state of the current page
 	 * @param UrlWriter (optional) a custom writer for URL formatting
 	 */
-	final function __construct(Phreezer &$phreezer, &$renderEngine, &$context = null, &$urlwriter = null)
+	final function __construct(Phreezer &$phreezer, &$renderEngine, &$context = null, IRouter &$urlwriter = null)
 	{
 		$this->Phreezer =& $phreezer;
 		$this->RenderEngine =& $renderEngine;
-		
+
 		// for backwards compatibility
 		$this->Smarty =& $renderEngine;
-		
+
 		$ra = RequestUtil::GetRemoteHost();
 		$this->GUID = $this->Phreezer->DataAdapter->GetDBName() . "_" . str_replace(".","_", $ra);
-		
+
 		$this->UrlWriter = $urlwriter ? $urlwriter : new UrlWriter();
 
 		if ($context)
@@ -84,20 +85,20 @@ abstract class Controller
 			$this->Context = new Context();
 			$this->Context->GUID = "CTX_" . $this->GUID;
 		}
-		
+
 		// assign some variables globally for the views
 		$this->Assign("CURRENT_USER",$this->GetCurrentUser());
 		$this->Assign("URL",$this->UrlWriter);
 		$this->Assign("BROWSER_DEVICE",$this->GetDevice());
-		
+
 		// if feedback was persisted, set it
 		$this->Assign("feedback",$this->Context->Get("feedback"));
 		$this->Context->Set("feedback",null);
-		
+
 		$this->Init();
-		
+
 	}
-	
+
 	/**
 	 * In the case of a rewrite url, the url itself contains the parameter
 	 * for example http://server/param1/param2/param3.  These params
@@ -121,11 +122,11 @@ abstract class Controller
 		$params = $this->GetUrlParams();
 		return count($params) > $index ? $params[$index] : '';
 	}
-	
+
 	/**
-	 * Init is called by the base constructor immediately after construction.  
-	 * This method must be implemented and provided an oportunity to 
-	 * set any class-wide variables such as ModelName, implement 
+	 * Init is called by the base constructor immediately after construction.
+	 * This method must be implemented and provided an oportunity to
+	 * set any class-wide variables such as ModelName, implement
 	 * authentication for this Controller or any other class-wide initialization
 	 */
 	abstract protected function Init();
@@ -141,25 +142,25 @@ abstract class Controller
 	protected function Require401Authentication(IAuthenticatable $authenticatable, $realm = "Login Required", $qs_username_field = "", $qs_password_field = "")
 	{
 		$user = $this->Get401Authentication($authenticatable,$qs_username_field, $qs_password_field);
-		
+
 		// we only want to output 401 headers if the user is not already authenticated
 		if (!$user)
 		{
-			if( $this->Get401AuthUsername($qs_username_field) ) 
+			if( $this->Get401AuthUsername($qs_username_field) )
 			{
 				// a username was provided, which means login failed
 				Auth401::OutputHeaders("Invalid Login");
 			}
-			else 
+			else
 			{
 				// no username provided, which means prompt for username
 				Auth401::OutputHeaders($realm);
 			}
 		}
 	}
-	
+
 	/**
-	 * accept username passed in either headers or querystring.  if a querystring parameter name is 
+	 * accept username passed in either headers or querystring.  if a querystring parameter name is
 	 * provided, that will be checked first before the 401 auth headers
 	 * @param string $qs_username_field the querystring parameter to check for username (optional)
 	 */
@@ -194,12 +195,12 @@ abstract class Controller
 	{
 		$user = null;
 		$username = $this->Get401AuthUsername($qs_username_field);
-		
+
 		if( $username )
 		{
 			// username was provided so let's attempt a login
 			$password = $this->Get401AuthPassword($qs_password_field);
-				
+
 			if ( $authenticatable->Login($username,$password) )
 			{
 				$user = $authenticatable;
@@ -208,20 +209,20 @@ abstract class Controller
 		}
 		else
 		{
-			// no login info was provided so return whatever is in the session 
+			// no login info was provided so return whatever is in the session
 			// (which will be null if the user is not authenticated)
 			$user = $this->GetCurrentUser();
 		}
-		
+
 		return $user;
 
 	}
-	
+
 	/**
 	 * LoadFromForm should load the object specified by primary key = $pk, or
 	 * create a new instance of the object.  Then should overwrite any applicable
 	 * properties with user input.
-	 * 
+	 *
 	 * This method is used by ValidateInput for automation AJAX server-side validation.
 	 *
 	 * @param variant $pk the primary key (optional)
@@ -231,7 +232,7 @@ abstract class Controller
 	{
 		return null;
 	}
-	
+
 	/**
 	 * Use as an alterative to print in order to capture debug output
 	 * @param string text to print
@@ -247,7 +248,7 @@ abstract class Controller
 			print $text;
 		}
 	}
-	
+
 	/**
 	 * Returns a BrowserDevice object with information about the browser
 	 * that is being used to view/execute this code.
@@ -257,9 +258,9 @@ abstract class Controller
 	{
 		return BrowserDevice::GetInstance();
 	}
-	
+
 	/**
-	 * Displays the ListAll view for the primary model object.  Because the 
+	 * Displays the ListAll view for the primary model object.  Because the
 	 * datagrid is populated via ajax, no model data is populated here
 	 */
 	public function ListAll()
@@ -268,7 +269,7 @@ abstract class Controller
 		{
 			throw new Exception("ModelName must be defined in " . get_class($this) . "::ListAll");
 		}
-				
+
 		// capture output instead of rendering if specified
 		if ($this->CaptureOutputMode)
 		{
@@ -295,12 +296,12 @@ abstract class Controller
 		{
 			throw new Exception("ModelName must be defined in " . get_class($this) . "::_ListAll.");
 		}
-		
+
 		$page = $this->Phreezer->Query($this->ModelName,$criteria)->GetDataPage($current_page,$limit);
 		$this->RenderEngine->assign($this->ModelName . "DataPage", $page);
 		$this->RenderEngine->display("View" . $this->ModelName .  "ListAll.tpl");
 	}
-	
+
 	/**
 	 * Renders a datapage as XML for use with a datagrid.  The optional $additionalProps allows
 	 * retrieval of properties from foreign relationships
@@ -313,14 +314,14 @@ abstract class Controller
 	protected function RenderXML(DataPage $page,$additionalProps = null, $supressProps = null, $noMap = false)
 	{
 		if (!is_array($supressProps)) $supressProps = array();
-		
+
 		// never include these props
 		$suppressProps[] = "NoCache";
 		$suppressProps[] = "CacheLevel";
 		$suppressProps[] = "IsLoaded";
 		$suppressProps[] = "IsPartiallyLoaded";
-		
-		
+
+
 		$xml = "";
 		$xml .= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
 
@@ -331,9 +332,9 @@ abstract class Controller
 		$xml .= "<TotalPages>".htmlspecialchars($page->TotalPages)."</TotalPages>\r\n";
 		$xml .= "<CurrentPage>".htmlspecialchars($page->CurrentPage)."</CurrentPage>\r\n";
 		$xml .= "<PageSize>".htmlspecialchars($page->PageSize)."</PageSize>\r\n";
-	
+
 		$xml .= "<Records>\r\n";
-		
+
 		// get the fieldmap for this object type unless not specified
 		if ($noMap)
 		{
@@ -350,8 +351,8 @@ abstract class Controller
 				throw new Exception("The objects contained in this DataPage do not have a FieldMap.  Set noMap argument to true to supress this error: " . $ex->getMessage());
 			}
 		}
-		
-		foreach ($page->Rows as $obj) 
+
+		foreach ($page->Rows as $obj)
 		{
 			$xml .= "<" . htmlspecialchars($page->ObjectName) . ">\r\n";
 			foreach (get_object_vars($obj) as $var => $val)
@@ -360,7 +361,7 @@ abstract class Controller
 				{
 					// depending on what type of field this is, do some special formatting
 					$fm = isset($fms[$var]) ? $fms[$var]->FieldType : FM_TYPE_UNKNOWN;
-					
+
 					if ($fm == FM_TYPE_DATETIME)
 					{
 						$val = strtotime($val) ? date("m/d/Y h:i A",strtotime($val)) : $val;
@@ -369,21 +370,21 @@ abstract class Controller
 					{
 						$val = strtotime($val) ? date("m/d/Y",strtotime($val)) : $val;
 					}
-					
+
 					// if the developer has added a property that is not a simple type
 					// we need to serialize it
 					if (is_array($val) || is_object($val))
 					{
 						$val = serialize($val);
 					}
-					
+
 					$val = VerySimpleStringUtil::EncodeSpecialCharacters($val, true, true);
-					
+
 					$xml .= "<" . htmlspecialchars($var) . ">" . $val . "</" . htmlspecialchars($var) . ">\r\n";
 				}
 			}
-			
-			
+
+
 			// Add any properties that we want from child objects
 			if ($additionalProps)
 			{
@@ -396,13 +397,13 @@ abstract class Controller
 					}
 				}
 		}
-					
+
 			$xml .= "</" . htmlspecialchars($page->ObjectName) . ">\r\n";
 		}
 		$xml .= "</Records>\r\n";
-		
+
 		$xml .= "</DataPage>\r\n";
-		
+
 		// capture output instead of rendering if specified
 		if ($this->CaptureOutputMode)
 		{
@@ -413,7 +414,7 @@ abstract class Controller
 			header('Content-type: text/xml');
 			print $xml;
 		}
-		
+
 	}
 
 	/**
@@ -431,14 +432,14 @@ abstract class Controller
 		$rssWriter = new RSS_Writer($feedTitle,$baseUrl,$feedDescription);
 		$rssWriter->setLanguage('us-en');
 		$rssWriter->addCategory("Items");
-		
+
 		if (count($feedItems))
 		{
 			$count = 0;
 			foreach ($feedItems as $item)
 			{
 				$count++;
-				
+
 				if ($item instanceof IRSSFeedItem)
 				{
 					$rssWriter->addItem(
@@ -461,10 +462,10 @@ abstract class Controller
 		{
 			$rssWriter->addItem("No Items","about:blank",'','No Author',date(DATE_RSS) );
 		}
-		
+
 		$rssWriter->writeOut();
 	}
-	
+
 	/**
 	 * @deprecated use Controller->Context->Set instead
 	 */
@@ -472,7 +473,7 @@ abstract class Controller
 	{
 		return $this->Context->Set($var,$val);
 	}
-	
+
 	/**
 	 * @deprecated use Controller->Context->Get instead
 	 */
@@ -480,21 +481,21 @@ abstract class Controller
 	{
 		return $this->Context->Get($var,$default);
 	}
-	
+
 	/**
 	 * This method calls LoadFromForm to retrieve a model object populated with user
 	 * input.  The input is validated and a ValidationResponse is rendered in JSON format
-	 * 
-	 * if Request::Get("SaveInline") is set then validate will call Save instead of 
+	 *
+	 * if Request::Get("SaveInline") is set then validate will call Save instead of
 	 * rendering JSON.  In which case, your Save method should render the ValidationResponse
 	 */
 	function ValidateInput()
 	{
 		require_once("ValidationResponse.php");
 		$vr = new ValidationResponse();
-		
+
 		$save = RequestUtil::Get("SaveInline");
-		
+
 		$obj = $this->LoadFromForm();
 
 		if (!is_object($obj))
@@ -513,7 +514,7 @@ abstract class Controller
 			$vr->Errors = $obj->GetValidationErrors();
 			$vr->Message = "Validation Errors Occured";
 		}
-		
+
 		// if the user requested to save inline, their Save method will take over from here
 		if ($vr->Success && $save)
 		{
@@ -524,8 +525,8 @@ abstract class Controller
 			$this->RenderJSON($vr);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Stub method
 	 */
@@ -535,7 +536,7 @@ abstract class Controller
 		{
 			throw new Exception("Save is not implemented by this controller");
 		}
-		
+
 		require_once("ValidationResponse.php");
 		$vr = new ValidationResponse();
 		$vr->Success = false;
@@ -543,10 +544,10 @@ abstract class Controller
 		$vr->Message = "SaveInline is not implemented by this controller";
 		$this->RenderJSON($vr);
 	}
-	
+
 	/**
 	 * Returns an array of all property names in the primary model
-	 * 
+	 *
 	 * @return array
 	 */
 	protected function GetColumns()
@@ -555,7 +556,7 @@ abstract class Controller
 		{
 			throw new Exception("ModelName must be defined in " . get_class($this) . "::GetColumns");
 		}
-		
+
 		$counter = 0;
 		$props = array();
 		foreach (get_class_vars($this->ModelName)as $var => $val)
@@ -564,7 +565,7 @@ abstract class Controller
 		}
 		return $props;
 	}
-	
+
 	/**
 	 * Returns a unique ID for this session based on connection string and remote IP
 	 * This is a reasonable variable to use as a session variable because it ensures
@@ -579,7 +580,7 @@ abstract class Controller
 	{
 		return $this->GUID;
 	}
-	
+
 	/**
 	 * Clears the current authenticated user from the session
 	 */
@@ -588,7 +589,7 @@ abstract class Controller
 		$this->_cu = null;
 		Authenticator::ClearAuthentication($this->GUID);
 	}
-	
+
 	/**
 	 * Sets the given user as the authenticatable user for this session.
 	 *
@@ -598,7 +599,7 @@ abstract class Controller
 	{
 		$this->_cu = $user;
 		Authenticator::SetCurrentUser($user,$this->GUID);
-		
+
 		// assign some global variables to the view
 		$this->Assign("CURRENT_USER",$this->GetCurrentUser());
 	}
@@ -624,7 +625,7 @@ abstract class Controller
 					$parts1 = explode("__PHP_Incomplete_Class_Name] => ",$tmp);
 					$parts2 = explode("[",$parts1[1]);
 					$name = trim($parts2[0]);
-					
+
 					Authenticator::ClearAuthentication($this->GUID);
 					throw new Exception("The class definition used for authentication '$name' must be defined (included) before the session is started, for example in _config.php.");
 				}
@@ -638,10 +639,10 @@ abstract class Controller
 		{
 			$this->Phreezer->Observe("Using previously loaded CurrentUser");
 		}
-		
+
 		return $this->_cu;
 	}
-	
+
 	/**
 	 * Check the current user to see if they have the requested permission.
 	 * If so then the function does nothing.  If not, then the user is redirected
@@ -655,13 +656,13 @@ abstract class Controller
 	{
 		$this->Phreezer->Observe("Checking For Permission '$permission'");
 		$cu = $this->GetCurrentUser();
-		
+
 		if (!$cu || !$cu->IsAuthorized($permission))
 		{
 			$message = !$cu || $cu->IsAnonymous()
 				? "Please login to access this page"
 				: "You are not authorized to view this page and/or your session has expired";
-			
+
 			if ($on_fail_action)
 			{
 				$this->Redirect($on_fail_action,$message);
@@ -673,7 +674,7 @@ abstract class Controller
 			}
 		}
 	}
-	
+
 	/**
 	 * Assigns a variable to the view
 	 *
@@ -684,7 +685,7 @@ abstract class Controller
 	{
 		$this->RenderEngine->assign($varname,$varval);
 	}
-	
+
 	/**
 	 * Renders the specified view
 	 *
@@ -694,11 +695,11 @@ abstract class Controller
 	protected function Render($view="",$format = null)
 	{
 		$isSmarty = (strpos(get_class($this->RenderEngine),"Smarty") > -1);
-		
+
 		if ($isSmarty && $format == null) $format = self::$SmartyViewPrefix;
-		
+
 		if ($format == null) $format = '';
-		
+
 		if ($view == "")
 		{
 			// automatic binding
@@ -708,7 +709,7 @@ abstract class Controller
 
 		// if the render engine is Smarty then add the '.tpl' suffix
 		$viewPath = $isSmarty ? $format.$view.".tpl" : $format.$view;
-		
+
 		// capture output instead of rendering if specified
 		if ($this->CaptureOutputMode)
 		{
@@ -719,7 +720,7 @@ abstract class Controller
 			$this->RenderEngine->display($viewPath);
 		}
 	}
-	
+
 	/**
 	 * Renders the given value as JSON
 	 *
@@ -730,12 +731,12 @@ abstract class Controller
 	{
 		require_once("JSON.php");
 		$json = new Services_JSON();
-		
+
 		// @header('Content-type: application/json');
 
 		$output = $json->encode($var);
 		if ($callback) $output = "$callback(" . $output . ")";
-		
+
 		// capture output instead of rendering if specified
 		if ($this->CaptureOutputMode)
 		{
@@ -747,7 +748,7 @@ abstract class Controller
 		}
 	}
 
-	
+
 	/**
 	 * Send a crash message to the browser and terminate
 	 *
@@ -772,19 +773,19 @@ abstract class Controller
 	protected function Redirect($action, $feedback = "", $params = "")
 	{
 		$params = is_array($params) ? $params : array();
-	
+
 		if ($feedback)
 		{
-			// $params["feedback"] = $feedback; 
+			// $params["feedback"] = $feedback;
 			$this->Context->Set("feedback",$feedback);
 		}
-		
+
 		// support for deprecated Controller/Method format
 		list($controller,$method) = explode(".", str_replace("/",".",$action));
-		
+
 		$url = $this->UrlWriter->Get($controller,$method,$params);
 		$this->RenderEngine->assign("url",$url);
-		
+
 		// capture output instead of rendering if specified
 		if ($this->CaptureOutputMode)
 		{
@@ -794,12 +795,12 @@ abstract class Controller
 		{
 			$this->RenderEngine->display("_redirect.tpl");
 		}
-		
+
 		// don't exit if we are unit testing because it will stop all further tests
 		if (!$this->UnitTestMode) exit;
 
 	}
-	
+
     /**
     * Throw an exception if an undeclared method is accessed
     *
