@@ -3,22 +3,23 @@
 
 require_once("verysimple/HTTP/RequestUtil.php");
 require_once("verysimple/Util/UrlWriterMode.php");
+require_once("verysimple/Phreeze/IRouter.php");
 
 /**
  * class for dealing with URLs
  *
- * @package    verysimple::HTTP 
+ * @package    verysimple::HTTP
  * @author     VerySimple Inc.
  * @copyright  1997-2007 VerySimple, Inc. http://www.verysimple.com
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
  * @version    1.0
  */
-class UrlWriter
+class UrlWriter implements IRouter
 {
 	private $_format;
 	private $_mode;
-	
-	/** 
+
+	/**
 	 * Constructor allows a rewriting pattern to be specified
 	 *
 	 * @param string $format sprintf compatible format
@@ -29,7 +30,23 @@ class UrlWriter
 		$this->_mode = $mode;
 		$this->_format = $format;
 	}
-	
+
+	/**
+	 * @inheritdocs
+	 */
+	public function GetUrl($controller,$method,$params = '')
+	{
+		throw new Exception('Not implemented');
+	}
+
+	/**
+	 * @inheritdocs
+	 */
+	public function GetRoute($uri = "")
+	{
+		throw new Exception('Not implemented');
+	}
+
 	/** Returns a url for the given controller, method and parameters
 	 *
 	 * @param string $controller
@@ -42,7 +59,7 @@ class UrlWriter
 	public function Get($controller, $method, $params = "", $strip_api = true, $delim="&")
 	{
 		$format = str_replace("{delim}",$delim,$this->_format);
-		
+
 		$qs = "";
 		$d = "";
 		if (is_array($params))
@@ -58,26 +75,26 @@ class UrlWriter
 		{
 			$qs = $params;
 		}
-		
+
 		$url = sprintf($format,$controller,$method,$qs);
-		
+
 		// strip off trailing delimiters from the url
 		$url = (substr($url,-5) == "&amp;") ? substr($url,0,strlen($url)-5) : $url;
 		$url = (substr($url,-1) == "&" || substr($url,-1) == "?") ? substr($url,0,strlen($url)-1) : $url;
-		
+
 		$api_check = explode("/api/",RequestUtil::GetCurrentUrl());
 		if ($strip_api && count($api_check) > 1)
 		{
 			$url = $api_check[0] . "/" . $url;
 		}
-		
+
 		return $url;
 	}
-	
+
 	/**
 	 * Returns true or false based on the $value passed in as to whether or not the
 	 * URL Writer is currently in that mode.
-	 * 
+	 *
 	 * @param $value	String mode to check against the current mode
 	 * @return	boolean TRUE if arg passed in is the current mode
 	 */
@@ -88,10 +105,10 @@ class UrlWriter
 		else
 			return false;
 	}
-	
+
 	/**
 	 * Returns how the Dispatcher plucks it's controller and method from the URL.
-	 * 
+	 *
 	 * @param $default_action	The Default action in case the argument hasn't been supplied
 	 */
 	public function GetAction( $url_param = "action", $default_action = "Account.DefaultAction" )
