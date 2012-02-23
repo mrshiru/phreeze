@@ -14,6 +14,30 @@ class GenericRouter implements IRouter
 
 	}
 
+	/**
+	* @inherit-docs
+	*/
+	public function GetUrl($controller,$method,$params = '')
+	{
+		throw new Exception('Not Implemented');
+	}
+
+	/**
+	 * @inherit-docs
+	 */
+	public function GetRoute($uri = "")
+	{
+		throw new Exception('Not Implemented');
+	}
+
+	/**
+	 * @inherit-docs
+	 */
+	public function GetUri()
+	{
+		throw new Exception('Not Implemented');
+	}
+
 }
 
 ?>

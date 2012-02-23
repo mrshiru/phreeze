@@ -18,17 +18,20 @@ class UrlWriter implements IRouter
 {
 	private $_format;
 	private $_mode;
+	private $_appRoot;
 
 	/**
 	 * Constructor allows a rewriting pattern to be specified
 	 *
 	 * @param string $format sprintf compatible format
 	 * @param string UrlWriterMode string
+	 * @param string the root folder of the app
 	 */
-	public function __construct($format = "%s.%s.page?%s", $mode = UrlWriterMode::WEB )
+	public function __construct($format = "%s.%s.page?%s", $mode = UrlWriterMode::WEB, $appRoot = '' )
 	{
 		$this->_mode = $mode;
 		$this->_format = $format;
+		$this->_appRoot = $appRoot;
 	}
 
 	/**
@@ -37,6 +40,14 @@ class UrlWriter implements IRouter
 	public function GetUrl($controller,$method,$params = '')
 	{
 		throw new Exception('Not implemented');
+	}
+
+	/**
+	* @inheritdocs
+	*/
+	public function GetUri()
+	{
+		return implode('/',RequestUtil::GetUrlParts($this->_appRoot));
 	}
 
 	/**

@@ -19,4 +19,12 @@ interface IRouter
 	* @return array($controller,$method)
 	*/
 	public function GetRoute($uri = "");
+
+	/**
+	* Returns the URI
+	*
+	* @param string the url, if not provided will be obtained using the current URL
+	* @return string
+	*/
+	public function GetUri();
 }
