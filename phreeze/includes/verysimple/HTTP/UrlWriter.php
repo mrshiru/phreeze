@@ -39,7 +39,7 @@ class UrlWriter implements IRouter
 	 */
 	public function GetUrl($controller,$method,$params = '')
 	{
-		throw new Exception('Not implemented');
+		return $this->Get($controller,$method,$params);
 	}
 
 	/**
@@ -55,7 +55,23 @@ class UrlWriter implements IRouter
 	 */
 	public function GetRoute($uri = "")
 	{
-		throw new Exception('Not implemented');
+		if( $uri == "" )
+			$uri = RequestUtil::GetCurrentURL();
+		
+		// get the action requested
+		$params = explode(".", str_replace("/",".", $uri) );
+		$controller_param = isset($params[0]) && $params[0] ? $params[0] : "";
+		$controller_param = str_replace(array(".","/","\\"),array("","",""),$controller_param);
+		
+		if ( !$controller_param )
+		{
+			throw new Exception("Invalid or missing Controller parameter");
+		}
+		
+		$method_param = isset($params[1]) && $params[1] ? $params[1] : "";
+		if ( !$method_param ) $method_param = "DefaultAction";
+		
+		return array($controller_param,$method_param);
 	}
 
 	/** Returns a url for the given controller, method and parameters
@@ -70,7 +86,7 @@ class UrlWriter implements IRouter
 	public function Get($controller, $method, $params = "", $strip_api = true, $delim="&")
 	{
 		$format = str_replace("{delim}",$delim,$this->_format);
-
+		
 		$qs = "";
 		$d = "";
 		if (is_array($params))
@@ -98,7 +114,7 @@ class UrlWriter implements IRouter
 		{
 			$url = $api_check[0] . "/" . $url;
 		}
-
+		
 		return $url;
 	}
 

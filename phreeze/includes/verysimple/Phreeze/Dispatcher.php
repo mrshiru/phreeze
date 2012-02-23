@@ -32,25 +32,13 @@ class Dispatcher
 	 * @param Context (optional) a context object for persisting the state of the current page
 	 * @param UrlWriter (optional) a custom writer for URL formatting
 	 */
-	static function Dispatch($phreezer,$renderEngine,$action,$context=null,$urlwriter=null)
+	static function Dispatch($phreezer,$renderEngine,$action,$context=null,$router=null)
 	{
-		// get the action requested
-		$params = explode(".", str_replace("/",".", $action) );
-		$controller = null;
-		$controller_param = isset($params[0]) && $params[0] ? $params[0] : "";
-		$controller_param = str_replace(array(".","/","\\"),array("","",""),$controller_param);
-
-		if ( !$controller_param )
-		{
-			throw new Exception("Invalid or missing Controller parameter");
-		}
+		list($controller_param,$method_param) = $router->GetRoute( $action );
 
 		// normalize the input
 		$controller_class = $controller_param."Controller";
 		$controller_file = "Controller/" . $controller_param . "Controller.php";
-		$method_param = isset($params[1]) && $params[1] ? $params[1] : "";
-
-		if ( !$method_param ) $method_param = "DefaultAction";
 
 		// look for the file in the expected places, hault if not found
 		if ( !(file_exists($controller_file) || file_exists("libs/".$controller_file)) )
@@ -92,7 +80,7 @@ class Dispatcher
 
 
 		// create an instance of the controller class
-		$controller = new $controller_class($phreezer,$renderEngine,$context,$urlwriter);
+		$controller = new $controller_class($phreezer,$renderEngine,$context,$router);
 
 		// we have a valid instance, just verify there is a matching method
 		if (!is_callable(array($controller, $method_param)))
