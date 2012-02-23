@@ -34,6 +34,13 @@ class Dispatcher
 	 */
 	static function Dispatch($phreezer,$renderEngine,$action,$context=null,$router=null)
 	{
+
+		if ($router == null)
+		{
+			require_once('GenericRouter.php');
+			$router = new GenericRouter();
+		}
+
 		list($controller_param,$method_param) = $router->GetRoute( $action );
 
 		// normalize the input
