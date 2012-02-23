@@ -2,7 +2,6 @@
 /** @package    verysimple::Phreeze */
 
 /** import supporting libraries */
-require_once("verysimple/HTTP/UrlWriter.php");
 require_once("verysimple/HTTP/RequestUtil.php");
 require_once("verysimple/HTTP/Context.php");
 require_once("verysimple/HTTP/BrowserDevice.php");
@@ -14,6 +13,7 @@ require_once("DataPage.php");
 require_once("Phreezer.php");
 require_once("Criteria.php");
 require_once("IRouter.php");
+require_once("GenericRouter.php");
 
 /**
  * Controller is a base controller object used for an MVC pattern
@@ -40,11 +40,11 @@ abstract class Controller
 	protected $ModelName;
 
 	protected $Context;
-	protected $UrlWriter;
 
 	/** @deprecated use RenderEngine */
 	protected $Smarty;
 
+	private $_router;
 	private $_cu;
 	public $GUID;
 	public $DebugOutput = "";
@@ -61,9 +61,9 @@ abstract class Controller
 	 * @param Phreezer $phreezer Object persistance engine
 	 * @param IRenderEngine $renderEngine rendering engine
 	 * @param Context (optional) a context object for persisting the state of the current page
-	 * @param UrlWriter (optional) a custom writer for URL formatting
+	 * @param Router (optional) a custom writer for URL formatting
 	 */
-	final function __construct(Phreezer &$phreezer, &$renderEngine, &$context = null, IRouter &$urlwriter = null)
+	final function __construct(Phreezer &$phreezer, &$renderEngine, &$context = null, IRouter &$router = null)
 	{
 		$this->Phreezer =& $phreezer;
 		$this->RenderEngine =& $renderEngine;
@@ -74,7 +74,7 @@ abstract class Controller
 		$ra = RequestUtil::GetRemoteHost();
 		$this->GUID = $this->Phreezer->DataAdapter->GetDBName() . "_" . str_replace(".","_", $ra);
 
-		$this->UrlWriter = $urlwriter ? $urlwriter : new UrlWriter();
+		$this->_router = $router ? $router : new GenericRouter();
 
 		if ($context)
 		{
@@ -88,7 +88,7 @@ abstract class Controller
 
 		// assign some variables globally for the views
 		$this->Assign("CURRENT_USER",$this->GetCurrentUser());
-		$this->Assign("URL",$this->UrlWriter);
+		$this->Assign("URL",$this->GetRouter());
 		$this->Assign("BROWSER_DEVICE",$this->GetDevice());
 
 		// if feedback was persisted, set it
@@ -96,31 +96,15 @@ abstract class Controller
 		$this->Context->Set("feedback",null);
 
 		$this->Init();
-
 	}
 
 	/**
-	 * In the case of a rewrite url, the url itself contains the parameter
-	 * for example http://server/param1/param2/param3.  These params
-	 * are parsed and returned as an array
-	 * @return array
+	 * Returns the router object used to convert url/uri to controller method
+	 * @return IRouter
 	 */
-	protected function GetUrlParams()
+	protected function GetRouter()
 	{
-		$subdir = defined('APP_ROOT_SUBDIRECTORY') ? APP_ROOT_SUBDIRECTORY : '';
-		return RequestUtil::GetUrlParts($subdir);
-	}
-
-	/**
-	* In the case of a rewrite url, the url itself contains the parameter
-	* for example http://server/param1/param2/param3.  These params
-	* are parsed and the param with the given index is returned
-	* @return string (or empty string if index is out of bounds)
-	*/
-	protected function GetUrlParam($index)
-	{
-		$params = $this->GetUrlParams();
-		return count($params) > $index ? $params[$index] : '';
+		return $this->_router;
 	}
 
 	/**
@@ -783,7 +767,7 @@ abstract class Controller
 		// support for deprecated Controller/Method format
 		list($controller,$method) = explode(".", str_replace("/",".",$action));
 
-		$url = $this->UrlWriter->Get($controller,$method,$params);
+		$url = $this->GetRouter()->GetUrl($controller,$method,$params);
 		$this->RenderEngine->assign("url",$url);
 
 		// capture output instead of rendering if specified
