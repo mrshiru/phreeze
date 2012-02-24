@@ -34,7 +34,6 @@ class Dispatcher
 	 */
 	static function Dispatch($phreezer,$renderEngine,$action,$context=null,$router=null)
 	{
-
 		if ($router == null)
 		{
 			require_once('GenericRouter.php');
