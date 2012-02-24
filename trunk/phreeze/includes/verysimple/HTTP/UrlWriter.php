@@ -14,7 +14,7 @@ require_once("verysimple/HTTP/RequestUtil.php");
  * @version    1.0
  */
 class UrlWriter extends ActionRouter
-{	
+{
 	/** Returns a url for the given controller, method and parameters
 	 *
 	 * @param string $controller
@@ -26,37 +26,9 @@ class UrlWriter extends ActionRouter
 	 */
 	public function Get($controller, $method, $params = "", $strip_api = true, $delim="&")
 	{
-		$format = str_replace("{delim}",$delim,$this->_format);
-		
-		$qs = "";
-		$d = "";
-		if (is_array($params))
-		{
-			foreach ($params as $key => $val)
-			{
-				// if no val, the omit the equal sign (this might be used in rest-type requests)
-				$qs .= $d . $key . (strlen($val) ? ("=" . urlencode($val)) : "");
-				$d = $delim;
-			}
-		}
-		else
-		{
-			$qs = $params;
-		}
-
-		$url = sprintf($format,$controller,$method,$qs);
-
-		// strip off trailing delimiters from the url
-		$url = (substr($url,-5) == "&amp;") ? substr($url,0,strlen($url)-5) : $url;
-		$url = (substr($url,-1) == "&" || substr($url,-1) == "?") ? substr($url,0,strlen($url)-1) : $url;
-
-		$api_check = explode("/api/",RequestUtil::GetCurrentUrl());
-		if ($strip_api && count($api_check) > 1)
-		{
-			$url = $api_check[0] . "/" . $url;
-		}
-		
-		return $url;
+		$this->stripApi = $strip_api;
+		$this->delim = $delim;
+		return $this->GetUrl($controller, $method, $params);
 	}
 }
 
