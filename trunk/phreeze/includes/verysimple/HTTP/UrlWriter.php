@@ -1,9 +1,8 @@
 <?php
 /** @package    verysimple::HTTP */
 
+require_once("verysimple/Phreeze/ActionRouter.php");
 require_once("verysimple/HTTP/RequestUtil.php");
-require_once("verysimple/Util/UrlWriterMode.php");
-require_once("verysimple/Phreeze/IRouter.php");
 
 /**
  * class for dealing with URLs
@@ -14,66 +13,8 @@ require_once("verysimple/Phreeze/IRouter.php");
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
  * @version    1.0
  */
-class UrlWriter implements IRouter
-{
-	private $_format;
-	private $_mode;
-	private $_appRoot;
-
-	/**
-	 * Constructor allows a rewriting pattern to be specified
-	 *
-	 * @param string $format sprintf compatible format
-	 * @param string UrlWriterMode string
-	 * @param string the root folder of the app
-	 */
-	public function __construct($format = "%s.%s.page?%s", $mode = UrlWriterMode::WEB, $appRoot = '' )
-	{
-		$this->_mode = $mode;
-		$this->_format = $format;
-		$this->_appRoot = $appRoot;
-	}
-
-	/**
-	 * @inheritdocs
-	 */
-	public function GetUrl($controller,$method,$params = '')
-	{
-		return $this->Get($controller,$method,$params);
-	}
-
-	/**
-	* @inheritdocs
-	*/
-	public function GetUri()
-	{
-		return implode('/',RequestUtil::GetUrlParts($this->_appRoot));
-	}
-
-	/**
-	 * @inheritdocs
-	 */
-	public function GetRoute($uri = "")
-	{
-		if( $uri == "" )
-			$uri = RequestUtil::GetCurrentURL();
-		
-		// get the action requested
-		$params = explode(".", str_replace("/",".", $uri) );
-		$controller_param = isset($params[0]) && $params[0] ? $params[0] : "";
-		$controller_param = str_replace(array(".","/","\\"),array("","",""),$controller_param);
-		
-		if ( !$controller_param )
-		{
-			throw new Exception("Invalid or missing Controller parameter");
-		}
-		
-		$method_param = isset($params[1]) && $params[1] ? $params[1] : "";
-		if ( !$method_param ) $method_param = "DefaultAction";
-		
-		return array($controller_param,$method_param);
-	}
-
+class UrlWriter extends ActionRouter
+{	
 	/** Returns a url for the given controller, method and parameters
 	 *
 	 * @param string $controller
@@ -116,44 +57,6 @@ class UrlWriter implements IRouter
 		}
 		
 		return $url;
-	}
-
-	/**
-	 * Returns true or false based on the $value passed in as to whether or not the
-	 * URL Writer is currently in that mode.
-	 *
-	 * @param $value	String mode to check against the current mode
-	 * @return	boolean TRUE if arg passed in is the current mode
-	 */
-	public function ModeIs( $value )
-	{
-		if( strcmp($this->_mode,$value) == 0 )
-			return true;
-		else
-			return false;
-	}
-
-	/**
-	 * Returns how the Dispatcher plucks it's controller and method from the URL.
-	 *
-	 * @param $default_action	The Default action in case the argument hasn't been supplied
-	 */
-	public function GetAction( $url_param = "action", $default_action = "Account.DefaultAction" )
-	{
-		switch( $this->_mode )
-		{
-			// TODO: Determine mobile/joomla URL action (if different from default)
-			/*
-			 *	case UrlWriterMode::JOOMLA:
-			 *		break;
-			 *	case UrlWriterMode::MOBILE:
-			 *		break;
-			 */
-			default:
-				// default is to return the standard browser-based action=%s.%s&%s:
-				return RequestUtil::Get($url_param, $default_action);
-				break;
-		}
 	}
 }
 
