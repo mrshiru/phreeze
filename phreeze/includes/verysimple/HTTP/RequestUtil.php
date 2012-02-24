@@ -84,10 +84,21 @@ class RequestUtil
 	}
 
 	/**
+	* Returns the root url of the server without any subdirectories
+	* @return string URL path with trailing slash
+	*/
+	public static function GetServerRootUrl()
+	{
+		$url = self::GetCurrentURL(false);
+		$parts = explode('/', $url);
+		if (count($parts) < 2) throw new Exception('RequestUtil is unable to determine the server root');
+		return $parts[0] . '//' . $parts[2] . '/';
+	}
+
+	/**
 	 * Returns the base url of the currently executing script.  For example
 	 * the script http://localhost/myapp/index.php would return http://localhost/myapp/
-	 * The trailing slash is included
-	 * @return string URL path
+	 * @return string URL path with trailing slash
 	 */
 	public static function GetBaseURL()
 	{
