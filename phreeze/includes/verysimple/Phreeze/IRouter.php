@@ -13,11 +13,34 @@ interface IRouter
 	public function GetUrl($controller,$method,$params = '');
 
 	/**
-	* Returns the controller and method for the given URI
-	*
-	* @param string the url, if not provided will be obtained using the current URL
-	* @return array($controller,$method)
-	*/
+	 * Returns the controller and method for the given URI
+	 *
+	 * @param string the url, if not provided will be obtained using the current URL
+	 * @return array($controller,$method)
+	 */
 	public function GetRoute($uri = "");
+	
+	/**
+	 * In the case of a rewrite url, the url itself contains the parameter
+	 * for example http://server/param1/param2/param3.  These params
+	 * are parsed and the param with the given index is returned
+	 * @return string (or empty string if index is out of bounds)
+	 */
+	public function GetUrlParam($index);
+	
+	/**
+	 * In the case of a rewrite url, the url itself contains the parameter
+	 * for example http://server/param1/param2/param3.  These params
+	 * are parsed and returned as an array
+	 * @return array
+	 */
+	public function GetUrlParams();
+	
+	/**
+	 * Returns the RESTful part of the url
+	 * For example, localhost/users/5 will return users/5
+	 * @return string
+	 */
+	public function GetUri();
 }
 ?>
