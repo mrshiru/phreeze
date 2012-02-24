@@ -51,8 +51,11 @@ abstract class Controller
 	public $UnitTestMode = false;
 	public $CaptureOutputMode = false;
 
-	/* */
+	/** Prefix this to the name of the view templates */
 	static $SmartyViewPrefix = "View";
+
+	/** the default mode used when calling 'Redirect' */
+	static $DefaultRedirectMode = "client";
 
 	/**
 	 * Constructor initializes the controller.  This method cannot be overriden.  If you need
@@ -753,9 +756,12 @@ abstract class Controller
 	 * @param string $action in the format Controller.Method
 	 * @param string $feedback
 	 * @param array $params
+	 * @param string $mode (client | header) default = Controller::$DefaultRedirectMode
 	 */
-	protected function Redirect($action, $feedback = "", $params = "")
+	protected function Redirect($action, $feedback = "", $params = "", $mode = "")
 	{
+		if (!$mode) $mode = self::$DefaultRedirectMode;
+
 		$params = is_array($params) ? $params : array();
 
 		if ($feedback)
@@ -768,16 +774,33 @@ abstract class Controller
 		list($controller,$method) = explode(".", str_replace("/",".",$action));
 
 		$url = $this->GetRouter()->GetUrl($controller,$method,$params);
-		$this->RenderEngine->assign("url",$url);
 
 		// capture output instead of rendering if specified
 		if ($this->CaptureOutputMode)
 		{
-			$this->DebugOutput = $this->RenderEngine->fetch("_redirect.tpl");
+			if ($mode == 'client')
+			{
+				$this->RenderEngine->assign("url",$url);
+				$this->DebugOutput = $this->RenderEngine->fetch("_redirect.tpl");
+			}
+			else
+			{
+				$this->DebugOutput = 'Location: ' . $url;
+			}
 		}
 		else
 		{
-			$this->RenderEngine->display("_redirect.tpl");
+
+			if ($mode == 'client')
+			{
+				$this->RenderEngine->assign("url",$url);
+				$this->RenderEngine->display("_redirect.tpl");
+			}
+			else
+			{
+				header('Location: ' . $url) ;
+			}
+
 		}
 
 		// don't exit if we are unit testing because it will stop all further tests
