@@ -7,7 +7,7 @@ interface IRouter
 	 *
 	 * @param string $controller
 	 * @param string $method
-	 * @param string $params in the format param1=val1&param2=val2
+	 * @param array $params in the format param1=val1&param2=val2
 	 * @return string URL
 	 */
 	public function GetUrl($controller,$method,$params = '');

@@ -103,9 +103,13 @@ class GenericRouter implements IRouter
 	 * @inheritdocs
 	 */
 	public function GetUrl( $controller, $method, $params = '' )
-	{
+	{		
+		// @todo: implement Request Method into routemap
 		$prefix = $this->appRoot ? $this->appRoot . '/' : '';
-		$url = RequestUtil::GetServerRootUrl() . $prefix . strtolower($controller . '/' . $method);
+		$url = RequestUtil::GetServerRootUrl() 
+			. $prefix 
+			. strtolower($controller . '/' . $method);
+		
 		return $url;
 	}
 	
