@@ -719,7 +719,7 @@ abstract class Controller
 		require_once("JSON.php");
 		$json = new Services_JSON();
 
-		// @header('Content-type: application/json');
+		@header('Content-type: application/json');
 
 		$output = $json->encode($var);
 		if ($callback) $output = "$callback(" . $output . ")";
