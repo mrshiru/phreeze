@@ -104,11 +104,35 @@ class GenericRouter implements IRouter
 	 */
 	public function GetUrl( $controller, $method, $params = '' )
 	{		
-		// @todo: implement Request Method into routemap
-		$prefix = $this->appRoot ? $this->appRoot . '/' : '';
-		$url = RequestUtil::GetServerRootUrl() 
-			. $prefix 
-			. strtolower($controller . '/' . $method);
+		$prefix = $this->appRoot ? $this->appRoot : '';
+		$url = RequestUtil::GetServerRootUrl() . $prefix;
+		
+		if( count($params) == 0 )
+			$url = $url . '/' . strtolower($controller . '/' . $method);
+		else
+		{
+			foreach( static::$routes as $key => $value)
+			{
+				list($routeController,$routeMethod) = explode(".",$value["route"]);
+				
+				if( ($routeController == $controller) && ($routeMethod == $method) &&
+				    (count($params) == count($value["params"]))
+				  )
+				{
+					$keyArr = explode('/',$key);
+					
+					// merge the parameters passed in with the routemap's path
+					// example: path is user/(:num)/events and parameters are [userCode]=>111
+					// this would yiled an array of [0]=>user, [1]=>111, [2]=>events 
+					foreach( $value["params"] as $rKey => $rVal )
+						$keyArr[$value["params"][$rKey]] = $params[$rKey];
+						
+					// put the url together:
+					foreach( $keyArr as $urlPiece )
+						$url = $url . '/' . $urlPiece;
+				}
+			}
+		}
 		
 		return $url;
 	}
