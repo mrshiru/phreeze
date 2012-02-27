@@ -106,8 +106,9 @@ class GenericRouter implements IRouter
 	{		
 		$prefix = $this->appRoot ? $this->appRoot : '';
 		$url = RequestUtil::GetServerRootUrl() . $prefix;
+		$requestMethod = RequestUtil::GetMethod();
 		
-		if( count($params) == 0 )
+		if( $params == '' || count($params) == 0 )
 			$url = $url . '/' . strtolower($controller . '/' . $method);
 		else
 		{
@@ -116,7 +117,7 @@ class GenericRouter implements IRouter
 				list($routeController,$routeMethod) = explode(".",$value["route"]);
 				
 				if( ($routeController == $controller) && ($routeMethod == $method) &&
-				    (count($params) == count($value["params"]))
+				    (count($params) == count($value["params"]) && $requestMethod == $value["method"])
 				  )
 				{
 					$keyArr = explode('/',$key);
