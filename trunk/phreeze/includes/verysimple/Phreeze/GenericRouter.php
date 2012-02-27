@@ -9,6 +9,8 @@ class GenericRouter implements IRouter
 	private $uri = '';
 	private $appRoot = '';
 	
+	private $currentRouteParams;
+	
 	/**
 	 * Constructor sets up the router allowing for patterns to be
 	 * instantiated
@@ -119,7 +121,7 @@ class GenericRouter implements IRouter
 				if( ($routeController == $controller) && ($routeMethod == $method) &&
 				    (count($params) == count($value["params"]) && $requestMethod == $value["method"])
 				  )
-				{
+				{					
 					$keyArr = explode('/',$key);
 					
 					// merge the parameters passed in with the routemap's path
@@ -131,6 +133,8 @@ class GenericRouter implements IRouter
 					// put the url together:
 					foreach( $keyArr as $urlPiece )
 						$url = $url . '/' . $urlPiece;
+					
+					break;
 				}
 			}
 		}
@@ -149,10 +153,36 @@ class GenericRouter implements IRouter
 	/**
 	 * @inheritdocs
 	 */
-	public function GetUrlParam($index)
+	public function GetUrlParam($paramKey)
 	{
 		$params = $this->GetUrlParams();
-		return count($params) > $index ? $params[$index] : '';
+		$uri = $this->GetUri();
+		$count = 0;
+		$routeMap = "";
+		
+		// replace the current url with the routemap key version
+		foreach ( $params as $arg )
+		{
+			if( preg_match('/^\d+$/', $arg) )
+				$routeMap = $routeMap . '(:num)/';
+			else
+				$routeMap = $routeMap . $params[$count] . '/';
+			$count++;
+		}
+		
+		// remove trailing slash:
+		$routeMap = substr($routeMap, 0, -1);
+		
+		foreach ( static::$routes as $key => $value)
+		{
+			if( $key == $routeMap )
+			{
+				$indexLocation = $value["params"][$paramKey];
+				return $params[$indexLocation];
+			}
+		}
+		
+		return "";
 	}
 }
 ?>
