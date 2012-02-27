@@ -25,7 +25,10 @@ abstract class Phreezable implements Serializable
 	private $_noCache = false;
 
 	/** @var these properties will never be cached */
-	static $NoCacheProperties = array("_cache","_phreezer","_val_errors","_base_validation_complete");
+	private static $NoCacheProperties = array("_cache","_phreezer","_val_errors","_base_validation_complete");
+
+	/** @var cache of public properties for each type for improved performance when enumerating */
+	private static $PublicPropCache = array();
 
 	/**
 	* Returns true if the current object has been loaded
@@ -77,45 +80,37 @@ abstract class Phreezable implements Serializable
 
 	/**
 	 * Returns an array with all public properties, excluding any internal
-	 * properties used by the Phreeze framework
+	 * properties used by the Phreeze framework.  This is cached for performance
+	 * when enumerating through large numbers of the same class
 	 * @return array
 	 */
 	public function GetPublicProperties()
 	{
-		$props = array();
-		$ro = new ReflectionObject($this);
+		$className = get_class($this);
 
-		foreach ($ro->getProperties() as $rp )
+		if (!array_key_exists($className, self::$PublicPropCache))
 		{
-			$propname = $rp->getName();
 
-			if (!in_array($propname,self::$NoCacheProperties))
+			$props = array();
+			$ro = new ReflectionObject($this);
+
+			foreach ($ro->getProperties() as $rp )
 			{
-				if (!($rp->isPrivate() || $rp->isStatic()))
+				$propname = $rp->getName();
+
+				if (!in_array($propname,self::$NoCacheProperties))
 				{
-					$props[] = $propname;
+					if (!($rp->isPrivate() || $rp->isStatic()))
+					{
+						$props[] = $propname;
+					}
 				}
 			}
+
+			self::$PublicPropCache[$className] = $props;
 		}
 
-		return $props;
-	}
-
-	/**
-	 * Intented to be overridden.  By default returns a simple object
-	 * that is intended for serialization
-	 * @return string
-	 */
-	public function ToSimpleObject()
-	{
-		$props = $this->GetPublicProperties();
-		$obj = new stdClass();
-		foreach ($props as $prop)
-		{
-			$obj->$prop = $this->$prop;
-		}
-
-		return $obj;
+		return self::$PublicPropCache[$className];
 	}
 
 	/**
@@ -152,20 +147,37 @@ abstract class Phreezable implements Serializable
 	}
 
 	/**
-	 * Return an object with a limited number of properties from
-	 * this Phreezable object.  This can be used if not all properties
-	 * are necessary, for example rendering as JSON
+	* @deprecated use ToObject
+	*/
+	function GetObject($props = null, $camelCase = false)
+	{
+		return $this->ToObject(array('props'=>$props,'camelCase'=>$camelCase));
+	}
+
+	/**
+	 * Return an object with a limited number of properties from this Phreezable object.
+	 * This can be used if not all properties are necessary, for example rendering as JSON
 	 *
-	 * @param array $props array of the properties to include
+	 * This can be overriden per class for custom JSON output.  the overridden method may accept
+	 * additional option parameters that are not supported by the base Phreezable calss
+	 *
+	 * @param array assoc array of options. This is passed through from Controller->RenderJSON
+	 * 		props (array) array of props to return (if null then use all public props)
+	 * 		camelCase (bool) if true then first letter of each property is made lowercase
 	 * @return stdClass
 	 */
-	function GetObject(array $props)
+	function ToObject($options = null)
 	{
+		if ($options === null) $options = array();
+		$props = array_key_exists('props', $options) ? $options['props'] : $this->GetPublicProperties();
+		$camelCase = array_key_exists('camelCase', $options) ? $options['camelCase'] : false;
+
 		$obj = new stdClass();
 
 		foreach ($props as $prop)
 		{
-			$obj->$prop = $this->$prop;
+			$newProp = ($camelCase) ? lcfirst($prop) : $prop;
+			$obj->$newProp = $this->$prop;
 		}
 
 		return $obj;
