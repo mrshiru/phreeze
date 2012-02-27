@@ -713,15 +713,45 @@ abstract class Controller
 	 *
 	 * @param variant the variable, array, object, etc to be rendered as JSON
 	 * @param string if a callback is provided, this will be rendered as JSONP
+	 * @param bool if true then objects will be returned ->GetObject() (only supports ObjectArray or individual Phreezable object)
+	 * @param array  (only relvant if useSimpleObject is true) options array passed through to Phreezable->ToString()
 	 */
-	protected function RenderJSON($var, $callback = "")
+	protected function RenderJSON($var, $callback = "",$useSimpleObject = false, $options = null)
 	{
 		require_once("JSON.php");
 		$json = new Services_JSON();
 
 		@header('Content-type: application/json');
 
-		$output = $json->encode($var);
+		$obj = null;
+
+		if ($useSimpleObject)
+		{
+			// we need to figure out what type
+			if (is_array($var)  )
+			{
+				$obj = array();
+				foreach ($var as $item)
+				{
+					$obj[] = $item->ToObject($options);
+				}
+			}
+			elseif (is_a($var,'Phreezable'))
+			{
+				$obj = $var->ToObject($options);
+			}
+			else
+			{
+				throw new Exception('RenderJSON could not determine the type of object to render');
+			}
+		}
+		else
+		{
+			$obj = $var;
+		}
+
+		$output = $json->encode($obj);
+
 		if ($callback) $output = "$callback(" . $output . ")";
 
 		// capture output instead of rendering if specified
