@@ -163,6 +163,7 @@ abstract class Phreezable implements Serializable
 	 *
 	 * @param array assoc array of options. This is passed through from Controller->RenderJSON
 	 * 		props (array) array of props to return (if null then use all public props)
+	 * 		omit (array) array of props to omit
 	 * 		camelCase (bool) if true then first letter of each property is made lowercase
 	 * @return stdClass
 	 */
@@ -170,14 +171,18 @@ abstract class Phreezable implements Serializable
 	{
 		if ($options === null) $options = array();
 		$props = array_key_exists('props', $options) ? $options['props'] : $this->GetPublicProperties();
+		$omit = array_key_exists('omit', $options) ? $options['omit'] : array();
 		$camelCase = array_key_exists('camelCase', $options) ? $options['camelCase'] : false;
 
 		$obj = new stdClass();
 
 		foreach ($props as $prop)
 		{
-			$newProp = ($camelCase) ? lcfirst($prop) : $prop;
-			$obj->$newProp = $this->$prop;
+			if (!in_array($prop, $omit))
+			{
+				$newProp = ($camelCase) ? lcfirst($prop) : $prop;
+				$obj->$newProp = $this->$prop;
+			}
 		}
 
 		return $obj;
