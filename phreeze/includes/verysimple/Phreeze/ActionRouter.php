@@ -55,7 +55,7 @@ class ActionRouter implements IRouter
 	/**
 	* @inheritdocs
 	*/
-	public function GetUrlParam($index)
+	public function GetUrlParam($key, $default = '')
 	{
 		throw new Exception('Not Implemented');
 	}
