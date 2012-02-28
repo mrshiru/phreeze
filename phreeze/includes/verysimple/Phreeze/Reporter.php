@@ -15,13 +15,16 @@ abstract class Reporter
 {
     protected $_phreezer;
 
-private $_isLoaded;
+	private $_isLoaded;
 	private $_isPartiallyLoaded;
 	private $_cacheLevel = 0;
 	private $_noCache = false;
 
 	/** @var these properties will never be cached */
-	static $NoCacheProperties = array("_cache","_phreezer","_val_errors","_base_validation_complete");
+	private static $NoCacheProperties = array("_cache","_phreezer","_val_errors","_base_validation_complete");
+
+	/** @var cache of public properties for each type for improved performance when enumerating */
+	private static $PublicPropCache = array();
 
 	/**
 	* Returns true if the current object has been loaded
@@ -149,6 +152,75 @@ private $_isLoaded;
 
 			}
 		}
+	}
+
+	/**
+	* Returns an array with all public properties, excluding any internal
+	* properties used by the Phreeze framework.  This is cached for performance
+	* when enumerating through large numbers of the same class
+	* @return array
+	*/
+	public function GetPublicProperties()
+	{
+		$className = get_class($this);
+
+		if (!array_key_exists($className, self::$PublicPropCache))
+		{
+
+			$props = array();
+			$ro = new ReflectionObject($this);
+
+			foreach ($ro->getProperties() as $rp )
+			{
+				$propname = $rp->getName();
+
+				if (!in_array($propname,self::$NoCacheProperties))
+				{
+					if (!($rp->isPrivate() || $rp->isStatic()))
+					{
+						$props[] = $propname;
+					}
+				}
+			}
+
+			self::$PublicPropCache[$className] = $props;
+		}
+
+		return self::$PublicPropCache[$className];
+	}
+
+	/**
+	* Return an object with a limited number of properties from this Phreezable object.
+	* This can be used if not all properties are necessary, for example rendering as JSON
+	*
+	* This can be overriden per class for custom JSON output.  the overridden method may accept
+	* additional option parameters that are not supported by the base Phreezable calss
+	*
+	* @param array assoc array of options. This is passed through from Controller->RenderJSON
+	* 		props (array) array of props to return (if null then use all public props)
+	* 		omit (array) array of props to omit
+	* 		camelCase (bool) if true then first letter of each property is made lowercase
+	* @return stdClass
+	*/
+	function ToObject($options = null)
+	{
+		if ($options === null) $options = array();
+		$props = array_key_exists('props', $options) ? $options['props'] : $this->GetPublicProperties();
+		$omit = array_key_exists('omit', $options) ? $options['omit'] : array();
+		$camelCase = array_key_exists('camelCase', $options) ? $options['camelCase'] : false;
+
+		$obj = new stdClass();
+
+		foreach ($props as $prop)
+		{
+			if (!in_array($prop, $omit))
+			{
+				$newProp = ($camelCase) ? lcfirst($prop) : $prop;
+				$obj->$newProp = $this->$prop;
+			}
+		}
+
+		return $obj;
 	}
 
 	/**
