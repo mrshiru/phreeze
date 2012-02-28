@@ -9,7 +9,8 @@ class GenericRouter implements IRouter
 	private $uri = '';
 	private $appRoot = '';
 
-	private $currentRouteParams;
+	// cached route from last run:
+	private $cachedRoute;
 
 	/**
 	 * Constructor sets up the router allowing for patterns to be
@@ -23,6 +24,13 @@ class GenericRouter implements IRouter
 		if ($appRoot) $this->appRoot = $appRoot;
 
 		$this->mapRoutes($mapping);
+		
+		$this->cachedRoute = array(
+			"key" => ""
+			,"route" => ""
+			,"method" => ""
+			,"params" => ""
+		);
 	}
 
 	/**
@@ -55,6 +63,8 @@ class GenericRouter implements IRouter
 		// loop through the route map for wild cards:
 		foreach( static::$routes as $key => $value)
 		{
+			$unalteredKey = $key;
+			
 			// convert wild cards to RegEx.
 			// currently only ":any" and ":num" are supported wild cards
 			$key = str_replace( ':any', '.+', $key );
@@ -63,6 +73,13 @@ class GenericRouter implements IRouter
 			// check for RegEx match
 			if ( preg_match( '#^' . $key . '$#', $uri ) )
 			{
+				$this->cachedRoute = array(
+					"key" => $unalteredKey
+					,"route" => $value["route"]
+					,"method" => $value["method"]
+					,"params" => $value["params"]
+				);
+				
 				// expects mapped values to be in the form: Controller.Model
 				list($controller,$method) = explode(".",$value["route"]);
 				return array($controller,$method);
@@ -158,31 +175,15 @@ class GenericRouter implements IRouter
 		$params = $this->GetUrlParams();
 		$uri = $this->GetUri();
 		$count = 0;
-		$routeMap = "";
+		$routeMap = $this->cachedRoute["key"];
 
-		// replace the current url with the routemap key version
-		foreach ( $params as $arg )
+		if( isset($this->cachedRoute["params"][$paramKey]) )
 		{
-			if( preg_match('/^\d+$/', $arg) )
-				$routeMap = $routeMap . '(:num)/';
-			else
-				$routeMap = $routeMap . $params[$count] . '/';
-			$count++;
+			$indexLocation = $this->cachedRoute["params"][$paramKey];
+			return $params[$indexLocation];
 		}
-
-		// remove trailing slash:
-		$routeMap = substr($routeMap, 0, -1);
-
-		foreach ( static::$routes as $key => $value)
-		{
-			if( $key == $routeMap )
-			{
-				$indexLocation = $value["params"][$paramKey];
-				return $params[$indexLocation];
-			}
-		}
-
-		return "";
+		else
+			return RequestUtil::Get($paramKey,"");
 	}
 }
 ?>
