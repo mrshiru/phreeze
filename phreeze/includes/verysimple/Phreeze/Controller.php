@@ -713,7 +713,7 @@ abstract class Controller
 	 *
 	 * @param variant the variable, array, object, etc to be rendered as JSON
 	 * @param string if a callback is provided, this will be rendered as JSONP
-	 * @param bool if true then objects will be returned ->GetObject() (only supports ObjectArray or individual Phreezable object)
+	 * @param bool if true then objects will be returned ->GetObject() (only supports ObjectArray or individual Phreezable or Reporter object)
 	 * @param array  (only relvant if useSimpleObject is true) options array passed through to Phreezable->ToString()
 	 */
 	protected function RenderJSON($var, $callback = "",$useSimpleObject = false, $options = null)
@@ -736,7 +736,7 @@ abstract class Controller
 					$obj[] = $item->ToObject($options);
 				}
 			}
-			elseif (is_a($var,'Phreezable'))
+			elseif (is_a($var,'Phreezable') || is_a($var,'Reporter'))
 			{
 				$obj = $var->ToObject($options);
 			}
