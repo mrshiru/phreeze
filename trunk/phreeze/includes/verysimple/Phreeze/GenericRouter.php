@@ -25,12 +25,7 @@ class GenericRouter implements IRouter
 
 		$this->mapRoutes($mapping);
 		
-		$this->cachedRoute = array(
-			"key" => ""
-			,"route" => ""
-			,"method" => ""
-			,"params" => ""
-		);
+		$this->cachedRoute = null;
 	}
 
 	/**
@@ -50,7 +45,7 @@ class GenericRouter implements IRouter
 	public function GetRoute( $uri = "" )
 	{
 		if( $uri == "" )
-			$uri = $this->GetUri();
+			$uri = RequestUtil::GetMethod() . ":" . $this->GetUri();
 
 		// literal match check
 		if ( isset(static::$routes[ $uri ]) )
@@ -76,7 +71,6 @@ class GenericRouter implements IRouter
 				$this->cachedRoute = array(
 					"key" => $unalteredKey
 					,"route" => $value["route"]
-					,"method" => $value["method"]
 					,"params" => $value["params"]
 				);
 				
@@ -156,7 +150,8 @@ class GenericRouter implements IRouter
 			}
 		}
 
-		return $url;
+		$strippedUrl = explode(":",$url,2);
+		return count($strippedUrl) == 2 ? $strippedUrl[1] : $strippedUrl[0];
 	}
 
 	/**
@@ -172,6 +167,9 @@ class GenericRouter implements IRouter
 	 */
 	public function GetUrlParam($paramKey, $default = '')
 	{
+		if( $this->cachedRoute == null )
+			throw new Exception("Call GetRoute before accessing GetUrlParam");
+		
 		$params = $this->GetUrlParams();
 		$uri = $this->GetUri();
 		$count = 0;
