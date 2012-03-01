@@ -16,31 +16,31 @@ class DataPage implements Iterator
 {
     /**
      * The Rows property is an array of objects retreived from the data store
-     */ 
-    public $Rows = null;   
+     */
+    public $Rows = null;
 
 	/**
 	 * ObjectName is the classname of the object that is stored
 	 */
     public $ObjectName = "";
-    
+
 	/**
 	 * ObjectInstance is an instance of the class that is stored in Rows
 	 * @var Phreezable
 	 */
     public $ObjectInstance = null;
-    
+
 	/**
 	 * ObjectKey is the name of the primary key property for the objects in Rows
 	 */
     public $ObjectKey = "";
-    
+
     public $TotalResults = 0;
     public $TotalPages = 0;
     public $CurrentPage = 0;
     public $PageSize = 0;
-    
-    
+
+
     /**
      * @return Phreezable
      */
@@ -48,35 +48,55 @@ class DataPage implements Iterator
     {
 		return next($this->Rows);
 	}
-	
+
 	public function rewind() {
 		reset($this->Rows);
 	}
-	
+
 	/**
 	 * @return Phreezable
 	 */
 	public function current() {
 		return current($this->Rows);
 	}
-	
+
 	public function key() {
 		return key($this->Rows);
 	}
-	
+
 	public function valid() {
 		return $this->current() !== false;
 	}
-    
+
 	/**
-	* Returns the entire page as an array of objects.
+	* Returns the entire page as an array of objects.  if the asSimpleObject is false
+	* then the stateful Phreezable objects will be returned.  If asSimpleObject is true
+	* then the objects returned will be whatever is returned by ToObject()
+	* Phreezable object (the default is a stdClass with all public properties)
 	*
-	* @access     public
-	* @return     array
+	* @access public
+    * @param bool asSimpleObject if true then populate the array with ToObject on each item in the array
+    * @param array options (only relevant if asSimpleObject is true) passed through to ToObject
+	* @return array
 	    */
-	function ToObjectArray()
+	function ToObjectArray($asSimpleObject = false, $options = null)
 	{
-		return $this->Rows;
+		$arr = null;
+
+		if ($asSimpleObject)
+		{
+			$arr = array();
+			foreach ($this->Rows as $row)
+			{
+				$arr[] = $row->ToObject($options);
+			}
+		}
+		else
+		{
+			$arr = $this->Rows;
+		}
+
+		return $arr;
 	}
 }
 
