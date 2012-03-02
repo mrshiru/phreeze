@@ -223,8 +223,9 @@ abstract class Controller
 	/**
 	 * Use as an alterative to print in order to capture debug output
 	 * @param string text to print
+	 * @param mime content type (example text/plain)
 	 */
-	protected function PrintOut($text)
+	protected function PrintOut($text,$contentType = null)
 	{
 		if ($this->CaptureOutputMode)
 		{
@@ -232,6 +233,7 @@ abstract class Controller
 		}
 		else
 		{
+			if ($contentType) header("Content-type: " . $contentType);
 			print $text;
 		}
 	}
