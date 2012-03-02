@@ -15,7 +15,8 @@ class MemCacheProxy
 {
 	private $_memcache;
 	public $ServerOffline = false;
-	
+	public $LastServerError = '';
+
 	/**
 	 * Acts as a proxy for a MemCache server and fails gracefull if the pool
 	 * cannot be contacted
@@ -34,11 +35,12 @@ class MemCacheProxy
 		}
 		else
 		{
+			$this->LastServerError = 'Memcache client module not installed';
 			$this->ServerOffline = true;
 		}
 	}
-	
-	
+
+
 	/**
 	 * This is method get
 	 * @param string $key The key of the item to retrieve
@@ -48,26 +50,28 @@ class MemCacheProxy
 	{
 		// prevent hammering the server if it is down
 		if ($this->ServerOffline) return null;
-		
+
 		$val = null;
 		try
 		{
+
 			$val = $this->_memcache->get($key);
 		}
 		catch (Exception $ex)
 		{
 			// memcache is not working
+			$this->LastServerError = $ex->getMessage();
 			$this->ServerOffline = true;
 		}
 		return $val;
 	}
-	
-	
+
+
 	/**
 	 * This is method set
 	 *
 	 * @param mixed $key The key that will be associated with the item
-	 * @param mixed $var The variable to store. Strings and integers are stored as is, other types are stored serialized. 
+	 * @param mixed $var The variable to store. Strings and integers are stored as is, other types are stored serialized.
 	 * @param mixed $flags Use MEMCACHE_COMPRESSED to store the item compressed (uses zlib).
 	 * @param mixed $expire Expiration time (in seconds)
 	 * @return mixed This is the return value description
@@ -77,7 +81,7 @@ class MemCacheProxy
 	{
 		// prevent hammering the server if it is down
 		if ($this->ServerOffline) return null;
-		
+
 		try
 		{
 			$this->_memcache->set($key, $var, $flags, $expire);
@@ -85,11 +89,12 @@ class MemCacheProxy
 		catch (Exception $ex)
 		{
 			// memcache is not working
+			$this->LastServerError = $ex->getMessage();
 			$this->ServerOffline = true;
 		}
 	}
-	
-	
+
+
 }
 
 ?>
