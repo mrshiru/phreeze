@@ -129,11 +129,19 @@ class GenericRouter implements IRouter
 			{
 				list($routeController,$routeMethod) = explode(".",$value["route"]);
 
+				$keyRequestMethodArr = explode(":",$key,2);
+				$keyRequestMethod = $keyRequestMethodArr[0];
+				
 				if( ($routeController == $controller) && ($routeMethod == $method) &&
-				    (count($params) == count($value["params"]) && $requestMethod == $value["method"])
+				    (count($params) == count($value["params"]) && ($keyRequestMethod == $requestMethod))
 				  )
 				{
 					$keyArr = explode('/',$key);
+					
+					// strip the request method off the key:
+					// we can safely access 0 here, as there has to be params to get here:
+					$reqMethodAndController = explode(":",$keyArr[0]);
+					$keyArr[0] = (count($reqMethodAndController) == 2 ? $reqMethodAndController[1] : $reqMethodAndController[0]);
 
 					// merge the parameters passed in with the routemap's path
 					// example: path is user/(:num)/events and parameters are [userCode]=>111
@@ -150,8 +158,7 @@ class GenericRouter implements IRouter
 			}
 		}
 
-		$strippedUrl = explode(":",$url,2);
-		return count($strippedUrl) == 2 ? $strippedUrl[1] : $strippedUrl[0];
+		return $url;
 	}
 
 	/**
