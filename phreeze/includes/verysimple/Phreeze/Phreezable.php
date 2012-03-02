@@ -311,8 +311,7 @@ abstract class Phreezable implements Serializable
 	public function Validate()
 	{
 		// force re-validation
-		$this->_val_errors = Array();
-		$this->_base_validation_complete = false;
+		$this->ResetValidationErrors();
 
 		$is_valid = (!$this->HasValidationErrors());
 
@@ -356,6 +355,15 @@ abstract class Phreezable implements Serializable
 	{
 		$this->_DoBaseValidation();
 		return $this->_val_errors;
+	}
+
+	/**
+	 * Clears all previous validation errors
+	 */
+	protected function ResetValidationErrors()
+	{
+		$this->_val_errors = Array();
+		$this->_base_validation_complete = false;
 	}
 
     /**
