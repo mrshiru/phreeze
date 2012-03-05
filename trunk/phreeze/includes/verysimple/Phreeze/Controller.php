@@ -723,8 +723,6 @@ abstract class Controller
 		require_once("JSON.php");
 		$json = new Services_JSON();
 
-		@header('Content-type: application/json');
-
 		$obj = null;
 
 		if ($useSimpleObject)
@@ -763,6 +761,7 @@ abstract class Controller
 		}
 		else
 		{
+			@header($callback ? 'Content-type: text/plain' : 'Content-type: application/json');
 			print $output;
 		}
 	}
