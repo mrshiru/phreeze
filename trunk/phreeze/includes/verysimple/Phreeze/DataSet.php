@@ -139,6 +139,15 @@ class DataSet implements Iterator // @TODO implement Countable, ArrayAccess
         }
     }
 
+    /**
+     * If a reporter query does not return data (insert/update/delete) then
+     * calling Execute will execute the sql without expecting return data
+     */
+    public function Execute()
+    {
+    	return $this->_phreezer->DataAdapter->Execute($this->_sql);
+    }
+
 	public function rewind() {
 		$this->_rs = null;
 		$this->_counter = 0;
