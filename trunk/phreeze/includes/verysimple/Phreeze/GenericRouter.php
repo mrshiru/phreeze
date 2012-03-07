@@ -52,6 +52,13 @@ class GenericRouter implements IRouter
 		{
 			// expects mapped values to be in the form: Controller.Model
 			list($controller,$method) = explode(".",static::$routes[ $uri ]["route"]);
+			
+			$this->cachedRoute = array(
+				"key" => static::$routes[ $uri ]
+				,"route" => static::$routes[ $uri ]["route"]
+				,"params" => static::$routes[ $uri ]["params"]
+			);
+			
 			return array($controller,$method);
 		}
 
