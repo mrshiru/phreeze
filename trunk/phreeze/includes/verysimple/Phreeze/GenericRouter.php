@@ -78,7 +78,7 @@ class GenericRouter implements IRouter
 				$this->cachedRoute = array(
 					"key" => $unalteredKey
 					,"route" => $value["route"]
-					,"params" => $value["params"]
+					,"params" => isset($value["params"]) ? $value["params"] : array()
 				);
 
 				// expects mapped values to be in the form: Controller.Model
