@@ -24,7 +24,7 @@ class GenericRouter implements IRouter
 		if ($appRoot) $this->appRoot = $appRoot;
 
 		$this->mapRoutes($mapping);
-		
+
 		$this->cachedRoute = null;
 	}
 
@@ -52,13 +52,13 @@ class GenericRouter implements IRouter
 		{
 			// expects mapped values to be in the form: Controller.Model
 			list($controller,$method) = explode(".",static::$routes[ $uri ]["route"]);
-			
+
 			$this->cachedRoute = array(
 				"key" => static::$routes[ $uri ]
 				,"route" => static::$routes[ $uri ]["route"]
-				,"params" => static::$routes[ $uri ]["params"]
+				,"params" => isset(static::$routes[ $uri ]["params"]) ? static::$routes[ $uri ]["params"] : array()
 			);
-			
+
 			return array($controller,$method);
 		}
 
@@ -66,7 +66,7 @@ class GenericRouter implements IRouter
 		foreach( static::$routes as $key => $value)
 		{
 			$unalteredKey = $key;
-			
+
 			// convert wild cards to RegEx.
 			// currently only ":any" and ":num" are supported wild cards
 			$key = str_replace( ':any', '.+', $key );
@@ -80,7 +80,7 @@ class GenericRouter implements IRouter
 					,"route" => $value["route"]
 					,"params" => $value["params"]
 				);
-				
+
 				// expects mapped values to be in the form: Controller.Model
 				list($controller,$method) = explode(".",$value["route"]);
 				return array($controller,$method);
@@ -138,13 +138,13 @@ class GenericRouter implements IRouter
 
 				$keyRequestMethodArr = explode(":",$key,2);
 				$keyRequestMethod = $keyRequestMethodArr[0];
-				
+
 				if( ($routeController == $controller) && ($routeMethod == $method) &&
 				    (count($params) == count($value["params"]) && ($keyRequestMethod == $requestMethod))
 				  )
 				{
 					$keyArr = explode('/',$key);
-					
+
 					// strip the request method off the key:
 					// we can safely access 0 here, as there has to be params to get here:
 					$reqMethodAndController = explode(":",$keyArr[0]);
@@ -183,7 +183,7 @@ class GenericRouter implements IRouter
 	{
 		if( $this->cachedRoute == null )
 			throw new Exception("Call GetRoute before accessing GetUrlParam");
-		
+
 		$params = $this->GetUrlParams();
 		$uri = $this->GetUri();
 		$count = 0;
