@@ -125,11 +125,19 @@ class GenericRouter implements IRouter
 	public function GetUrl( $controller, $method, $params = '' )
 	{
 		$prefix = $this->appRoot ? $this->appRoot : '';
-		$url = RequestUtil::GetServerRootUrl() . $prefix;
 		$requestMethod = RequestUtil::GetMethod();
+		$url = RequestUtil::GetServerRootUrl() . $prefix;
+
+		// normalize url by stripping trailing slash
+		while (substr($url,-1) == '/')
+		{
+			$url = substr($url,0,-1);
+		}
 
 		if( $params == '' || count($params) == 0 )
+		{
 			$url = $url . '/' . strtolower($controller . '/' . $method);
+		}
 		else
 		{
 			foreach( static::$routes as $key => $value)
@@ -158,7 +166,7 @@ class GenericRouter implements IRouter
 
 					// put the url together:
 					foreach( $keyArr as $urlPiece )
-						$url = $url . '/' . $urlPiece;
+						$url = $url . ($urlPiece ? "/$urlPiece" : '');
 
 					break;
 				}
