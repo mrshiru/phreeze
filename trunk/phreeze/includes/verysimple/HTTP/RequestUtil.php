@@ -26,6 +26,12 @@ class RequestUtil
 	/** @var bool set to false to skip is_uploaded_file.  This allows for simulated file uploads during unit testing */
 	static $VALIDATE_FILE_UPLOAD = true;
 
+	/** @var body contents, only read once in case GetBody is called multiple times */
+	private static $bodyCache = '';
+
+	/** @var true if the request body has already been read */
+	private static $bodyCacheIsReady = false;
+
 	/**
 	 * @var bool
 	 * @deprecated use $VALIDATE_FILE_UPLOAD instead
@@ -149,21 +155,24 @@ class RequestUtil
 	}
 
 	/**
-	 * Returns the body/payload of a request
+	 * Returns the body/payload of a request.  this is cached so that this method
+	 * may be called multiple times.
+	 *
+	 * Note: if this is a PUT request and the body is not returning data, then
+	 * you must look in other code an libraries that may read from php://input,
+	 * which can only be read one time for PUT requests
+	 *
 	 * @return string
 	 */
 	public static function GetBody()
 	{
-		$payload = '';
-
-		$fh = fopen('php://input','r');
-		while (!feof($fh))
+		if (!self::$bodyCacheIsReady)
 		{
-			$payload .= fgets($fh);
+			self::$bodyCache = @file_get_contents('php://input');
+			self::$bodyCacheIsReady = true;
 		}
-		fclose($fh);
 
-		return $payload;
+ 		return self::$bodyCache;
 	}
 
 	/**
@@ -240,7 +249,7 @@ class RequestUtil
 		// if we also want the post variables appended we can get them as a querystring from php://input
 		if ($append_post_vars && isset($_POST))
 		{
-			$post = file_get_contents("php://input");
+			$post = self::GetBody();
 			$qs .= $qs ? "&$post" : "?$post";
 		}
 
