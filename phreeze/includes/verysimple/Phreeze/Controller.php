@@ -720,9 +720,6 @@ abstract class Controller
 	 */
 	protected function RenderJSON($var, $callback = "",$useSimpleObject = false, $options = null)
 	{
-		require_once("JSON.php");
-		$json = new Services_JSON();
-
 		$obj = null;
 
 		if ($useSimpleObject)
@@ -750,7 +747,7 @@ abstract class Controller
 			$obj = $var;
 		}
 
-		$output = $json->encode($obj);
+		$output = json_encode($obj);
 
 		if ($callback) $output = "$callback(" . $output . ")";
 
