@@ -13,7 +13,7 @@ require_once("PaymentProcessor.php");
  *
  * @package    verysimple::Payment
  * @author     VerySimple Inc.
- * @copyright  1997-2011 VerySimple, Inc.
+ * @copyright  1997-2012 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
  * @version    1.0
  */
@@ -21,22 +21,30 @@ class TestGateway extends PaymentProcessor
 {
 
 	/**
-	* Called on contruction
-	*/
+	 * Called on contruction
+	 */
 	function Init($testmode)
 	{
 	}
-	
+
 	/**
-	* Process a PaymentRequest
-	* @param PaymentRequest $req Request object to be processed
-	* @return PaymentResponse
-	*/
+	 * @see PaymentProcessor::Refund()
+	 */
+	function Refund(RefundRequest $req)
+	{
+		throw new Exception("Refund not implemented for this gateway");
+	}
+
+	/**
+	 * Process a PaymentRequest
+	 * @param PaymentRequest $req Request object to be processed
+	 * @return PaymentResponse
+	 */
 	function Process(PaymentRequest $req)
 	{
 		$resp = new PaymentResponse();
 		$resp->OrderNumber = $req->OrderNumber;
-		
+
 		$expdate = strtotime("1/". $req->CCExpMonth . "/" . $this->GetFullYear($req->CCExpYear) . " + 1 month");
 
 		// before bothering with contacting the processor, check for some basic fields
@@ -68,11 +76,11 @@ class TestGateway extends PaymentProcessor
 			$resp->ResponseCode = "OK";
 			$resp->ResponseMessage = "TestGateway: Charge of " . number_format($req->TransactionAmount,2) . " Posted";
 		}
-		
+
 		return $resp;
-				
+
 	}
-	
+
 }
 
 ?>
