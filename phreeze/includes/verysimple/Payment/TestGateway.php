@@ -32,7 +32,26 @@ class TestGateway extends PaymentProcessor
 	 */
 	function Refund(RefundRequest $req)
 	{
-		throw new Exception("Refund not implemented for this gateway");
+		$resp = new PaymentResponse();
+		$resp->OrderNumber = $req->InvoiceId;
+
+		// before bothering with contacting the processor, check for some basic fields
+		if ($req->TransactionId == '')
+		{
+			$resp->IsSuccess = false;
+			$resp->ResponseCode = "0";
+			$resp->ResponseMessage = "TestGateway: No Transaction ID provided";
+			$resp->RawResponse = "Submit any value in the TransactionId field for a successful response";
+		}
+		else
+		{
+			$resp->IsSuccess = true;
+			$resp->TransactionId = rand( 1000000 , 9999999 );
+			$resp->ResponseCode = "OK";
+			$resp->ResponseMessage = "TestGateway: Full amount sucessfully refunded";
+		}
+
+		return $resp;
 	}
 
 	/**
