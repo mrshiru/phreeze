@@ -197,7 +197,7 @@ class PayPal extends PaymentProcessor
 			{
 				$resp->IsSuccess = true;
 				$resp->TransactionId = urldecode( $this->GetArrayVal($resp->RawResponse,"TRANSACTIONID") );
-				$resp->ResponseCode = urldecode( "AVSCODE=" . $this->GetArrayVal($resp->RawResponse,"AVSCODE") . ",CVV2MATCH=" . $this->GetArrayVal($httpParsedResponseAr,"CVV2MATCH"));
+				$resp->ResponseCode = urldecode( "AVSCODE=" . $this->GetArrayVal($resp->RawResponse,"AVSCODE") . ",CVV2MATCH=" . $this->GetArrayVal($resp->RawResponse,"CVV2MATCH"));
 				$resp->ResponseMessage = urldecode( "Charge of " . $this->GetArrayVal($resp->RawResponse,"AMT") . " Posted" );
 			}
 			else
