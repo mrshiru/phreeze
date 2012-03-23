@@ -10,32 +10,40 @@ require_once("PaymentProcessor.php");
  *
  * @package    verysimple::Payment
  * @author     VerySimple Inc.
- * @copyright  1997-2008 VerySimple, Inc.
+ * @copyright  1997-2012 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
  * @version    2.1
  */
 class SkipJack extends PaymentProcessor
 {
-	
+
 	private $liveUrl = "https://www.skipjackic.com/scripts/evolvcc.dll?AuthorizeApi";
 	private $testUrl = "https://developer.skipjackic.com/scripts/evolvcc.dll?AuthorizeAPI";
 	private $url = "";
-	
+
 	/**
-	* Called on contruction
-	* @param bool $test  set to true to enable test mode.  default = false 
-	*/
+	 * Called on contruction
+	 * @param bool $test  set to true to enable test mode.  default = false
+	 */
 	function Init($testmode)
 	{
 		// set the post url depending on whether we're in test mode or not
 		$this->url = $testmode ? $this->testUrl : $this->liveUrl;
 	}
-	
+
 	/**
-	* Process a PaymentRequest
-	* @param PaymentRequest $req Request object to be processed
-	* @return PaymentResponse
-	*/
+	 * @see PaymentProcessor::Refund()
+	 */
+	function Refund(RefundRequest $req)
+	{
+		throw new Exception("Refund not implemented for this gateway");
+	}
+
+	/**
+	 * Process a PaymentRequest
+	 * @param PaymentRequest $req Request object to be processed
+	 * @return PaymentResponse
+	 */
 	function Process(PaymentRequest $req)
 	{
 
@@ -53,37 +61,37 @@ class SkipJack extends PaymentProcessor
 				throw new Exception("SkipJack requires a SerialNumber for live transactions");
 			}
 		}
-		
+
 		// skipjack requires a funky formatted order string
 		if (!$req->OrderString) $req->OrderString = "1~None~0.00~0~N~||";
-		
+
 		$resp = new PaymentResponse();
 		$resp->OrderNumber = $req->OrderNumber;
-		
+
 		// post to skipjack service
 		$resp->RawResponse = $this->CurlPost($this->url, $this->GetPostData($req) );
-		
+
 		// response is two lines - first line is field name, 2nd line is values
 		$lines = explode("\r\n",$resp->RawResponse);
-		
+
 		// strip off the beginning and ending doublequote
 		$lines[0] = substr( $lines[0],1,strlen($lines[0])-2);
 		$lines[1] = substr( $lines[1],1,strlen($lines[1])-2);
-		
+
 		// split the fields and values
 		$fields = explode("\",\"",$lines[0]);
 		$vals = explode("\",\"",$lines[1]);
-		
+
 		// convert these two lines into a hash so we can get individual values
 		for ($i = 0; $i < count($fields); $i++)
 		{
 			$resp->ParsedResponse[$fields[$i]] = $vals[$i];
 		}
-		
+
 		// convert these codes into a generic response object
 		$resp->ResponseCode = $resp->ParsedResponse["szReturnCode"];
 		$resp->TransactionId = $resp->ParsedResponse["AUTHCODE"];
-		
+
 		// figure out if the transaction was a total success or not
 		$verifyOK = $resp->ParsedResponse["szReturnCode"] == "1";
 		$approvedOK = $resp->ParsedResponse["szIsApproved"] == "1";
@@ -113,7 +121,7 @@ class SkipJack extends PaymentProcessor
 
 		return $resp;
 	}
-	
+
 	private function GetPostData($req)
 	{
 		$data = array();
@@ -137,7 +145,7 @@ class SkipJack extends PaymentProcessor
 		$data["comment"] = $req->Comment;
 		return $data;
 	}
-	
+
 	/**
 	* Returns a text description based on the return code
 	* @param string $code the skipjack response code
