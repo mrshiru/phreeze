@@ -36,7 +36,7 @@ class GenericRouter implements IRouter
 	private static function mapRoutes( $src )
 	{
 		foreach ( $src as $key => $val )
-			static::$routes[ $key ] = $val;
+			self::$routes[ $key ] = $val;
 	}
 
 	/**
@@ -48,22 +48,22 @@ class GenericRouter implements IRouter
 			$uri = RequestUtil::GetMethod() . ":" . $this->GetUri();
 
 		// literal match check
-		if ( isset(static::$routes[ $uri ]) )
+		if ( isset(self::$routes[ $uri ]) )
 		{
 			// expects mapped values to be in the form: Controller.Model
-			list($controller,$method) = explode(".",static::$routes[ $uri ]["route"]);
+			list($controller,$method) = explode(".",self::$routes[ $uri ]["route"]);
 
 			$this->cachedRoute = array(
-				"key" => static::$routes[ $uri ]
-				,"route" => static::$routes[ $uri ]["route"]
-				,"params" => isset(static::$routes[ $uri ]["params"]) ? static::$routes[ $uri ]["params"] : array()
+				"key" => self::$routes[ $uri ]
+				,"route" => self::$routes[ $uri ]["route"]
+				,"params" => isset(self::$routes[ $uri ]["params"]) ? self::$routes[ $uri ]["params"] : array()
 			);
 
 			return array($controller,$method);
 		}
 
 		// loop through the route map for wild cards:
-		foreach( static::$routes as $key => $value)
+		foreach( self::$routes as $key => $value)
 		{
 			$unalteredKey = $key;
 
@@ -140,7 +140,7 @@ class GenericRouter implements IRouter
 		}
 		else
 		{
-			foreach( static::$routes as $key => $value)
+			foreach( self::$routes as $key => $value)
 			{
 				list($routeController,$routeMethod) = explode(".",$value["route"]);
 
