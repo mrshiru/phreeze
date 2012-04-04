@@ -22,7 +22,7 @@ class MemCacheProxy
 	 * cannot be contacted
 	 * @param array in host/port format: array('host1'=>'11211','host2'=>'11211')
 	 */
-	public function MemCacheProxy($server_array = array('localhost'=>'11211'))
+	public function __construct($server_array = array('localhost'=>'11211'))
 	{
 		if (class_exists('Memcache'))
 		{
