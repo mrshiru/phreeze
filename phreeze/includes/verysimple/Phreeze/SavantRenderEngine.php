@@ -19,18 +19,19 @@ class SavantRenderEngine implements IRenderEngine
 	static $TEMPLATE_EXTENSION = ".tpl.php";
 	private $savant;
 
+
 	/**
-	 * Constructor
-	 * @param string $path full path to template directory
+	 * @param string $templatePath
+	 * @param string $compilePath (not used for this render engine)
 	 */
-	function __construct($path)
+	function __construct($templatePath = '',$compilePath = '')
 	{
 		$this->savant = new Savant3();
 
 		// normalize the path
-		if (substr($path,-1) != '/' && substr($path,-1) != '\\') $path .= "/";
+		if (substr($templatePath,-1) != '/' && substr($templatePath,-1) != '\\') $templatePath .= "/";
 
-		if ($path) $this->savant->setPath('template',$path);
+		if ($templatePath) $this->savant->setPath('template',$templatePath);
 	}
 
 	/**

@@ -27,12 +27,12 @@ class Dispatcher
 	 * that the controller dependencies are all injected properly
 	 *
 	 * @param Phreezer $phreezer Object persistance engine
-	 * @param Smarty $renderEngine rendering engine
-	 * @param string $action the user requested action
-	 * @param Context (optional) a context object for persisting the state of the current page
-	 * @param UrlWriter (optional) a custom writer for URL formatting
+	 * @param IRenderEngine $renderEngine rendering engine
+	 * @param string (optional) $action the user requested action (if not provided will use router->GetRoute())
+	 * @param Context (optional) a context object for persisting state
+	 * @param IRouter (optional) router object for reading/writing URLs (if not provided, GenericRouter will be used)
 	 */
-	static function Dispatch($phreezer,$renderEngine,$action,$context=null,$router=null)
+	static function Dispatch($phreezer,$renderEngine,$action='',$context=null,$router=null)
 	{
 		if ($router == null)
 		{
