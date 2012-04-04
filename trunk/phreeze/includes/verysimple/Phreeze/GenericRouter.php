@@ -5,23 +5,31 @@ class GenericRouter implements IRouter
 {
 	private static $routes = array();
 
-	private $defaultAction = 'Default.DefaultAction';
+	private $defaultAction = 'Default.Home';
 	private $uri = '';
-	private $appRoot = '';
+	private $appRootUrl = '';
 
 	// cached route from last run:
 	private $cachedRoute;
 
 	/**
-	 * Constructor sets up the router allowing for patterns to be
-	 * instantiated
+	 * Instantiate the GenericRouter
 	 *
-	 * @param array associative array of $patterns
+	 * @param string $appRootUrl the root url of the application including trailing slash (ex http://localhost/)
+	 * @param string $defaultAction action to call if no route is provided (ex Default.DefaultAction)
+	 * @param array $mapping the associative array of maps Example: <pre>
+	 * 		$routes = array(
+	 * 			"GET:" => array("route" => "Default.Home"),
+	 * 			"GET:user/(:num)/packages" => array("route" => "Package.Query", "params" => array("userId" => 1)),
+	 * 			"POST:user/(:num)/package/(:num)" => array("route" => "Package.Update", "params" => array("userId" => 1, "packageId" => 3)),
+	 * 			"GET:automation/(:any)" => array("route" => "Automation.DoAutomation", "params" => array("action" => 1))
+	 * 		);
+	 * </pre>
 	 */
-	public function __construct($appRoot = '', $defaultAction = 'Default.DefaultAction', $mapping = array())
+	public function __construct($appRootUrl = '', $defaultAction = '', $mapping = array())
 	{
 		if ($defaultAction) $this->defaultAction = $defaultAction;
-		if ($appRoot) $this->appRoot = $appRoot;
+		if ($appRootUrl) $this->appRootUrl = $appRootUrl;
 
 		$this->mapRoutes($mapping);
 
@@ -98,12 +106,12 @@ class GenericRouter implements IRouter
 	{
 		if (!$this->uri)
 		{
-			$this->uri = $_REQUEST['_REWRITE_COMMAND'];
+			$this->uri = array_key_exists('_REWRITE_COMMAND', $_REQUEST) ? $_REQUEST['_REWRITE_COMMAND'] : '';
 
 			// if a root folder was provided, then we need to strip that out as well
-			if ($this->appRoot)
+			if ($this->appRootUrl)
 			{
-				$prefix = $this->appRoot.'/';
+				$prefix = $this->appRootUrl.'/';
 				while (substr($this->uri,0,strlen($prefix)) == $prefix)
 				{
 					$this->uri = substr($this->uri,strlen($prefix));
@@ -124,7 +132,7 @@ class GenericRouter implements IRouter
 	 */
 	public function GetUrl( $controller, $method, $params = '' )
 	{
-		$prefix = $this->appRoot ? $this->appRoot : '';
+		$prefix = $this->appRootUrl ? $this->appRootUrl : '';
 		$requestMethod = RequestUtil::GetMethod();
 		$url = RequestUtil::GetServerRootUrl() . $prefix;
 
