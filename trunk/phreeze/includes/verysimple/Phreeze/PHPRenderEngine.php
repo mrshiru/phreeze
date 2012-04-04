@@ -25,12 +25,12 @@ class PHPRenderEngine implements IRenderEngine
 	public $model = Array();
 
 	/**
-	 * Constructor
-	 * @param string $templatePath full path to template directory
+	 * @param string $templatePath
+	 * @param string $compilePath (not used for this render engine)
 	 */
-	function __construct($path)
+	function __construct($templatePath = '',$compilePath = '')
 	{
-		$this->templatePath = $path;
+		$this->templatePath = $templatePath;
 
 		if (substr($path,-1) != '/' && substr($path,-1) != '\\') $this->templatePath .= "/";
 	}
