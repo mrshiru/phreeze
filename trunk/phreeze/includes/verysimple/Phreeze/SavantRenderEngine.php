@@ -26,7 +26,7 @@ class SavantRenderEngine implements IRenderEngine
 	 */
 	function __construct($templatePath = '',$compilePath = '')
 	{
-		$this->savant = new Savant3();
+		$this->savant = new Savant3(array('exceptions'=>true));
 
 		// normalize the path
 		if (substr($templatePath,-1) != '/' && substr($templatePath,-1) != '\\') $templatePath .= "/";
