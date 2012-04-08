@@ -722,10 +722,15 @@ abstract class Controller
 	{
 		$obj = null;
 
-		if ($useSimpleObject)
+		if (is_a($var,'DataSet') || is_a($var,'DataPage'))
+		{
+			// if a dataset or datapage can be converted directly into an array without enumerating twice
+			$obj = $var->ToObjectArray($useSimpleObject,$options);
+		}
+		else if ($useSimpleObject)
 		{
 			// we need to figure out what type
-			if (is_array($var)  )
+			if (is_array($var) || is_a($var,'SplFixedArray')  )
 			{
 				$obj = array();
 				foreach ($var as $item)
