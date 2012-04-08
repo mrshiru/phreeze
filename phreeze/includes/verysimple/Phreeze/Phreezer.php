@@ -14,10 +14,10 @@ require_once("verysimple/IO/Includer.php");
 
 /**
  * The Phreezer class is a factory for obtaining and working with Phreezable (persistable)
- * objects.  The Phreezer is generally the starting point for the application where you 
+ * objects.  The Phreezer is generally the starting point for the application where you
  * will obtain one or more objects.
  *
- * @package    verysimple::Phreeze 
+ * @package    verysimple::Phreeze
  * @author     VerySimple Inc.
  * @copyright  1997-2008 VerySimple, Inc.
  * @license    http://www.gnu.org/licenses/lgpl.html  LGPL
@@ -26,37 +26,37 @@ require_once("verysimple/IO/Includer.php");
 class Phreezer extends Observable
 {
 	public $DataAdapter;
-	
+
 	/**
 	 * Render engine can hold any arbitrary object used to render views
 	 * @var Smarty
 	 */
 	public $RenderEngine;
-	
+
 	public $Version = 3.2;
-	
-	/** 
+
+	/**
 	 * @var int expiration time for query & value cache (in seconds) default = 5
 	 * The default is a low value which will help only with floods of traffic, but
 	 * will prevent stale data from appearing
 	 */
 	public $ValueCacheTimeout = 5;
-	
-	/** 
-	 * @var int expiration time for single objects cache (in seconds) 
+
+	/**
+	 * @var int expiration time for single objects cache (in seconds)
 	 * All individual save operations will update the cache so this can be a higher value
 	 * as long as other non-phreeze applications are not also editing the database
 	 * and you are not doing bulk query updates.
 	 */
 	public $ObjectCacheTimeout = 300; // 5 minutes
 
-	/** 
+	/**
 	 * @var set to true to save each individual query object in the level-2 cache
 	 * this can lead to a lot of save operations on the level-2 cahce that don't
 	 * ever get read, so enable only if you know it will improve performance
 	 */
 	public $CacheQueryObjectLevel2 = false;
-	
+
 	/**
 	 * @var array
 	 */
@@ -71,15 +71,15 @@ class Phreezer extends Observable
 	 * @var ICache
 	 */
 	private $_level2Cache;
-	
+
 	/**
 	 * @var string path used for saving lock files to prevent cache stampedes
 	 */
 	public $LockFilePath;
-	
+
     /**
     * Contructor initializes the object.  The database connection is opened upon instantiation
-    * and an exception will be thrown if db connectivity fails, so it is advisable to 
+    * and an exception will be thrown if db connectivity fails, so it is advisable to
     * surround the instantiation with a try/catch
     *
     * @access public
@@ -91,13 +91,13 @@ class Phreezer extends Observable
 		$this->_mapCache = new CacheRam();
 		$this->_level1Cache = new CacheRam();
 		$this->_level2Cache = new CacheNoCache();
-		
+
 		parent::AttachObserver($observer);
 		$this->Observe("Phreeze Instantiated", OBSERVE_DEBUG);
-		
+
 		$this->DataAdapter = new DataAdapter($csetting, $observer);
 	}
-	
+
 	/**
 	* Sets a cache provider for the level 1 cache
 	* @param ICache $cache
@@ -116,12 +116,12 @@ class Phreezer extends Observable
 		$this->_level2Cache = $cache;
 		$this->LockFilePath = $lockFilePath;
 	}
-	
+
 	/**
-	* ValueCache is a utility method allowing any object or value to 
-	* be stored in the cache.  The timout is specified by 
+	* ValueCache is a utility method allowing any object or value to
+	* be stored in the cache.  The timout is specified by
 	* ValueCacheTimeout.  This
-	* 
+	*
 	* @param string $sql
 	* @param variant $val
 	* @param int cache timeout (in seconds) default = Phreezer->ValueCacheTimeout.  set to zero for no cache
@@ -129,19 +129,19 @@ class Phreezer extends Observable
 	*/
 	public function SetValueCache($key, $val, $timeout = null)
 	{
-		if (is_null($timeout)) $timeout = $this->ValueCacheTimeout;	
-		
+		if (is_null($timeout)) $timeout = $this->ValueCacheTimeout;
+
 		if ($timeout <= 0) return false;
-		
+
 		if (strlen($key) > 250) $key = substr($key,0,150) . md5($key);
-		
+
 		$this->_level1Cache->Set(md5($key),$val,0,$timeout);
 		return $this->_level2Cache->Set($key,$val,0,$timeout);
 	}
-	
+
 	/**
 	* Retreives an object or value that was persisted using SetValueCache
-	* 
+	*
 	* @param string $key
 	* @return variant
 	*/
@@ -149,7 +149,7 @@ class Phreezer extends Observable
 	{
 		// save the trouble of retrieving the cache if it is not enabled
 		if ($this->ValueCacheTimeout <= 0) return null;
-		
+
 		if (strlen($key) > 250) $key = substr($key,0,150) . md5($key);
 		$obj = $this->_level1Cache->Get(md5($key));
 		return $obj ? $obj : $this->_level2Cache->Get($key);
@@ -166,7 +166,7 @@ class Phreezer extends Observable
 		$this->_level2Cache->Delete($objectclass . "_" . $id);
 		$this->Observe("Deleted TYPE='$objectclass' ID='$id' from Cache",OBSERVE_DEBUG);
 	}
-	
+
 	/**
 	* Sets value in the cache
 	* @param string $objectclass
@@ -178,24 +178,24 @@ class Phreezer extends Observable
 	public function SetCache($objectclass,$id, Phreezable $val, $includeCacheLevel2 = true, $timeout = null)
 	{
 		if (is_null($timeout)) $timeout = $this->ObjectCacheTimeout;
-		
+
 		if ($val->NoCache() || $timeout <= 0) return false;
-		
+
 		// if the object hasn't changed at level 1, then supress the cache update
 		$obj = $this->_level1Cache->Get($objectclass . "_" . $id);
-		
+
 		if ($obj && $obj->serialize() == $val->serialize())
 		{
 			$this->Observe("TYPE='$objectclass' ID='$id' level 1 cache has not changed.  SetCache was supressed",OBSERVE_DEBUG);
 			return false;
 		}
-		
+
 		$this->_level1Cache->Set($objectclass . "_" . $id,$val, $timeout);
-		
+
 		// cache level 2 only if specified
 		if ($includeCacheLevel2) $this->_level2Cache->Set($objectclass . "_" . $id,$val, $timeout);
 	}
-	
+
 	/**
 	* Retrieves a value from the cache
 	* @param string $objectclass
@@ -205,46 +205,46 @@ class Phreezer extends Observable
 	public function GetCache($objectclass,$id)
 	{
 		if ($this->ObjectCacheTimeout <= 0) return null;
-		
+
 		$cachekey = $objectclass . "_" . $id;
-		
+
 		// include the model so any serialized classes will not throw an exception
 		$this->IncludeModel($objectclass);
-		
+
 		// see if this object was cached in the level 1 cache
 		$obj = $this->_level1Cache->Get($cachekey);
-		
+
 		if ($obj)
-		{ 
+		{
 			$this->Observe("Retrieved TYPE='$objectclass' ID='$id' from 1st Level Cache",OBSERVE_DEBUG);
 			$obj->CacheLevel(1);
 			if (!$obj->IsLoaded()) $obj->Refresh($this);
 			return $obj;
 		}
-		
+
 		// try the level 2 cahce
 		$obj = $this->_level2Cache->Get($cachekey);
-		
+
 		if ($obj)
-		{ 
+		{
 			$this->Observe("Retrieved TYPE='$objectclass' ID='$id' from 2nd Level Cache",OBSERVE_DEBUG);
 			$obj->Refresh($this);
 			$obj->CacheLevel(2);
 
 			// we just got this from level 2, but it wasn't in level 1 so let's save it in level 1 for
 			$this->_level1Cache->Set($cachekey,$obj);
-			
+
 			return $obj;
 		}
-		
+
 		$this->Observe("No L1/L2 Cache for TYPE='$objectclass' ID='$id'",OBSERVE_DEBUG);
 		// $this->Observe("KEYS =" . serialize($this->_level1Cache->GetKeys()) ,OBSERVE_DEBUG);
 		return null;
 	}
-	
+
 	/**
     * Override of the base AttachObserver so that when an observer is attached, it
-	* will also be attached to all child objects.  Note that some initialization 
+	* will also be attached to all child objects.  Note that some initialization
 	* messages won't be observed unless you provide it in the Phreezer constructor
     */
 	public function AttachObserver($observer)
@@ -263,10 +263,10 @@ class Phreezer extends Observable
 	{
 		return strcmp($a->ToString(), $b->ToString());
 	}
-	
-	
+
+
 	/**
-	* Sort an array of Phreezable objects.  ToString() is used as the sort 
+	* Sort an array of Phreezable objects.  ToString() is used as the sort
 	* key.  You must implmement ToString on your sortable objects in order
 	* for Phreezer::Sort to be effective
 	*
@@ -276,7 +276,7 @@ class Phreezer extends Observable
 	{
 		usort($objects,array("Phreezer","Compare"));
 	}
-	
+
 	/**
 	* Get one instance of an object based on criteria.  If multiple records
 	* are found, only the first is returned.  If no matches are found,
@@ -292,27 +292,27 @@ class Phreezer extends Observable
 	public function GetByCriteria($objectclass, $criteria, $crash_if_multiple_found = true, $cache_timeout = null)
 	{
 		if (is_null($cache_timeout)) $cache_timeout = $this->ValueCacheTimeout;
-		
+
 		if (strlen($objectclass) < 1)
 		{
 			throw new Exception("\$objectclass argument is required");
 		}
-		
+
 		$obj = null;
 		$ds = $this->Query($objectclass, $criteria, $cache_timeout);
-		
+
 		$ds->UnableToCache = false;
-		
+
 		if (!$obj = $ds->Next())
 		{
 			throw new NotFoundException("$objectclass with specified criteria not found");
 		}
-		
+
 		if ($crash_if_multiple_found && $ds->Next())
 		{
 			throw new Exception("More than one $objectclass with specified criteria was found");
 		}
-		
+
 		return $obj;
 	}
 
@@ -328,7 +328,7 @@ class Phreezer extends Observable
  	public function Query($objectclass, $criteria = null, $cache_timeout = null)
 	{
 		if (is_null($cache_timeout)) $cache_timeout = $this->ValueCacheTimeout;
-		
+
 		if (strlen($objectclass) < 1)
 		{
 			throw new Exception("\$objectclass argument is required");
@@ -339,18 +339,18 @@ class Phreezer extends Observable
 		{
 			$criteria = new Criteria();
 		}
-		
+
 		// see if this object has a custom query designated
 		$custom = $this->GetCustomQuery($objectclass, $criteria);
-		
+
 		$sql = "";
 		$count_sql = "";
-		
+
 		if ($custom)
 		{
 			$this->Observe("Using Custom Query",OBSERVE_DEBUG);
 			$sql = $custom;
-			
+
 			// the counter query may be blank, in which case DataSet will generate one
 			$count_sql = $this->GetCustomCountQuery($objectclass, $criteria);
 		}
@@ -364,17 +364,17 @@ class Phreezer extends Observable
 			$builder->RecurseFieldMaps($objectclass, $fms);
 
 			$sql = $builder->GetSQL($criteria);
-			
+
 			$count_sql = $builder->GetCountSQL($criteria);
 		}
-		
+
 		$ds = new DataSet($this, $objectclass, $sql, $cache_timeout);
 		$ds->CountSQL = $count_sql;
-		
+
 		return $ds;
 
 	}
-	
+
     /**
     * Get one instance of an object based on it's primary key value
     *
@@ -387,7 +387,7 @@ class Phreezer extends Observable
 	public function Get($objectclass, $id, $cache_timeout = null)
 	{
 		if (is_null($cache_timeout)) $cache_timeout = $this->ObjectCacheTimeout;
-		
+
 		if (strlen($objectclass) < 1)
 		{
 			throw new Exception("\$objectclass argument is required");
@@ -396,38 +396,38 @@ class Phreezer extends Observable
 		{
 			throw new Exception("\$id argument is required for $objectclass");
 		}
-		
+
 		// see if this object was cached & if so return it
 		$obj = $cache_timeout == 0 ? null : $this->GetCache($objectclass,$id);
 		if ($obj) return $obj;
 
 		$pkm = $this->GetPrimaryKeyMap($objectclass);
-		
+
 		if (!$pkm) throw new Exception("Table for '$objectclass' has no primary key");
 
 		$criteria = new Criteria();
 		$criteria->PrimaryKeyField = "`" . $pkm->TableName . "`.`" . $pkm->ColumnName . "`";
 		$criteria->PrimaryKeyValue = $id;
-		
+
 		$ds = $this->Query($objectclass, $criteria);
-		
+
 		// tell the dataset that we will be able to cache this query
 		$ds->UnableToCache = false;
-		
+
 		if (!$obj = $ds->Next())
 		{
 			throw new NotFoundException("$objectclass with primary key of $id not found");
 		}
-		
+
 		// cache the object for future use
 		$this->SetCache($objectclass,$id,$obj,$cache_timeout);
-		
+
 		return $obj;
 	}
-	
+
 	/**
 	 * Persist an object to the data store.  An insert or update will be executed based
-	 * on whether the primary key has a value.  use $form_insert to override this 
+	 * on whether the primary key has a value.  use $form_insert to override this
 	 * in the case of a primary key that is not an auto_increment
 	 *
 	 * @access public
@@ -446,8 +446,10 @@ class Phreezer extends Observable
 		$pkcol = $fms[$pk]->ColumnName;
 		$returnval = "";
 
+		$pk_is_auto_insert = strlen($id) == 0;
+
 		// if there is no value for the primary key, this is an insert
-		$is_insert = $force_insert || strlen($id) == 0;
+		$is_insert = $force_insert || $pk_is_auto_insert;
 
 		// fire the OnSave event in case the object needs to prepare itself
 		// if OnSave returns false, then don't proceed with the save
@@ -459,7 +461,7 @@ class Phreezer extends Observable
 		}
 
 		$sql = "";
-		
+
 		if (!$is_insert)
 		{
 			// this is an update
@@ -491,6 +493,7 @@ class Phreezer extends Observable
 			$sql .= " where $pkcol = '" . $this->Escape($id) . "'";
 
 			$returnval = $this->DataAdapter->Execute($sql);
+
 			$obj->OnUpdate(); // fire OnUpdate event
 		}
 		else
@@ -526,7 +529,7 @@ class Phreezer extends Observable
 					{
 						$prop = $fm->PropertyName;
 						$val = $obj->$prop;
-						
+
 						try
 						{
 							$sql .= $delim . "'" . $this->Escape($val) . "'";
@@ -535,25 +538,26 @@ class Phreezer extends Observable
 						{
 							throw new Exception("Error escaping property '$prop'. value could not be converted to string");
 						}
-						
+
 						$delim = ", ";
 					}
 				}
 			}
 			$sql .= ")";
-			
+
 			// for the insert we also need to get the insert id of the primary key
 			$returnval = $this->DataAdapter->Execute($sql);
-			if (!$force_insert)
+			if ($pk_is_auto_insert)
 			{
-				$obj->$pk = $this->DataAdapter->GetLastInsertId();
+				$returnval = $this->DataAdapter->GetLastInsertId();
+				$obj->$pk = $returnval;
 			}
 			$obj->OnInsert(); // fire OnInsert event
 		}
-		
+
 		return $returnval;
 	}
-	
+
     /**
     * Delete the given object from the data store
     *
@@ -563,28 +567,28 @@ class Phreezer extends Observable
 	public function Delete($obj)
 	{
 		$objectclass = get_class($obj);
-		
+
 		if (!$obj->OnBeforeDelete())
 		{
 			$this->Observe("Delete was cancelled because OnBeforeDelete did not return true");
 			return 0;
 		}
-		
+
 		$fms = $this->GetFieldMaps($objectclass);
 
 		$pk = $obj->GetPrimaryKeyName();
 		$id = $obj->$pk;
 		$table = $fms[$pk]->TableName;
 		$pkcol = $fms[$pk]->ColumnName;
-		
+
 		$sql = "delete from `$table` where `$pkcol` = '" . $this->Escape($id) . "'";
 		$returnval = $this->DataAdapter->Execute($sql);
 
 		// remove from cache
 		$this->DeleteCache($objectclass,$id);
-		
+
 		$obj->OnDelete(); // fire OnDelete event
-		
+
 		return $returnval;
 
 	}
@@ -600,7 +604,7 @@ class Phreezer extends Observable
 		$fms = $this->GetFieldMaps(get_class($obj));
 		$pk = $obj->GetPrimaryKeyName();
 		$table = $fms[$pk]->TableName;
-		
+
 		$sql = "delete from `$table`";
 		$returnval = $this->DataAdapter->Execute($sql);
 		$obj->OnDelete(); // fire OnDelete event
@@ -620,12 +624,12 @@ class Phreezer extends Observable
 		// this is a temporary ram cache
 		$fms = $this->_mapCache->Get($objectclass."FieldMaps");
 		if ($fms) return $fms;
-		
+
 		$this->IncludeModel($objectclass);
-		
+
 		if (!class_exists($objectclass."Map")) throw new Exception("Class '" . $objectclass."Map' is not defined.");
 		$fms = call_user_func( array($objectclass."Map","GetFieldMaps") );
-		
+
 		$this->_mapCache->Set($objectclass."FieldMaps",$fms);
 		return $fms;
 	}
@@ -643,7 +647,7 @@ class Phreezer extends Observable
 		$sql = call_user_func( array($objectclass,"GetCustomQuery"),$criteria );
 		return $sql;
 	}
-	
+
 	/**
 	* Returns the custom "counter" query for the given object class if it is defined
 	*
@@ -659,7 +663,7 @@ class Phreezer extends Observable
 	}
 
 	static $cnt = 0; // used for debugging php memory errors due to circular references
-	
+
     /**
     * Returns all KeyMaps for the given object class
     *
@@ -676,11 +680,11 @@ class Phreezer extends Observable
 			throw new Exception("A sanity limit was exceeded when recursing KeyMaps for `$objectclass`.  Please check your Map for circular joins.");
 		}
 		//*/
-		
+
 		// this is a temporary ram cache
 		$kms = $this->_mapCache->Get($objectclass."KeyMaps");
 		if ($kms) return $kms;
-		
+
 		$this->IncludeModel($objectclass);
 		if (!class_exists($objectclass."Map")) throw new Exception("Class '" . $objectclass."Map' is not defined.");
 		$kms = call_user_func( array($objectclass."Map","GetKeyMaps") );
@@ -702,7 +706,7 @@ class Phreezer extends Observable
 		$fms = $this->GetFieldMaps($objectclass);
 		return $fms[$propertyname];
 	}
-	
+
     /**
     * Return specific KeyMap for the given object class with the given name
     *
@@ -744,7 +748,7 @@ class Phreezer extends Observable
 		$fm = $this->GetFieldMap($objectclass, $propertyname);
 		return $fm->TableName;
 	}
-	
+
 	/**
     * Return the KeyMap for the primary key for the given object class
     *
@@ -775,7 +779,7 @@ class Phreezer extends Observable
     */
     public function GetOneToMany($parent, $keyname, $criteria)
     {
-		
+
 		// get the keymap for this child relationship
 		$km = $this->GetKeyMap(get_class($parent), $keyname);
 
@@ -795,14 +799,14 @@ class Phreezer extends Observable
 		{
 			// ensure that the criteria passed in will filter correctly by foreign key
 			$foreign_prop = $km->ForeignKeyProperty;
-			
+
 			// this is only for backwards compatibility, but it should be ignored by current criteria objects
 			$criteria->$foreign_prop = $key_value;
-			
-			// the current criteria "Equals" format "FieldName_Equals" 
+
+			// the current criteria "Equals" format "FieldName_Equals"
 			$foreign_prop .= "_Equals";
 			$criteria->$foreign_prop = $key_value;
-			
+
 			// if this criteria has any or criterias attached, we need to set the foreign key to these
 			// as well or else we'll get unexpected results
 			foreach ($criteria->GetOrs() as $oc)
@@ -813,7 +817,7 @@ class Phreezer extends Observable
 
 		return $this->Query($km->ForeignObject,$criteria);
 	}
-	
+
     /**
     * Query for a parent object in a many-to-one relationship
     *
@@ -826,23 +830,23 @@ class Phreezer extends Observable
 	{
 		// get the keymap for this child relationship
 		$km = $this->GetKeyMap(get_class($parent), $keyname);
-		
+
 		// we need the value of the foreign key.  (ex. to get all orders for a customer, we need Customer.Id)
-		// we also need to know the class of the object we're retrieving because if it's cached, we need to 
+		// we also need to know the class of the object we're retrieving because if it's cached, we need to
 		// make sure the model file is loaded
 		$objectclass = $km->ForeignObject;
 		$parent_prop = $km->KeyProperty;
 		$key_value = $parent->$parent_prop;
-		
+
 		// get this object  Get uses caching so we don't need to bother
 		$obj = $this->Get($km->ForeignObject,$key_value);
-		
+
 		return $obj;
 
 	}
-	
+
 	/**
-	* Dynamically override the LoadType for a KeyMap.  This is useful for 
+	* Dynamically override the LoadType for a KeyMap.  This is useful for
 	* eager fetching for a particular query.  One set, this configuration
 	* will be used until the end of the page context, or it is changed.
 	*
@@ -855,7 +859,7 @@ class Phreezer extends Observable
 	{
 		$this->GetKeyMap($objectclass, $keyname)->LoadType = $load_type;
 	}
-	
+
 
 	/**
 	 * Escape SQL string for SQL
@@ -864,7 +868,7 @@ class Phreezer extends Observable
 	{
 		return DataAdapter::Escape($val);
 	}
-	
+
 	/**
 	* If the type is not already defined, attempts to require_once the definition.
 	* If the Model file cannot be located, an exception is thrown
