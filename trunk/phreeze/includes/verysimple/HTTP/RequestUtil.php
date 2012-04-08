@@ -144,12 +144,26 @@ class RequestUtil
 	}
 
 	/**
-	 * Returns the request method (GET, POST, PUT, DELETE)
-	 * @param string name of request method when using emulated HTTP (ex. backbone.js Backbone.emulateHTTP)
+	 * Returns the request method (GET, POST, PUT, DELETE).  This is detected based
+	 * on the HTTP request method, a special URL parameter, or a request header
+	 * with the name 'X-HTTP-Method-Override'
+	 *
+	 * For clients or servers that don't support PUT/DELETE requests, the emulated
+	 * param can be used or the override header
+	 *
+	 * @param string name of the querystring parameter that has the overridden request method
 	 */
 	public static function GetMethod($emulateHttpParamName = '_method')
 	{
+
 		if (array_key_exists($emulateHttpParamName, $_REQUEST)) return $_REQUEST[$emulateHttpParamName];
+
+		// this seems to be a psuedo-standard (used by backbone)
+		$headers = getAllHeaders();
+		if (array_key_exists('X-HTTP-Method-Override', $headers))
+		{
+			return $headers['X-HTTP-Method-Override'];
+		}
 
 		return array_key_exists('REQUEST_METHOD', $_SERVER) ? $_SERVER['REQUEST_METHOD'] : '';
 	}
