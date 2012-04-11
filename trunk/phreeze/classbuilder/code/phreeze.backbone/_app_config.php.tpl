@@ -39,8 +39,8 @@ GlobalConfig::$ROUTE_MAP = array(
 	// default controller when no route specified
 	'GET:' => array('route' => 'Default.Home'),
 {foreach from=$tables item=table name=tablesForEach}
-	{assign var=singular value=$tableInfos[$table->Name]['singular']|studlycaps}
-	{assign var=plural value=$tableInfos[$table->Name]['plural']|studlycaps}
+	{assign var=singular value=$tableInfos[$table->Name]['singular']}
+	{assign var=plural value=$tableInfos[$table->Name]['plural']}
 
 	// {$table->Name}
 	'GET:{$plural|lower}' => array('route' => '{$singular}.ListView'),

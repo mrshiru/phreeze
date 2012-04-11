@@ -88,9 +88,6 @@
 			<script type="text/javascript" src="scripts/libs/backbone-min.js"></script>
 			<script type="text/javascript" src="scripts/libs/jquery.scrollIntoView.min.js"></script>
 
-			<!-- All tpl files need to include this if they're using models/collections	-->
-			<script type="text/javascript" src="scripts/model.js"></script>
-
 			<!-- Le javascript
 			================================================== -->
 			<!-- Placed at the end of the document so the pages load faster -->
