@@ -17,4 +17,4 @@
     
     <div id="main">
     
-    {if $error}<p class="error">{$error}</p>{/if}
+    {if isset($error)}<p class="error">{$error}</p>{/if}

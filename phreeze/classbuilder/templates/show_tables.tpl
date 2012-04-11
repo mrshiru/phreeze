@@ -6,7 +6,8 @@
 
 <h2>1. Select Tables:</h2> 
 
-<table class="basic"> 
+<div style="height: 400px; overflow: auto; border: solid 1px #666666;">
+<table class="basic" style="width: 100%;"> 
 <tr> 
     <th><input type="checkbox" name="table_toggle" value="0" onclick="checkAll(this.form, 'table_name[]',this.checked)" checked="checked" /></th> 
     <th>Table</th> 
@@ -20,21 +21,33 @@
 		<td><input type="checkbox" name="table_name[]" value="{$table->Name}" {if !$table->IsView}checked="checked"{/if} /></td> 
 		<td>{if $table->IsView}VIEW: {/if}{$table->Name}</td> 
 		<td><input type="text" name="{$table->Name}_singular" value="{$table->Name|studlycaps}" /></td> 
-		<td><input type="text" name="{$table->Name}_plural" value="{$table->Name|studlycaps}s" /></td> 
+		<td><input type="text" name="{$table->Name}_plural" value="{$table->Name|plural|studlycaps}" /></td> 
 		<td><input type="text" name="{$table->Name}_prefix" value="{$table->ColumnPrefix}" size="15" /></td> 
 	</tr>
 {/foreach}
 
 </table>
+</div>
 
-<h2>2. Select Templates to Generate:</h2>
+<h2>2. Select Package to Generate:</h2>
 
-<div style="height: 150px; overflow: auto; border: solid 1px #666666; background-color: #E1E1E1;"> 
 
-	<div><input type="checkbox" name="table_toggle" value="0" onclick="checkAll(this.form, 'template_name[]',this.checked)" checked="checked"/> <em>SELECT ALL</em></div>
-	{foreach from=$files item=file}
-		<div><input type="checkbox" name="template_name[]" value="{$file->Name}" checked="checked"/>{$file->Prefix}</div>
+<div style="height: 150px; overflow: auto; border: solid 1px #666666;"> 
+<table class="basic" style="width: 100%;"> 
+<tr> 
+    <th><input type="checkbox" name="table_toggle" value="0" onclick="checkAll(this.form, 'package_name[]',this.checked)" /></th> 
+    <th>Package</th> 
+    <th>Description</th> 
+</tr> 
+	{foreach from=$packages item=package}
+		<tr>
+			<td><input type="checkbox" name="package_name[]" value="{$package->GetConfigFile()}" /></td>
+			<td>{$package->GetName()|escape}</td>
+			<td>{$package->GetDescription()|escape}</td>
+		</tr>
 	{/foreach}
+	
+</table>
 </div>
 
 <h2>3. (Optional) Additional Parameters (one per line):</h2> 
@@ -45,7 +58,7 @@
 PathToExtScripts=/scripts/ext/
 </textarea>
 -->
-<textarea name="parameters" style="width: 400px; height: 75px;">{foreach from=$params item=param}
+<textarea name="parameters" style="width: 100%; height: 75px;">{foreach from=$params item=param}
 {$param->name}={$param->value}
 {/foreach}
 </textarea>

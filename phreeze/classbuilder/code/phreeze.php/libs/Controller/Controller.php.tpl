@@ -1,8 +1,8 @@
 <?php
 /** @package    {$connection->DBName|studlycaps}::Controller */
- 
+
 /** import supporting libraries */
-require_once("verysimple/Phreeze/Controller.php");
+require_once("{$appname}BaseController.php");
 require_once("Model/{$singular}.php");
 
 /**
@@ -14,29 +14,30 @@ require_once("Model/{$singular}.php");
  * @author ClassBuilder
  * @version 1.0
  */
-class {$singular}Controller extends Controller
+class {$singular}Controller extends {$appname}BaseController
 {ldelim}
 
 	/**
-	 * This function is called on initialization of the controller and
-	 * the property ModelName must be set at this point if you plan
-	 * to use the base Controller ValidateInput method
-	 * TODO: Possibly add authentication checks here
-	 * 
+	 * Override here for any controller-specific functionality
+	 *
 	 * @inheritdocs
 	 */
 	protected function Init()
 	{ldelim}
+		parent::Init();
+
 		$this->ModelName = "{$singular}";
+
+		// TODO: add controller-wide bootstrap code
 	{rdelim}
-	
+
 	/**
-	 * List by default displays View{$singular}ListAll.  
+	 * List by default displays View{$singular}ListAll.
 	 * TODO: it is suggested to override this function
-	 * 
+	 *
 	 * @inheritdocs
 	 */
-	function ListAll() 
+	function ListAll()
 	{ldelim}
 		parent::ListAll();
 	{rdelim}
@@ -53,23 +54,23 @@ class {$singular}Controller extends Controller
 		$sc = RequestUtil::Get('sort'); // name of column for sorting
 		$sd = RequestUtil::Get('dir','ASC'); // sort direction
 		$cp = $s/$ps + 1; // current page
-		
-		require_once("Model/DAO/{$singular}Criteria.php");
+
+		require_once("Model/{$singular}Criteria.php");
 		$criteria = new {$singular}Criteria();
-		
+
 		// if a sort was specified, add it to the criteria
 		if ($sc)
 		{ldelim}
 			$criteria->SetOrder($sc, ($sd == "DESC") );
 		{rdelim}
-		
+
 		$datapage = $this->Phreezer->Query("{$singular}",$criteria)->GetDataPage($cp,$ps);
-		
+
 		$this->RenderXML($datapage);
 	{rdelim}
-	
+
 	/**
-	 * Render View{$signular}Display to display a read-only view of the specified record.
+	 * Render View{$singular}Display to display a read-only view of the specified record.
 	 * This method expects form input to contain a value for {$table->GetPrimaryKeyName()|studlycaps}
 	 */
 	public function Display()
@@ -79,7 +80,7 @@ class {$singular}Controller extends Controller
 	{rdelim}
 
 	/**
-	 * Render View{$signular}Edit to display an editable form for the specified record.
+	 * Render View{$singular}Edit to display an editable form for the specified record.
 	 * A query value is expected for {$table->GetPrimaryKeyName()|studlycaps}.
 	 */
 	function Edit()
@@ -87,9 +88,9 @@ class {$singular}Controller extends Controller
 		$this->_AssignModel(RequestUtil::Get("{$table->GetPrimaryKeyName()|studlycaps}"));
 		$this->Render("{$singular}Edit");
 	{rdelim}
-	
+
 	/**
-	 * Render View{$signular}Edit to display an editable form for a new record.
+	 * Render View{$singular}Edit to display an editable form for a new record.
 	 */
 	function Create()
 	{ldelim}
@@ -99,15 +100,15 @@ class {$singular}Controller extends Controller
 
 	/**
 	 * Save the record that was submitted by the user via an Edit or Create form.
-	 * If a value is provided for {$table->GetPrimaryKeyName()|studlycaps} then it 
+	 * If a value is provided for {$table->GetPrimaryKeyName()|studlycaps} then it
 	 * expected that this is an edit, otherwise it is expect that this is an insert.
 	 */
 	function Save()
 	{ldelim}
 		$pk = RequestUtil::Get("{$table->GetPrimaryKeyName()|studlycaps}");
-		
+
 		${$singular|lower} = $this->LoadFromForm($pk);
-		
+
 		if (!${$singular|lower}->Validate())
 		{ldelim}
 			$this->Assign("{$singular|lower}", ${$singular|lower});
@@ -154,7 +155,7 @@ class {$singular}Controller extends Controller
 	/**
 	 * Retrieves a {$singular} object from the datastore and assigns it to the view.
 	 * Optionally, all child objects are assigned to the view as well
-	 * 
+	 *
 	 * @param mixed primary key of the object
 	 * @param bool set to true and _AssignChildren will be called
 	 */
@@ -169,12 +170,12 @@ class {$singular}Controller extends Controller
 		{rdelim}
 	{rdelim}
 
-	
+
 	/**
 	 * LoadFromForm creates a new instance of a {$singular} object and populates it with
 	 * form data submitted by the user.  The base controller will utilize this function
 	 * when validating input via AJAX.
-	 * 
+	 *
 	 * @inheritdocs
 	 * @return {$singular}
 	 */
@@ -201,19 +202,19 @@ class {$singular}Controller extends Controller
 {/if}
 {/if}
 {/foreach}
-		
+
 		return ${$singular|lower};
 	{rdelim}
-	
+
 	/**
 	 * _AssignChildren assigns all necessary dependency records to the view in order to correctly display
 	 * an edit form.  For example, any drop-down lists that need to be populated as well
 	 * as child objects are retrieved from the database and assigned to the view.
-	 * 
+	 *
 	 * TODO: remove any uneeded assignments here
 	 * TODO: Change the label arrays "label" property to something friendly for displaying to the user
 	 * TODO: a sanity limit of 25 is used on child records
-	 * 
+	 *
 	 */
 	private function _AssignChildren(${$singular|lower})
 	{ldelim}
