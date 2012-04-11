@@ -165,6 +165,9 @@ class {$singular}Controller extends {$appname}BaseController
 			}
 			else
 			{
+{if !$table->PrimaryKeyIsAutoIncrement()}
+				// since the primary key is not auto-increment we must force the insert here
+{/if}
 				${$singular|lower}->Save({if !$table->PrimaryKeyIsAutoIncrement()}true{/if});
 				$this->RenderJSON(${$singular|lower}, $this->JSONPCallback(), true, $this->SimpleObjectParams());
 			}
@@ -230,6 +233,17 @@ class {$singular}Controller extends {$appname}BaseController
 		}
 		catch (Exception $ex)
 		{
+
+{if !$table->PrimaryKeyIsAutoIncrement()}
+			// this table does not have an auto-increment primary key, so it is semantically correct to
+			// issue a REST PUT request, however we have no way to know whether to insert or update.
+			// if the record is not found, this exception will indicate that this is an insert request
+			if (is_a($ex,'NotFoundException'))
+			{
+				return $this->Create();
+			}
+{/if}
+
 			$this->RenderExceptionJSON($ex);
 		}
 	}

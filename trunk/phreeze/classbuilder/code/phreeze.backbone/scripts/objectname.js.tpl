@@ -114,19 +114,10 @@ var page = {
 		// show the modal dialog
 		$('#{$singular|lcfirst}DetailDialog').modal({ show: true });
 
-		// either use the selected model or create a new one
-		if (m)
-		{
-			page.{$singular|lcfirst} = m;
-		}
-		else
-		{
-			page.{$singular|lcfirst} = new model.{$singular}Model();
-{if !$table->PrimaryKeyIsAutoIncrement()}
-			// HACK: force backbone to insert because this table's primary key is not auto-increment
-			page.{$singular|lcfirst}.overrideIsNew = true;
-{/if}
-		}
+		// if a model was specified then that means a user is editing an existing record
+		// if not, then the user is creating a new record
+		page.{$singular|lcfirst} = m ? m : new model.{$singular}Model();
+
 		page.modelView.model = page.{$singular|lcfirst};
 
 		if (page.{$singular|lcfirst}.id == null || page.{$singular|lcfirst}.id == '')
@@ -263,11 +254,6 @@ var page = {
 
 				// if desired re-sync the collection with the server
 				// page.fetch{$plural}();
-
-{if !$table->PrimaryKeyIsAutoIncrement()}
-				// HACK: undo the forced insert
-				page.{$singular|lcfirst}.overrideIsNew = false;
-{/if}
 		},
 			error: function(model,response,scope){
 

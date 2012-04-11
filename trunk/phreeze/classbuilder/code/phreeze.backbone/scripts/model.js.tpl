@@ -6,12 +6,6 @@
 // Backbone.emulateHTTP = true;
 // Backbone.emulateJSON = true
 
-// override backbone isNew to allow forcing an insert on tables without auto-insert id
-Backbone.Model.prototype.isNew = function () {
-	if (this.overrideIsNew == true) return true;
-    return this.id == null;
-};
-
 var model = {};
 
 {foreach from=$tables item=table}
