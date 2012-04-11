@@ -2,9 +2,17 @@
 
 require_once("_global.php");
 require_once("verysimple/IO/FolderHelper.php");
+require_once("libs/AppConfig.php");
 
+// load up the available packages (based on files: code/*.config)
 $folder = new FolderHelper(CODE_PATH);
-$files = $folder->GetFiles();
+$files = $folder->GetFiles('/config/');
+$packages = Array();
+
+foreach ($files as $fileHelper)
+{
+	$packages[] = new AppConfig($fileHelper->Path);
+}
 
 // read and parse the database structure
 try
@@ -18,63 +26,14 @@ catch (exception $ex)
 	exit();
 }
 	
-/**
- * Holds all the vars that will be presented in the parameters section.
- * Note: this is quick and dirty. Should probably have its own file 
- * somewhere.
- *
- * @package Phreeze::ClassBuilder
- * @author  laplix
- * @since   2007-11-02
- */
-class Parameter
-{
-   var $name;
-   var $value;
-
-   /**
-    * Constructor.
-    * @param string $name     Parameter name.
-    * @param string $value    Parameter value.
-    */
-   function __construct($name=null, $value=null) {
-      $this->name = $name;
-      $this->value = $value;
-   }
-
-   /**
-    * Constructor for php4.
-    * @see __construct()
-    */
-   function Parameter($name=null, $value=null)
-   {
-      $this->__construct();
-   }
-}
-
-// laplix 2007-11-02. Setup the parameters.
+// initialize parameters that will be passed on to the code templates
 $params = array();
-$params[] = new Parameter('PathToVerySimpleScripts', '/scripts/verysimple/');
-$params[] = new Parameter('PathToExtScripts', '/scripts/ext-2/');
-
-// Laplix 2007-11-02.
-// AppName will enable the user to provide a name for his application.
-// This will be used as the zip file name. Defaults to the database name.
-$params[] = new Parameter('AppName', $schema->Name);
-
-/*
-echo "<pre>";
-print_r($schema);
-print_r($files);
-print_r($params);
-print_r($schema->Name);
-exit();
-/**/
+$params[] = new AppParameter('PathToVerySimpleScripts', '/scripts/verysimple/');
+$params[] = new AppParameter('PathToExtScripts', '/scripts/ext-2/');
+$params[] = new AppParameter('AppName', $schema->Name);
 
 $G_SMARTY->assign("schema",$schema);
-$G_SMARTY->assign("files",$files);
-
-// laplix 2007-11-02
+$G_SMARTY->assign("packages",$packages);
 $G_SMARTY->assign("params", $params);
 
 $G_SMARTY->display("show_tables.tpl");

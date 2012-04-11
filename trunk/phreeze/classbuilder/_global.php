@@ -8,9 +8,9 @@ $ar = realpath("./");
 if (substr($ar,-1) != "/") $ar .= "/";
 define("APP_ROOT",$ar);
 
-define("TEMPLATE_PATH", APP_ROOT . "/templates/");
-define("TEMP_PATH", APP_ROOT . "/templates_c/");
-define("CODE_PATH", APP_ROOT . "/code/");
+define("TEMPLATE_PATH", APP_ROOT . "templates/");
+define("TEMP_PATH", APP_ROOT . "templates_c/");
+define("CODE_PATH", APP_ROOT . "code/");
 
 
 // add local libs to include path (optionally use .htaccess or php.ini)
@@ -21,7 +21,7 @@ set_include_path(APP_ROOT . "/libs/" . PATH_SEPARATOR . get_include_path());
 // For dev purposes, it's easier to keep te includes dir under WEB_ROOT/phreeze
 // with classbuilder and scripts. So we include the path here.
 // FOR PRODUCTION, YOU SHOULD PUT THE includes DIRECTORY **OUTSIDE** YOU WEB ROOT
-// AND SETUP THIS LINE TO POINT TO YOUR PRODUCTION includes DIR 
+// AND SETUP THIS LINE TO POINT TO YOUR PRODUCTION includes DIR
 // You can also use your php.ini or .htaccess file to do that
 set_include_path(APP_ROOT . "../includes/" . PATH_SEPARATOR . get_include_path());
 
@@ -44,7 +44,7 @@ $G_SMARTY->template_dir = TEMPLATE_PATH;
 $G_SMARTY->compile_dir = TEMP_PATH;
 $G_SMARTY->config_dir = TEMP_PATH;
 $G_SMARTY->cache_dir = TEMP_PATH;
-	
+
 // see if the connection information has been specifed, otherwise we can't continue
 // we need to redirect the user to the set_connection page
 if ( !array_key_exists("connstr",$_SESSION) )
@@ -57,7 +57,7 @@ else
 {
 	// create the database access objects
 	$G_CONNSTR = $_SESSION["connstr"];
-	$G_HANDLER = new DBEventHandler(); // set the LogLevel at constructor if desired 
+	$G_HANDLER = new DBEventHandler(); // set the LogLevel at constructor if desired
 	$G_CONNECTION = new DBConnection($G_CONNSTR, $G_HANDLER);
 	$G_SERVER = new DBServer($G_CONNECTION);
 }
