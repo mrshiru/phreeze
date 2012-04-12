@@ -3,7 +3,6 @@
 
 /** import supporting libraries */
 require_once("verysimple/Phreeze/Reporter.php");
-require_once("verysimple/Phreeze/DataAdapter.php");
 
 /**
  * This is an example Reporter based on the {$singular} object.  The reporter object
