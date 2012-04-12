@@ -52,15 +52,7 @@
 		</tbody>
 		</table>
 
-		<%  if (page.totalPages > 1) { %>
-			<div class="pagination">
-				<ul>
-					<% for (var i = 1; i <= page.totalPages; i++) { %>
-						<li <%  if (page.currentPage == i) { %>class="active"<% } %> ><a class="pageButton" id="page-<%= i %>" href="#"><%= i %></a></li>
-					<% } %>
-				</ul>
-			</div>
-		<% } %>
+		<%=  view.getPaginationHtml(page) %>
 	</script>
 
 	<!-- underscore template for the model -->

@@ -51,9 +51,9 @@
 						<div class="nav-collapse">
 							<ul class="nav">
 								<li {ldelim}if $nav=='home'{rdelim} class="active"{ldelim}/if{rdelim}><a href="./">Home</a></li>
-{foreach from=$tables item=table}
+{foreach from=$tables item=table}{if isset($tableInfos[$table->Name])}
 								<li {ldelim}if $nav=='{$tableInfos[$table->Name]['plural']|lower}'{rdelim} class="active"{ldelim}/if{rdelim}><a href="./{$tableInfos[$table->Name]['plural']|lower}">{$tableInfos[$table->Name]['plural']}</a></li>
-{/foreach}
+{/if}{/foreach}
 							</ul>
 						</div><!--/.nav-collapse -->
 					</div>

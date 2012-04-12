@@ -1,7 +1,50 @@
 /**
- * Generic view implementations
+ * View logic for the application.  Defines generic views for collections and
+ * models as well as helper methods for template generation
  */
 var view = {
+
+	/**
+	 * Given an object with properties totalPages and currentPage, return
+	 * HTML page navigator
+	 */
+	getPaginationHtml: function(page)
+	{
+		var html = '';
+		if (page.totalPages > 1) {
+			html += '<div class="pagination"><ul>';
+
+			var first = 1;
+			var last = (1 * page.totalPages);
+
+			if (last > 10)
+			{
+				first = (1 * page.currentPage) - 5;
+				first = first > 1 ? first : 1;
+
+				last = last > (first + 9) ? (first + 9) : last;
+			}
+
+			if (first > 1)
+			{
+				html += '<li><a class="pageButton" id="page-<%= first - 1 %>" href="#">&laquo;</a></li>';
+			}
+
+			for (var i = first; i <= last; i++) {
+				html += '<li' + (page.currentPage == i ? ' class="active"' : '') + '>'
+					+ '<a class="pageButton" id="page-' + i + '" href="#">'
+					+ i + '</a></li>';
+			}
+
+			if (last < (1 * page.totalPages) )
+			{
+				html += '<li><a class="pageButton" id="page-<%= last+1 %>" href="#">&raquo;</a></li>';
+			}
+			html += '</ul></div>';
+		}
+
+		return html;
+	},
 
 	/**
 	 * CollectionView implements a generic view for rendering collections
