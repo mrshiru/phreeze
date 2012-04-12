@@ -27,7 +27,7 @@ var view = {
 
 			if (first > 1)
 			{
-				html += '<li><a class="pageButton" id="page-<%= first - 1 %>" href="#">&laquo;</a></li>';
+				html += '<li><a class="pageButton" id="page-' + (first - 1) + '" href="#">&laquo;</a></li>';
 			}
 
 			for (var i = first; i <= last; i++) {
@@ -38,7 +38,7 @@ var view = {
 
 			if (last < (1 * page.totalPages) )
 			{
-				html += '<li><a class="pageButton" id="page-<%= last+1 %>" href="#">&raquo;</a></li>';
+				html += '<li><a class="pageButton" id="page-' + (last+1) + '" href="#">&raquo;</a></li>';
 			}
 			html += '</ul></div>';
 		}
