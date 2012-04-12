@@ -127,7 +127,7 @@
 	<div id="{$singular|lcfirst}CollectionContainer" class="collectionContainer">
 	</div>
 
-	<p id="newButtonContainer" class="buttonContainer hide">
+	<p id="newButtonContainer" class="buttonContainer">
 		<button id="new{$singular}Button" class="btn btn-primary">Add {$table->Name|underscore2space}</button>
 	</p>
 

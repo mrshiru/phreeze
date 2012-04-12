@@ -8,6 +8,10 @@
 
 var model = {};
 
+// duration in miliseconds to automatically re-fetch data from server (0 = do not use long polling)
+// warning!  changing this setting can cause high server load.  change with caution
+model.longPollDuration = 0;
+
 {foreach from=$tables item=table}{if isset($tableInfos[$table->Name])}
 {assign var=singular value=$tableInfos[$table->Name]['singular']}
 {assign var=plural value=$tableInfos[$table->Name]['plural']}
@@ -33,9 +37,15 @@ model.{$singular}Collection = Backbone.Collection.extend({
 	totalPages: 0,
 	currentPage: 0,
 	pageSize: 0,
+	lastResponseText: null,
+	collectionHasChanged: true,
 
-	// override parse to handle pagination
-	parse: function(response) {
+	// override parse to track changes and handle pagination
+	parse: function(response, xhr) {
+
+		this.collectionHasChanged = (this.lastResponseText != xhr.responseText);
+		this.lastResponseText = xhr.responseText;
+
 		this.totalResults = response.totalResults;
 		this.totalPages = response.totalPages;
 		this.currentPage = response.currentPage;

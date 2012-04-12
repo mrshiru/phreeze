@@ -16,6 +16,10 @@ var page = {
 	{$singular|lcfirst}: null,
 	modelView: null,
 
+	fetchParams: null,
+	fetchInProgress: false,
+	dialogIsOpen: false,
+
 	/**
 	 *
 	 */
@@ -27,9 +31,15 @@ var page = {
 			page.showDetailDialog();
 		});
 
-		// when the model dialog is closed, reset the model view
+		// let the page know when the dialog is open
+		$('#{$singular|lcfirst}DetailDialog').on('show',function(){
+			page.dialogIsOpen = true;
+		});
+
+		// when the model dialog is closed, let page know and reset the model view
 		$('#{$singular|lcfirst}DetailDialog').on('hidden',function(){
 			$('#modelAlert').html('');
+			page.dialogIsOpen = false;
 		});
 
 		// save the model when the save button is clicked
@@ -75,31 +85,58 @@ var page = {
 
 		// tell the model view where it's template is located
 		this.modelView.templateEl = $("#{$singular|lcfirst}ModelTemplate");
+
+		if (model.longPollDuration > 0)
+		{
+			setInterval(function () {
+
+				if (!page.dialogIsOpen)
+				{
+					page.fetch{$plural}(page.fetchParams,true);
+				}
+
+			}, model.longPollDuration);
+		}
 	},
 
 	/**
 	 * Fetch the collection data from the server
+	 * @param object params passed through to collection.fetch
+	 * @param bool true to hide the loading animation
 	 */
-	fetch{$plural}: function(params)
+	fetch{$plural}: function(params, hideLoader)
 	{
-		app.showProgress('loader');;
-		$('#newButtonContainer').hide();
+		page.fetchParams = params;
+
+		if (page.fetchInProgress)
+		{
+			if (console) console.log('supressing fetch because it is already in progress');
+		}
+
+		page.fetchInProgress = true;
+
+		if (!hideLoader) app.showProgress('loader');;
 
 		page.{$plural|lcfirst}.fetch({
 
 			data: params,
 
 			success: function() {
-				// data returned from the server.  render the collection view
-				page.collectionView.render();
+
+				if (page.{$plural|lcfirst}.collectionHasChanged)
+				{
+					// data returned from the server.  render the collection view
+					page.collectionView.render();
+				}
 
 				app.hideProgress('loader');
-				$('#newButtonContainer').show();
+				page.fetchInProgress = false;
 			},
 
 			error: function(m, r) {
 				app.appendAlert(app.getErrorMessage(r), 'alert-error',0,'collectionAlert');
 				app.hideProgress('loader');
+				page.fetchInProgress = false;
 			}
 
 		});
@@ -252,8 +289,11 @@ var page = {
 				// if the collection was initally new then we need to add it to the collection now
 				if (isNew) { page.{$plural|lcfirst}.add(page.{$singular|lcfirst}) }
 
-				// if desired re-sync the collection with the server
-				// page.fetch{$plural}();
+				// if long-polling is used then re-fetch right away
+				if (model.longPollDuration > 0)
+				{
+					page.fetch{$plural}(page.fetchParams,true);
+				}
 		},
 			error: function(model,response,scope){
 
@@ -295,8 +335,11 @@ var page = {
 				setTimeout("app.appendAlert('The {$singular} record was deleted','alert-success',3000,'collectionAlert')",500);
 				app.hideProgress('modelLoader');
 
-				// if desired re-sync the collection with the server
-				// page.fetch{$plural}();
+				// if long-polling is used then re-fetch right away
+				if (model.longPollDuration > 0)
+				{
+					page.fetch{$plural}(page.fetchParams,true);
+				}
 			},
 			error: function(model,response,scope){
 				app.appendAlert(app.getErrorMessage(response), 'alert-error',0,'modelAlert');

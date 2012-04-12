@@ -44,7 +44,7 @@ GlobalConfig::$ROUTE_MAP = array(
 
 	// {$table->Name}
 	'GET:{$plural|lower}' => array('route' => '{$singular}.ListView'),
-	'GET:{$singular|lower}/{if $table->PrimaryKeyIsAutoIncrement()}(:num){else}(:any){/if}' => array('route' => '{$singular}.SingleView', 'params' => array('{$table->GetPrimaryKeyName()|studlycaps|ucfirst}' => 1)),
+	'GET:{$singular|lower}/{if $table->PrimaryKeyIsAutoIncrement()}(:num){else}(:any){/if}' => array('route' => '{$singular}.SingleView', 'params' => array('{$table->GetPrimaryKeyName()|studlycaps|lcfirst}' => 1)),
 	'GET:api/{$singular|lower}' => array('route' => '{$singular}.Query'),
 	'POST:api/{$singular|lower}' => array('route' => '{$singular}.Create'),
 	'GET:api/{$singular|lower}/{if $table->PrimaryKeyIsAutoIncrement()}(:num){else}(:any){/if}' => array('route' => '{$singular}.Read', 'params' => array('{$table->GetPrimaryKeyName()|studlycaps|lcfirst}' => 2)),
