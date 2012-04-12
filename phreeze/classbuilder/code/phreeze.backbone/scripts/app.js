@@ -1,5 +1,5 @@
 /**
- * Application logic available globally throughout th eapp
+ * Application logic available globally throughout the app
  */
 var app = {
 

@@ -8,7 +8,7 @@
 
 var model = {};
 
-{foreach from=$tables item=table}
+{foreach from=$tables item=table}{if isset($tableInfos[$table->Name])}
 {assign var=singular value=$tableInfos[$table->Name]['singular']}
 {assign var=plural value=$tableInfos[$table->Name]['plural']}
 model.{$singular}Model = Backbone.Model.extend({
@@ -45,4 +45,4 @@ model.{$singular}Collection = Backbone.Collection.extend({
 	}
 });
 
-{/foreach}
+{/if}{/foreach}

@@ -183,7 +183,7 @@ else
    // laplix 2007-11-02.
    // Use the application name provided by the user in show_tables.
 	//header("Content-disposition: attachment; filename=".str_replace(" ","_",$G_CONNSTR->DBName).".zip");
-	header("Content-disposition: attachment; filename=".str_replace(" ","_",$G_SMARTY->getTemplateVars('AppName')).".zip");
+	header("Content-disposition: attachment; filename=".str_replace(" ","_",strtolower($appname)).".zip");
 
 	header("Content-Transfer-Encoding: Binary");
 	header('Content-Type: application/zip');

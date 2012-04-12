@@ -38,7 +38,7 @@ GlobalConfig::$ROUTE_MAP = array(
 
 	// default controller when no route specified
 	'GET:' => array('route' => 'Default.Home'),
-{foreach from=$tables item=table name=tablesForEach}
+{foreach from=$tables item=table name=tablesForEach}{if isset($tableInfos[$table->Name])}
 	{assign var=singular value=$tableInfos[$table->Name]['singular']}
 	{assign var=plural value=$tableInfos[$table->Name]['plural']}
 
@@ -50,7 +50,7 @@ GlobalConfig::$ROUTE_MAP = array(
 	'GET:api/{$singular|lower}/{if $table->PrimaryKeyIsAutoIncrement()}(:num){else}(:any){/if}' => array('route' => '{$singular}.Read', 'params' => array('{$table->GetPrimaryKeyName()|studlycaps|lcfirst}' => 2)),
 	'PUT:api/{$singular|lower}/{if $table->PrimaryKeyIsAutoIncrement()}(:num){else}(:any){/if}' => array('route' => '{$singular}.Update', 'params' => array('{$table->GetPrimaryKeyName()|studlycaps|lcfirst}' => 2)),
 	'DELETE:api/{$singular|lower}/{if $table->PrimaryKeyIsAutoIncrement()}(:num){else}(:any){/if}' => array('route' => '{$singular}.Delete', 'params' => array('{$table->GetPrimaryKeyName()|studlycaps|lcfirst}' => 2)),
-{/foreach}
+{/if}{/foreach}
 
 	// catch any broken API urls
 	'GET:api/(:any)' => array('route' => 'Default.ErrorApi404'),
