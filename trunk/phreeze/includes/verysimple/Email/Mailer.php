@@ -227,13 +227,14 @@ class Mailer
 	 * @param string $subject
 	 * @param string $body
 	 */
-    function QuickSend($to,$from,$subject,$body)
+    function QuickSend($to,$from,$subject,$body,$format = MESSAGE_FORMAT_TEXT)
     {
-        $message = new Message();
+        $message = new EmailMessage();
         $message->SetFrom($from);
         $message->AddRecipient($to);
         $message->Subject = $subject;
         $message->Body = $body;
+        $message->Format = $format;
 
         return $this->Send($message);
     }
