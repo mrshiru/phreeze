@@ -38,7 +38,7 @@ catch (exception $ex)
 
 	try
 	{
-		$gc->GetRenderEngine()->display("DefaultFatalError.tpl");
+		$gc->GetRenderEngine()->display("DefaultErrorFatal.tpl");
 	}
 	catch (Exception $ex2)
 	{
